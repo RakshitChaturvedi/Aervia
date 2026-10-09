@@ -47,13 +47,13 @@ def assign_source_labels(df):
     # Low PM ratio (mostly coarse particles), high PM10, dry conditions
     scores['dust'] += np.where(df['pm_ratio'] < 0.45, 1.5, 0.0)
     scores['dust'] += np.where(df['humidity'] < 50, 0.5, 0.0)
-    scores['dust'] += np.where(df['wind_speed_ms'] > df['wind_speed_ms'].quantile(0.8), 0.5, 0.0) # Wind kicks up dust
+    scores['dust'] += np.where(df['wind_speed'] > df['wind_speed'].quantile(0.8), 0.5, 0.0) # Wind kicks up dust
     
     # --- BIOMASS BURNING HEURISTICS ---
     # Very high PM ratio, high CO, low temp/high humidity (winter inversions), high AOD if available
     scores['biomass_burning'] += np.where(df['pm_ratio'] > 0.8, 1.0, 0.0)
     scores['biomass_burning'] += np.where(df['co'] > df['co'].quantile(0.8), 1.0, 0.0)
-    scores['biomass_burning'] += np.where(df['temp_c'] < 20, 0.5, 0.0) # Common in winter mornings
+    scores['biomass_burning'] += np.where(df['temp'] < 20, 0.5, 0.0) # Common in winter mornings
     
     if 'aod' in df.columns:
         scores['biomass_burning'] += np.where(df['aod'] > 0.5, 1.0, 0.0)
@@ -61,7 +61,7 @@ def assign_source_labels(df):
     # --- SECONDARY PHOTOCHEMICAL HEURISTICS ---
     # High O3, high temperature, high UV (afternoon)
     scores['secondary_photochemical'] += np.where(df['o3'] > df['o3'].quantile(0.75), 1.5, 0.0)
-    scores['secondary_photochemical'] += np.where(df['temp_c'] > 30, 0.5, 0.0)
+    scores['secondary_photochemical'] += np.where(df['temp'] > 30, 0.5, 0.0)
     
     is_afternoon = (hour >= 12) & (hour <= 16)
     scores['secondary_photochemical'] += np.where(is_afternoon, 0.5, 0.0)

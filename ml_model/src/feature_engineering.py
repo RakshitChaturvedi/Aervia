@@ -3,32 +3,35 @@ import numpy as np
 
 def add_temporal_lags(df):
     """Adds historical lag features for PM2.5 and AQI."""
-    # Ensure dataframe is sorted by time
-    df = df.sort_values(by=['district_id', 'timestamp'])
+    # Determine group column: use 'station' (primary) or fall back to 'district_id' if present
+    group_col = 'station' if 'station' in df.columns else 'district_id'
+    
+    df = df.sort_values(by=[group_col, 'timestamp'])
     
     # PM2.5 Lags
-    df['pm25_lag_1h'] = df.groupby('district_id')['pm25'].shift(1)
-    df['pm25_lag_3h'] = df.groupby('district_id')['pm25'].shift(3)
-    df['pm25_lag_6h'] = df.groupby('district_id')['pm25'].shift(6)
-    df['pm25_lag_12h'] = df.groupby('district_id')['pm25'].shift(12)
-    df['pm25_lag_24h'] = df.groupby('district_id')['pm25'].shift(24)
+    df['pm25_lag_1h'] = df.groupby(group_col)['pm25'].shift(1)
+    df['pm25_lag_3h'] = df.groupby(group_col)['pm25'].shift(3)
+    df['pm25_lag_6h'] = df.groupby(group_col)['pm25'].shift(6)
+    df['pm25_lag_12h'] = df.groupby(group_col)['pm25'].shift(12)
+    df['pm25_lag_24h'] = df.groupby(group_col)['pm25'].shift(24)
     
     # Target Lags (useful if forecasting AQI directly)
     if 'aqi_in' in df.columns:
-        df['aqi_lag_24h'] = df.groupby('district_id')['aqi_in'].shift(24)
+        df['aqi_lag_24h'] = df.groupby(group_col)['aqi_in'].shift(24)
         
     return df
 
 def add_rolling_stats(df):
     """Adds rolling window statistics."""
-    df = df.sort_values(by=['district_id', 'timestamp'])
+    group_col = 'station' if 'station' in df.columns else 'district_id'
+    df = df.sort_values(by=[group_col, 'timestamp'])
     
     # 6-hour and 24-hour rolling means
-    df['pm25_rolling_6h_mean'] = df.groupby('district_id')['pm25'].transform(lambda x: x.rolling(window=6, min_periods=1).mean())
-    df['pm25_rolling_24h_mean'] = df.groupby('district_id')['pm25'].transform(lambda x: x.rolling(window=24, min_periods=1).mean())
+    df['pm25_rolling_6h_mean'] = df.groupby(group_col)['pm25'].transform(lambda x: x.rolling(window=6, min_periods=1).mean())
+    df['pm25_rolling_24h_mean'] = df.groupby(group_col)['pm25'].transform(lambda x: x.rolling(window=24, min_periods=1).mean())
     
     # 24-hour rolling standard deviation (volatility)
-    df['pm25_rolling_24h_std'] = df.groupby('district_id')['pm25'].transform(lambda x: x.rolling(window=24, min_periods=1).std().fillna(0))
+    df['pm25_rolling_24h_std'] = df.groupby(group_col)['pm25'].transform(lambda x: x.rolling(window=24, min_periods=1).std().fillna(0))
     
     # Momentum / Delta
     if 'pm25_lag_6h' in df.columns:
@@ -58,8 +61,8 @@ def add_atmospheric_physics(df):
     """Derives physics-based features like Ventilation Index."""
     # Ventilation Index = Planetary Boundary Layer Height * Wind Speed
     # Higher VI = Better mixing/dispersion
-    if 'pblh' in df.columns and 'wind_speed_ms' in df.columns:
-        df['ventilation_index'] = df['pblh'] * df['wind_speed_ms']
+    if 'pblh' in df.columns and 'wind_speed' in df.columns:
+        df['ventilation_index'] = df['pblh'] * df['wind_speed']
         
         # Stagnation flag: VI < 2000 is generally considered poor dispersion
         df['stagnation_flag'] = (df['ventilation_index'] < 2000).astype(int)

@@ -1,26 +1,599 @@
 {
-  "24h": {
-    "rmse": 9.41,
-    "mae": 6.9,
-    "r2": 0.472,
-    "baseline_rmse": 13.03,
-    "coverage_90": 0.94,
-    "improvement": 0.277
+  "global_forecast": {
+    "24h": {
+      "rmse": 32.78,
+      "mae": 20.19,
+      "r2": 0.567,
+      "coverage_90": 0.893,
+      "mean_interval_width": 96.19
+    },
+    "48h": {
+      "rmse": 37.07,
+      "mae": 23.37,
+      "r2": 0.445,
+      "coverage_90": 0.89,
+      "mean_interval_width": 104.76
+    },
+    "72h": {
+      "rmse": 38.88,
+      "mae": 24.78,
+      "r2": 0.39,
+      "coverage_90": 0.873,
+      "mean_interval_width": 104.36
+    }
   },
-  "48h": {
-    "rmse": 11.05,
-    "mae": 8.15,
-    "r2": 0.274,
-    "baseline_rmse": 14.1,
-    "coverage_90": 0.927,
-    "improvement": 0.217
+  "city_breakdown": {
+    "ahmedabad": {
+      "24h": {
+        "rmse": 15.48,
+        "mae": 9.73,
+        "r2": 0.542,
+        "coverage_90": 0.717
+      },
+      "48h": {
+        "rmse": 16.21,
+        "mae": 11.39,
+        "r2": 0.495,
+        "coverage_90": 0.651
+      },
+      "72h": {
+        "rmse": 16.99,
+        "mae": 12.18,
+        "r2": 0.442,
+        "coverage_90": 0.637
+      }
+    },
+    "delhi": {
+      "24h": {
+        "rmse": 37.7,
+        "mae": 25.33,
+        "r2": 0.373,
+        "coverage_90": 0.896
+      },
+      "48h": {
+        "rmse": 42.56,
+        "mae": 29.05,
+        "r2": 0.2,
+        "coverage_90": 0.892
+      },
+      "72h": {
+        "rmse": 44.86,
+        "mae": 30.91,
+        "r2": 0.111,
+        "coverage_90": 0.873
+      }
+    },
+    "bengaluru": {
+      "24h": {
+        "rmse": 7.65,
+        "mae": 5.07,
+        "r2": 0.667,
+        "coverage_90": 0.958
+      },
+      "48h": {
+        "rmse": 8.83,
+        "mae": 5.99,
+        "r2": 0.552,
+        "coverage_90": 0.963
+      },
+      "72h": {
+        "rmse": 9.56,
+        "mae": 6.58,
+        "r2": 0.473,
+        "coverage_90": 0.963
+      }
+    },
+    "chennai": {
+      "24h": {
+        "rmse": 10.2,
+        "mae": 7.45,
+        "r2": 0.343,
+        "coverage_90": 0.75
+      },
+      "48h": {
+        "rmse": 12.84,
+        "mae": 9.79,
+        "r2": -0.032,
+        "coverage_90": 0.698
+      },
+      "72h": {
+        "rmse": 13.38,
+        "mae": 10.7,
+        "r2": -0.112,
+        "coverage_90": 0.762
+      }
+    },
+    "hyderabad": {
+      "24h": {
+        "rmse": 11.9,
+        "mae": 8.59,
+        "r2": 0.687,
+        "coverage_90": 0.725
+      },
+      "48h": {
+        "rmse": 14.31,
+        "mae": 10.69,
+        "r2": 0.547,
+        "coverage_90": 0.696
+      },
+      "72h": {
+        "rmse": 15.98,
+        "mae": 11.94,
+        "r2": 0.436,
+        "coverage_90": 0.707
+      }
+    },
+    "kolkata": {
+      "24h": {
+        "rmse": 25.8,
+        "mae": 18.07,
+        "r2": 0.791,
+        "coverage_90": 0.631
+      },
+      "48h": {
+        "rmse": 32.55,
+        "mae": 23.83,
+        "r2": 0.669,
+        "coverage_90": 0.597
+      },
+      "72h": {
+        "rmse": 36.48,
+        "mae": 26.93,
+        "r2": 0.583,
+        "coverage_90": 0.563
+      }
+    },
+    "lucknow": {
+      "24h": {
+        "rmse": 21.7,
+        "mae": 15.81,
+        "r2": 0.744,
+        "coverage_90": 0.693
+      },
+      "48h": {
+        "rmse": 25.2,
+        "mae": 18.11,
+        "r2": 0.654,
+        "coverage_90": 0.668
+      },
+      "72h": {
+        "rmse": 27.48,
+        "mae": 19.81,
+        "r2": 0.589,
+        "coverage_90": 0.675
+      }
+    },
+    "mumbai": {
+      "24h": {
+        "rmse": 13.49,
+        "mae": 9.63,
+        "r2": 0.727,
+        "coverage_90": 0.59
+      },
+      "48h": {
+        "rmse": 16.73,
+        "mae": 12.31,
+        "r2": 0.58,
+        "coverage_90": 0.531
+      },
+      "72h": {
+        "rmse": 17.38,
+        "mae": 12.53,
+        "r2": 0.55,
+        "coverage_90": 0.553
+      }
+    },
+    "pune": {
+      "24h": {
+        "rmse": 12.35,
+        "mae": 8.45,
+        "r2": 0.725,
+        "coverage_90": 0.686
+      },
+      "48h": {
+        "rmse": 15.84,
+        "mae": 11.29,
+        "r2": 0.549,
+        "coverage_90": 0.631
+      },
+      "72h": {
+        "rmse": 16.46,
+        "mae": 12.21,
+        "r2": 0.511,
+        "coverage_90": 0.606
+      }
+    }
   },
-  "72h": {
-    "rmse": 11.49,
-    "mae": 8.63,
-    "r2": 0.215,
-    "baseline_rmse": 14.1,
-    "coverage_90": 0.939,
-    "improvement": 0.185
-  }
+  "hyderabad_district_breakdown": {
+    "Hyderabad-Central": {
+      "test_observations": 3172,
+      "24h_rmse": 11.12,
+      "24h_mae": 8.1,
+      "24h_r2": 0.727,
+      "coverage_90": 0.998,
+      "interval_width": 96.19
+    }
+  },
+  "hazard_exceedance_metrics": {
+    "24h": {
+      "threshold_pm25": 90.0,
+      "precision": 0.664,
+      "recall": 0.621,
+      "f1_score": 0.642,
+      "critical_success_index": 0.473,
+      "total_hazard_events": 82667
+    },
+    "48h": {
+      "threshold_pm25": 90.0,
+      "precision": 0.608,
+      "recall": 0.509,
+      "f1_score": 0.554,
+      "critical_success_index": 0.383,
+      "total_hazard_events": 82477
+    },
+    "72h": {
+      "threshold_pm25": 90.0,
+      "precision": 0.581,
+      "recall": 0.444,
+      "f1_score": 0.503,
+      "critical_success_index": 0.337,
+      "total_hazard_events": 82872
+    }
+  },
+  "rolling_origin_cv": {
+    "24h": {
+      "fold_rmse": [
+        30.78,
+        24.47,
+        29.44
+      ],
+      "mean_cv_rmse": 28.23,
+      "cv_stability_std": 2.71
+    },
+    "48h": {
+      "fold_rmse": [
+        35.65,
+        26.93,
+        32.52
+      ],
+      "mean_cv_rmse": 31.7,
+      "cv_stability_std": 3.61
+    },
+    "72h": {
+      "fold_rmse": [
+        37.2,
+        28.39,
+        33.67
+      ],
+      "mean_cv_rmse": 33.09,
+      "cv_stability_std": 3.62
+    }
+  },
+  "source_attribution": {
+    "accuracy": 0.736,
+    "avg_conformal_set_size": 1.35,
+    "classes": [
+      "biomass",
+      "dust",
+      "industrial",
+      "vehicular"
+    ]
+  },
+  "hyderabad_all_21_stations_breakdown": [
+    {
+      "station": "Alwal",
+      "district_zone": "Alwal / Lothkunta",
+      "test_observations": 2621,
+      "rmse_24h": 13.27,
+      "mae_24h": 10.02,
+      "r2_24h": 0.6,
+      "coverage_90_24h": 63.8,
+      "rmse_48h": 16.19,
+      "mae_48h": 12.03,
+      "r2_48h": 0.412,
+      "rmse_72h": 19.67,
+      "mae_72h": 14.61,
+      "r2_72h": 0.151
+    },
+    {
+      "station": "Bollaram Industrial Area",
+      "district_zone": "Jeedimetla / Bollaram Industrial",
+      "test_observations": 2231,
+      "rmse_24h": 17.93,
+      "mae_24h": 13.93,
+      "r2_24h": 0.448,
+      "coverage_90_24h": 48.7,
+      "rmse_48h": 20.41,
+      "mae_48h": 15.79,
+      "r2_48h": 0.3,
+      "rmse_72h": 25.7,
+      "mae_72h": 19.82,
+      "r2_72h": -0.11
+    },
+    {
+      "station": "Central University (Gachibowli)",
+      "district_zone": "Gachibowli / Serilingampally",
+      "test_observations": 2313,
+      "rmse_24h": 15.54,
+      "mae_24h": 12.35,
+      "r2_24h": 0.552,
+      "coverage_90_24h": 52.7,
+      "rmse_48h": 17.8,
+      "mae_48h": 13.88,
+      "r2_48h": 0.416,
+      "rmse_72h": 20.7,
+      "mae_72h": 16.09,
+      "r2_72h": 0.219
+    },
+    {
+      "station": "Charminar",
+      "district_zone": "Charminar / Old City",
+      "test_observations": 2621,
+      "rmse_24h": 11.37,
+      "mae_24h": 8.68,
+      "r2_24h": 0.689,
+      "coverage_90_24h": 70.9,
+      "rmse_48h": 14.32,
+      "mae_48h": 10.9,
+      "r2_48h": 0.514,
+      "rmse_72h": 15.62,
+      "mae_72h": 11.91,
+      "r2_72h": 0.436
+    },
+    {
+      "station": "ECIL Kapra",
+      "district_zone": "Kapra / Kushaiguda",
+      "test_observations": 2225,
+      "rmse_24h": 32.05,
+      "mae_24h": 27.05,
+      "r2_24h": -6.096,
+      "coverage_90_24h": 9.8,
+      "rmse_48h": 16.51,
+      "mae_48h": 11.95,
+      "r2_48h": -0.88,
+      "rmse_72h": 18.21,
+      "mae_72h": 14.35,
+      "r2_72h": -1.287
+    },
+    {
+      "station": "ICRISAT Patancheru",
+      "district_zone": "Patancheru Industrial Area",
+      "test_observations": 2491,
+      "rmse_24h": 21.29,
+      "mae_24h": 17.98,
+      "r2_24h": 0.285,
+      "coverage_90_24h": 31.7,
+      "rmse_48h": 26.06,
+      "mae_48h": 21.62,
+      "r2_48h": -0.075,
+      "rmse_72h": 32.27,
+      "mae_72h": 27.25,
+      "r2_72h": -0.653
+    },
+    {
+      "station": "IDA Pashamylaram",
+      "district_zone": "Pashamylaram SEZ",
+      "test_observations": 1628,
+      "rmse_24h": 25.78,
+      "mae_24h": 21.61,
+      "r2_24h": -0.414,
+      "coverage_90_24h": 27.5,
+      "rmse_48h": 30.12,
+      "mae_48h": 25.5,
+      "r2_48h": -0.909,
+      "rmse_72h": 32.38,
+      "mae_72h": 27.43,
+      "r2_72h": -1.222
+    },
+    {
+      "station": "IITH Kandi",
+      "district_zone": "Sangareddy / Kandi",
+      "test_observations": 1888,
+      "rmse_24h": 22.35,
+      "mae_24h": 18.09,
+      "r2_24h": -2.367,
+      "coverage_90_24h": 33.4,
+      "rmse_48h": 12.81,
+      "mae_48h": 9.81,
+      "r2_48h": -0.091,
+      "rmse_72h": 13.5,
+      "mae_72h": 10.79,
+      "r2_72h": -0.209
+    },
+    {
+      "station": "Kokapet",
+      "district_zone": "Financial District / Gandipet",
+      "test_observations": 2247,
+      "rmse_24h": 33.79,
+      "mae_24h": 30.48,
+      "r2_24h": -31.223,
+      "coverage_90_24h": 3.7,
+      "rmse_48h": 13.79,
+      "mae_48h": 12.0,
+      "r2_48h": -4.248,
+      "rmse_72h": 14.58,
+      "mae_72h": 12.95,
+      "r2_72h": -4.736
+    },
+    {
+      "station": "Kompally Municipal Office",
+      "district_zone": "Kompally / Medchal",
+      "test_observations": 2173,
+      "rmse_24h": 39.17,
+      "mae_24h": 35.91,
+      "r2_24h": -104.177,
+      "coverage_90_24h": 2.0,
+      "rmse_48h": 13.85,
+      "mae_48h": 11.81,
+      "r2_48h": -12.109,
+      "rmse_72h": 15.76,
+      "mae_72h": 14.33,
+      "r2_72h": -15.954
+    },
+    {
+      "station": "Kukatpally",
+      "district_zone": "KPHB / Kukatpally",
+      "test_observations": 2621,
+      "rmse_24h": 13.7,
+      "mae_24h": 10.38,
+      "r2_24h": 0.574,
+      "coverage_90_24h": 62.3,
+      "rmse_48h": 17.0,
+      "mae_48h": 12.82,
+      "r2_48h": 0.352,
+      "rmse_72h": 21.07,
+      "mae_72h": 15.64,
+      "r2_72h": 0.026
+    },
+    {
+      "station": "LB Nagar",
+      "district_zone": "LB Nagar / Saroornagar",
+      "test_observations": 2621,
+      "rmse_24h": 11.34,
+      "mae_24h": 8.65,
+      "r2_24h": 0.691,
+      "coverage_90_24h": 71.4,
+      "rmse_48h": 14.37,
+      "mae_48h": 10.88,
+      "r2_48h": 0.51,
+      "rmse_72h": 15.82,
+      "mae_72h": 12.03,
+      "r2_72h": 0.422
+    },
+    {
+      "station": "Madhapur",
+      "district_zone": "HITEC City / Madhapur",
+      "test_observations": 2621,
+      "rmse_24h": 13.51,
+      "mae_24h": 10.23,
+      "r2_24h": 0.586,
+      "coverage_90_24h": 62.6,
+      "rmse_48h": 16.63,
+      "mae_48h": 12.48,
+      "r2_48h": 0.38,
+      "rmse_72h": 20.62,
+      "mae_72h": 15.29,
+      "r2_72h": 0.067
+    },
+    {
+      "station": "Nacharam TSIIC IALA",
+      "district_zone": "Nacharam / Mallapur Industrial",
+      "test_observations": 2292,
+      "rmse_24h": 25.17,
+      "mae_24h": 22.61,
+      "r2_24h": -23.988,
+      "coverage_90_24h": 11.1,
+      "rmse_48h": 12.07,
+      "mae_48h": 9.93,
+      "r2_48h": -4.832,
+      "rmse_72h": 12.8,
+      "mae_72h": 11.24,
+      "r2_72h": -5.505
+    },
+    {
+      "station": "New Malakpet",
+      "district_zone": "Malakpet / Dilsukhnagar",
+      "test_observations": 2264,
+      "rmse_24h": 22.19,
+      "mae_24h": 18.97,
+      "r2_24h": -1.216,
+      "coverage_90_24h": 21.4,
+      "rmse_48h": 17.82,
+      "mae_48h": 13.44,
+      "r2_48h": -0.435,
+      "rmse_72h": 19.08,
+      "mae_72h": 15.28,
+      "r2_72h": -0.645
+    },
+    {
+      "station": "Ramachandrapuram",
+      "district_zone": "RC Puram / BHEL",
+      "test_observations": 1932,
+      "rmse_24h": 33.95,
+      "mae_24h": 30.6,
+      "r2_24h": -11.997,
+      "coverage_90_24h": 2.5,
+      "rmse_48h": 16.25,
+      "mae_48h": 12.68,
+      "r2_48h": -1.963,
+      "rmse_72h": 17.72,
+      "mae_72h": 14.44,
+      "r2_72h": -2.482
+    },
+    {
+      "station": "Sanathnagar",
+      "district_zone": "Sanathnagar / Begumpet",
+      "test_observations": 2562,
+      "rmse_24h": 29.13,
+      "mae_24h": 14.76,
+      "r2_24h": 0.15,
+      "coverage_90_24h": 53.3,
+      "rmse_48h": 32.73,
+      "mae_48h": 18.37,
+      "r2_48h": -0.075,
+      "rmse_72h": 34.76,
+      "mae_72h": 20.66,
+      "r2_72h": -0.208
+    },
+    {
+      "station": "Secunderabad",
+      "district_zone": "Secunderabad / Marredpally",
+      "test_observations": 2621,
+      "rmse_24h": 12.6,
+      "mae_24h": 9.38,
+      "r2_24h": 0.64,
+      "coverage_90_24h": 67.7,
+      "rmse_48h": 15.57,
+      "mae_48h": 11.57,
+      "r2_48h": 0.456,
+      "rmse_72h": 17.66,
+      "mae_72h": 13.16,
+      "r2_72h": 0.316
+    },
+    {
+      "station": "Somajiguda",
+      "district_zone": "Panjagutta / Khairatabad",
+      "test_observations": 1943,
+      "rmse_24h": 32.44,
+      "mae_24h": 24.82,
+      "r2_24h": -0.301,
+      "coverage_90_24h": 26.2,
+      "rmse_48h": 27.68,
+      "mae_48h": 19.23,
+      "r2_48h": 0.051,
+      "rmse_72h": 28.86,
+      "mae_72h": 20.08,
+      "r2_72h": -0.032
+    },
+    {
+      "station": "Uppal",
+      "district_zone": "Uppal / Ramanthapur",
+      "test_observations": 2621,
+      "rmse_24h": 11.89,
+      "mae_24h": 8.83,
+      "r2_24h": 0.679,
+      "coverage_90_24h": 71.8,
+      "rmse_48h": 14.76,
+      "mae_48h": 10.95,
+      "r2_48h": 0.511,
+      "rmse_72h": 16.17,
+      "mae_72h": 12.01,
+      "r2_72h": 0.427
+    },
+    {
+      "station": "Zoo Park (Bahadurpura)",
+      "district_zone": "Old City / Charminar",
+      "test_observations": 2431,
+      "rmse_24h": 20.3,
+      "mae_24h": 16.99,
+      "r2_24h": 0.223,
+      "coverage_90_24h": 33.0,
+      "rmse_48h": 27.7,
+      "mae_48h": 23.6,
+      "r2_48h": -0.448,
+      "rmse_72h": 35.27,
+      "mae_72h": 31.02,
+      "r2_72h": -1.346
+    }
+  ]
 }
