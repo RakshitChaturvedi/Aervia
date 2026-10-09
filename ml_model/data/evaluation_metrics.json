@@ -1,0 +1,26 @@
+{
+  "24h": {
+    "rmse": 9.41,
+    "mae": 6.9,
+    "r2": 0.472,
+    "baseline_rmse": 13.03,
+    "coverage_90": 0.94,
+    "improvement": 0.277
+  },
+  "48h": {
+    "rmse": 11.05,
+    "mae": 8.15,
+    "r2": 0.274,
+    "baseline_rmse": 14.1,
+    "coverage_90": 0.927,
+    "improvement": 0.217
+  },
+  "72h": {
+    "rmse": 11.49,
+    "mae": 8.63,
+    "r2": 0.215,
+    "baseline_rmse": 14.1,
+    "coverage_90": 0.939,
+    "improvement": 0.185
+  }
+}
