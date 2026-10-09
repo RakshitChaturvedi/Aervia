@@ -1,13 +1,37 @@
-# Member 1: ML Modeling & Atmospheric Science
+# Aervia: Machine Learning & Atmospheric Science Engine
 
-This directory contains the machine learning pipelines, feature engineering scripts, and model validation checks.
+This directory contains the machine learning pipelines, physics-based atmospheric feature engineering, and model validation suite for Aervia.
 
-## Key Tasks & Roles
-1. **Physics-based Feature Engineering**: Implement calculation of atmospheric features (e.g. Ventilation Index) in `src/features.py`.
-2. **24h/48h/72h AQI Forecasting**: Train/test XGBoost models in `src/forecast.py`.
-3. **Source Apportionment (Attribution)**: Train Weak-Supervision Random Forest classifiers in `src/classifier.py`.
-4. **Conformal Predictions**: Wrap models in prediction intervals using MAPIE in `src/uncertainty.py`.
-5. **Validation Suite**: Evaluate RMSE, persistence baseline comparison, and JSD (Jensen-Shannon Divergence) checks in `src/validation.py`.
+## Architecture & Modules
 
-## Checkpoints
-- **Day 5**: Hand over the finalized models as pure Python function interfaces to Member 2 (Backend). Make sure outputs adhere to [ml_backend_attribution.json](file:///c:/Users/lalit/OneDrive/Documents/vayubudhi/contracts/ml_backend_attribution.json) and [ml_backend_forecast.json](file:///c:/Users/lalit/OneDrive/Documents/vayubudhi/contracts/ml_backend_forecast.json).
+1. **Physics-Informed Feature Engineering (`src/features.py`, `src/feature_engineering.py`)**
+   - Planetary Boundary Layer Height (PBLH) integration.
+   - Dynamic Ventilation Index ($VI = PBLH \times \text{Wind Speed}$) calculation.
+   - Diurnal cycle and meteorological stagnation proxies.
+
+2. **Multi-Horizon AQI Forecasting (`src/forecast.py`, `src/train_models.py`)**
+   - Multi-horizon forecasting models for 24h, 48h, and 72h lead times.
+   - City-specific models for Hyderabad and major metropolitan regions.
+   - Exponential Moving Average (EMA) closed-loop bias correction.
+
+3. **Source Attribution & Weak Supervision (`src/classifier.py`, `src/source_labeling.py`)**
+   - Multi-source emission fingerprinting (Vehicular, Industrial, Biomass, Dust).
+   - Weak supervision labeling with calibrated classification confidence.
+
+4. **Conformal Uncertainty Quantification (`src/uncertainty.py`)**
+   - MAPIE conformal prediction intervals guaranteeing mathematical coverage bounds (e.g., 90% confidence).
+
+5. **Validation Suite (`src/validation.py`, `src/evaluate_models.py`)**
+   - RMSE, MAE benchmarks vs persistence baselines.
+   - Distributional fidelity checks (Wasserstein distance, Jensen-Shannon divergence).
+
+## Running Inferences & Training
+
+- Run demo runner:
+  ```bash
+  python src/demo_run.py
+  ```
+- Train multi-city forecast models:
+  ```bash
+  python src/train_models.py
+  ```

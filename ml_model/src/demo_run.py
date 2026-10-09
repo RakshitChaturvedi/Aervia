@@ -53,7 +53,7 @@ def print_banner(text):
     print("=" * 60)
 
 def main():
-    print_banner("VAYUBUDHI MODEL DEMO RUNNER")
+    print_banner("AERVIA MODEL DEMO RUNNER")
     print("This demo feeds diverse operational scenarios into your trained models")
     print("and inspects forecast intervals and conformal prediction sets.\n")
     

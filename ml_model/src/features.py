@@ -1,5 +1,5 @@
 """
-Physics-based feature engineering for VayuBudhi atmospheric models.
+Physics-based feature engineering for Aervia atmospheric models.
 Includes Ventilation Index, boundary layer interactions, etc.
 """
 
