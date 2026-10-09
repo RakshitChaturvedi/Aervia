@@ -155,6 +155,9 @@ def get_attribution_inference(telemetry: Dict[str, Any]) -> Dict[str, Any]:
         else:
             y_pred = model.predict(df_clf)
             prediction_set = [str(y_pred[0])]
+        if not prediction_set:
+            y_pred = model.predict(df_clf)
+            prediction_set = [str(y_pred[0])]
     except Exception:
         y_pred = model.predict(df_clf)
         prediction_set = [str(y_pred[0])]
