@@ -1,0 +1,10 @@
+# Requirements for ML modeling module
+xgboost>=1.7.0
+scikit-learn>=1.0.0
+mapie>=0.6.0
+numpy>=1.22.0
+pandas>=1.4.0
+scipy>=1.8.0
+lightgbm>=3.3.0
+catboost>=1.1.0
+shap>=0.41.0
