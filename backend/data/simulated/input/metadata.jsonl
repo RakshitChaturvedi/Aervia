@@ -1,0 +1,11 @@
+{
+  "dataset_id": "aervia-simulated-gate-v1",
+  "start": "2026-10-08T08:00:00+00:00",
+  "duration_minutes": 120,
+  "seed": 42,
+  "ground_truth_event_centers_seconds": [
+    2100,
+    5100
+  ],
+  "note": "Synthetic development data only; not a real sensor measurement."
+}
