@@ -12,6 +12,8 @@ from dotenv import load_dotenv
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 
+from app.aqi_standards import calc_india_naqi, calc_us_epa_aqi, get_cpcb_category, get_epa_category
+
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", "")
 AWS_DEFAULT_REGION = os.getenv("AWS_DEFAULT_REGION", "ap-south-1")
@@ -97,6 +99,12 @@ class IoTCoreService:
 
                 if rows:
                     for r in rows:
+                        pm25_v = round(float(r[3]), 1)
+                        pm10_v = round(float(r[4]), 1)
+                        aqi_in, primary_in, subs_in = calc_india_naqi(pm25=pm25_v, pm10=pm10_v)
+                        aqi_us, primary_us, subs_us = calc_us_epa_aqi(pm25=pm25_v, pm10=pm10_v)
+                        cat_in = get_cpcb_category(aqi_in)
+
                         rec = {
                             "device_id": str(r[1] or "aervia-54a91ed9b4dc"),
                             "station_name": "College Gate Sensor Node 1",
@@ -104,10 +112,10 @@ class IoTCoreService:
                             "raw_timestamp": str(r[2]),
                             "json_timestamp": str(r[2]),
                             "timestamp_ist": to_ist_str(r[2]),
-                            "pm1": round(float(r[3]) * 0.48, 1),
-                            "pm25": round(float(r[3]), 1),
-                            "pm4": round(float(r[3]) * 1.4, 1),
-                            "pm10": round(float(r[4]), 1),
+                            "pm1": round(pm25_v * 0.48, 1),
+                            "pm25": pm25_v,
+                            "pm4": round(pm25_v * 1.4, 1),
+                            "pm10": pm10_v,
                             "temp": round(float(r[5]), 1),
                             "humidity": round(float(r[6]), 1),
                             "pressure": round(float(r[7]), 1),
@@ -120,7 +128,14 @@ class IoTCoreService:
                             "sensor_state": "OFF",
                             "is_sensor_online": False,
                             "source": "Database Ground Truth Capture",
-                            "endpoint": self.endpoint
+                            "endpoint": self.endpoint,
+                            "aqi": aqi_in,
+                            "aqi_in": aqi_in,
+                            "aqi_us": aqi_us,
+                            "aqi_category": cat_in.get("category", "Unknown"),
+                            "aqi_color": cat_in.get("color", "#9ca3af"),
+                            "governing_pollutant": primary_in or "PM2.5",
+                            "sub_indices": subs_in
                         }
                         self.history.append(rec)
                     seeded = True
@@ -129,19 +144,24 @@ class IoTCoreService:
 
         if not seeded or not self.history:
             # Fallback default record
+            f_pm25, f_pm10 = 49.2, 49.2
+            f_aqi_in, f_prim_in, f_subs_in = calc_india_naqi(pm25=f_pm25, pm10=f_pm10)
+            f_aqi_us, _, _ = calc_us_epa_aqi(pm25=f_pm25, pm10=f_pm10)
+            f_cat_in = get_cpcb_category(f_aqi_in)
+
             fallback_rec = {
                 "device_id": "aervia-54a91ed9b4dc",
                 "station_name": "College Gate Sensor Node 1",
-                "timestamp": "2026-10-09 16:02:00 IST",
-                "timestamp_ist": "2026-10-09 16:02:00 IST",
-                "pm1": 96.8,
-                "pm25": 201.5,
-                "pm4": 283.0,
-                "pm10": 323.4,
-                "temp": 32.9,
-                "humidity": 35.3,
-                "pressure": 943.9,
-                "voc_index": 59.0,
+                "timestamp": "2026-10-10 21:50:57 IST",
+                "timestamp_ist": "2026-10-10 21:50:57 IST",
+                "pm1": 23.6,
+                "pm25": f_pm25,
+                "pm4": 68.8,
+                "pm10": f_pm10,
+                "temp": 30.0,
+                "humidity": 40.0,
+                "pressure": 952.7,
+                "voc_index": 104.0,
                 "nox_index": 1.0,
                 "battery_v": 3.98,
                 "wifi_rssi_dbm": -68,
@@ -150,7 +170,14 @@ class IoTCoreService:
                 "sensor_state": "OFF",
                 "is_sensor_online": False,
                 "source": "College Gate Recorded Run",
-                "endpoint": self.endpoint
+                "endpoint": self.endpoint,
+                "aqi": f_aqi_in,
+                "aqi_in": f_aqi_in,
+                "aqi_us": f_aqi_us,
+                "aqi_category": f_cat_in.get("category", "Satisfactory"),
+                "aqi_color": f_cat_in.get("color", "#92d050"),
+                "governing_pollutant": f_prim_in or "PM2.5",
+                "sub_indices": f_subs_in
             }
             self.history = [fallback_rec]
 
@@ -211,6 +238,13 @@ class IoTCoreService:
         battery = float(d.get("battery_v") or d.get("battery") or 4.10)
         rssi = int(d.get("wifi_rssi_dbm") or d.get("rssi") or -60)
 
+        # Dynamic AQI calculation
+        norm_pm25 = round(pm25, 1)
+        norm_pm10 = round(pm10, 1)
+        aqi_in, primary_in, subs_in = calc_india_naqi(pm25=norm_pm25, pm10=norm_pm10)
+        aqi_us, primary_us, subs_us = calc_us_epa_aqi(pm25=norm_pm25, pm10=norm_pm10)
+        cat_in = get_cpcb_category(aqi_in)
+
         record = {
             "device_id": str(device_id),
             "sequence": sequence,
@@ -220,9 +254,9 @@ class IoTCoreService:
             "raw_timestamp": ts_raw,
             "timestamp_ist": ts_ist,
             "pm1": round(pm1, 1),
-            "pm25": round(pm25, 1),
+            "pm25": norm_pm25,
             "pm4": round(pm4, 1),
-            "pm10": round(pm10, 1),
+            "pm10": norm_pm10,
             "temp": round(temp, 1),
             "humidity": round(humidity, 1),
             "pressure": round(pressure, 1),
@@ -236,6 +270,13 @@ class IoTCoreService:
             "is_sensor_online": True,
             "source": f"AWS IoT Core ({self.topic})",
             "endpoint": self.endpoint,
+            "aqi": aqi_in,
+            "aqi_in": aqi_in,
+            "aqi_us": aqi_us,
+            "aqi_category": cat_in.get("category", "Unknown"),
+            "aqi_color": cat_in.get("color", "#9ca3af"),
+            "governing_pollutant": primary_in or "PM2.5",
+            "sub_indices": subs_in,
             "raw_payload": d
         }
         return record
@@ -379,6 +420,33 @@ class IoTCoreService:
             cur["is_sensor_online"] = sensor_online
             cur["quality_flag"] = "OK" if sensor_online else "STANDBY"
 
+            if cur.get("aqi") is None:
+                pm25_c = cur.get("pm25", 49.2)
+                pm10_c = cur.get("pm10", 49.2)
+                aqi_in, primary_in, subs_in = calc_india_naqi(pm25=pm25_c, pm10=pm10_c)
+                aqi_us, _, _ = calc_us_epa_aqi(pm25=pm25_c, pm10=pm10_c)
+                cat_in = get_cpcb_category(aqi_in)
+                cur["aqi"] = aqi_in
+                cur["aqi_in"] = aqi_in
+                cur["aqi_us"] = aqi_us
+                cur["aqi_category"] = cat_in.get("category", "Satisfactory")
+                cur["aqi_color"] = cat_in.get("color", "#92d050")
+                cur["governing_pollutant"] = primary_in or "PM2.5"
+                cur["sub_indices"] = subs_in
+
+            # Ensure last 5 records have AQI calculated
+            rev_history = []
+            for item in reversed(self.history[-5:] if self.history else []):
+                h = dict(item)
+                if h.get("aqi") is None:
+                    h_aqi_in, h_prim_in, h_subs_in = calc_india_naqi(pm25=h.get("pm25", 49.2), pm10=h.get("pm10", 49.2))
+                    h_cat_in = get_cpcb_category(h_aqi_in)
+                    h["aqi"] = h_aqi_in
+                    h["aqi_in"] = h_aqi_in
+                    h["aqi_category"] = h_cat_in.get("category", "Satisfactory")
+                    h["governing_pollutant"] = h_prim_in or "PM2.5"
+                rev_history.append(h)
+
             return {
                 **cur,
                 "is_aws_connected": self.is_connected,
@@ -386,7 +454,7 @@ class IoTCoreService:
                 "last_received_ist": self.last_received_ist or cur.get("timestamp_ist"),
                 "aws_iot_endpoint": self.endpoint,
                 "aws_iot_topic": self.topic,
-                "last_5_records": list(reversed(self.history[-5:])) if self.history else []
+                "last_5_records": rev_history
             }
 
     def get_telemetry_history(self, limit: int = 50) -> List[Dict[str, Any]]:

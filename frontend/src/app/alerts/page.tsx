@@ -117,11 +117,11 @@ export default function AlertsPage() {
 
   const filteredEvents = useMemo(() => {
     return events.filter(e => {
-      const matchesSev = severityFilter === 'ALL' || e.severity === severityFilter;
+      const matchesSev = severityFilter === 'ALL' || e.warning_severity === severityFilter;
       const matchesSearch =
         searchQuery === '' ||
-        e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         e.short_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        e.event_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
         e.lifecycle.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesSev && matchesSearch;
     });
@@ -132,8 +132,9 @@ export default function AlertsPage() {
       const matchesSev = severityFilter === 'ALL' || w.severity === severityFilter;
       const matchesSearch =
         searchQuery === '' ||
-        w.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        w.id.toLowerCase().includes(searchQuery.toLowerCase());
+        w.short_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        w.warning_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        w.event_id.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesSev && matchesSearch;
     });
   }, [warnings, severityFilter, searchQuery]);
@@ -462,11 +463,12 @@ export default function AlertsPage() {
                   </thead>
                   <tbody>
                     {filteredEvents.map(event => {
-                      const isSelected = selectedEventId === event.id;
+                      const eventKey = event.event_id || event.id || event.short_id;
+                      const isSelected = selectedEventId === eventKey;
                       return (
                         <tr
-                          key={event.id}
-                          onClick={() => setSelectedEventId(event.id)}
+                          key={eventKey}
+                          onClick={() => setSelectedEventId(eventKey)}
                           style={{
                             borderBottom: '1px solid var(--border-subtle)',
                             background: isSelected ? 'rgba(16, 185, 129, 0.08)' : 'transparent',
@@ -540,9 +542,10 @@ export default function AlertsPage() {
                   </thead>
                   <tbody>
                     {filteredWarnings.map(warn => {
-                      const isAck = acknowledgedWarnings[warn.id] || warn.status === 'ACKNOWLEDGED';
+                      const warnKey = warn.warning_id || warn.id || warn.short_id;
+                      const isAck = acknowledgedWarnings[warnKey] || warn.status === 'ACKNOWLEDGED';
                       return (
-                        <tr key={warn.id} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                        <tr key={warnKey} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                           <td style={{ padding: '12px 16px' }}>
                             <span style={{
                               fontSize: '0.72rem',
@@ -578,7 +581,7 @@ export default function AlertsPage() {
                           <td style={{ padding: '12px 16px' }}>
                             {!isAck ? (
                               <button
-                                onClick={() => handleAcknowledge(warn.id)}
+                                onClick={() => handleAcknowledge(warnKey)}
                                 style={{
                                   padding: '4px 10px',
                                   borderRadius: 'var(--radius-pill)',

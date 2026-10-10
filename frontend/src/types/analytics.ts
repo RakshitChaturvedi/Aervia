@@ -24,7 +24,12 @@ export interface AnalyticsOverview {
 
 export interface EventItem {
   event_id: string;
+  id?: string;
   short_id: string;
+  title?: string;
+  severity?: string;
+  start_time?: string;
+  end_time?: string;
   start_utc: string;
   end_utc: string;
   start_ist?: string;
@@ -76,7 +81,12 @@ export interface TimelinePoint {
 
 export interface WarningItem {
   warning_id: string;
+  id?: string;
   short_id: string;
+  title?: string;
+  trigger_rule?: string;
+  trigger_value?: any;
+  created_at?: string;
   event_id: string;
   short_event_id: string;
   severity: 'SEVERE' | 'ELEVATED' | string;
@@ -172,4 +182,10 @@ export interface IotTelemetry {
   aws_iot_endpoint: string;
   aws_iot_topic: string;
   last_5_records?: IotTelemetry[];
+  aqi?: number;
+  aqi_in?: number;
+  aqi_us?: number;
+  aqi_category?: string;
+  aqi_color?: string;
+  governing_pollutant?: string;
 }
