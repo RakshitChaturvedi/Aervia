@@ -149,9 +149,29 @@ def compute_fully_dynamic_pollution(
         'aqi': round(overall_aqi)
     }
 
+def compute_diurnal_traffic_congestion(hour_ist: float) -> float:
+    """
+    Calibrated Indian urban traffic congestion model (when TomTom API key is not configured or offline).
+    Morning Peak (8:30-11:00 AM), Evening Peak (17:30-21:30 PM), Midday lull, Night dip.
+    Returns congestion factor between 0.05 and 0.85.
+    """
+    if 8.0 <= hour_ist <= 11.0:
+        peak_offset = abs(hour_ist - 9.5) / 1.5
+        return 0.70 - (0.25 * peak_offset)
+    elif 17.0 <= hour_ist <= 21.5:
+        peak_offset = abs(hour_ist - 19.0) / 2.5
+        return 0.75 - (0.30 * peak_offset)
+    elif 11.0 < hour_ist < 17.0:
+        return 0.35
+    elif 6.0 <= hour_ist < 8.0 or 21.5 < hour_ist <= 23.0:
+        return 0.20
+    else:
+        return 0.08
+
 def get_traffic_multipliers_bulk(station_list: list) -> dict:
     """
     Concurrently fetches TomTom traffic flow congestion for all stations with short timeout and caching.
+    Gracefully falls back to a calibrated diurnal traffic model if TOMTOM_API_KEY is not set.
     """
     now = time.time()
     results = {}
@@ -159,20 +179,32 @@ def get_traffic_multipliers_bulk(station_list: list) -> dict:
     
     with CACHE_LOCK:
         for st in station_list:
-            key = f"{st['lat']},{st['lon']}"
-            if key in TRAFFIC_CACHE and (now - TRAFFIC_CACHE[key]['time']) < CACHE_TTL:
-                results[key] = TRAFFIC_CACHE[key]['val']
+            coord_tuple = (round(st['lat'], 4), round(st['lon'], 4))
+            if coord_tuple in TRAFFIC_CACHE and (now - TRAFFIC_CACHE[coord_tuple]['time']) < CACHE_TTL:
+                results[coord_tuple] = TRAFFIC_CACHE[coord_tuple]['val']
             else:
-                to_fetch.append((key, st['lat'], st['lon']))
+                to_fetch.append((coord_tuple, st['lat'], st['lon']))
                 
     if not to_fetch:
         return results
 
+    if not TOMTOM_API_KEY:
+        from datetime import datetime, timezone, timedelta
+        ist_now = datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)
+        hour_ist = ist_now.hour + ist_now.minute / 60.0
+        congestion = compute_diurnal_traffic_congestion(hour_ist)
+        mult = round(1.0 + (max(0.0, congestion) * 0.40), 3)
+        with CACHE_LOCK:
+            for coord_tuple, _, _ in to_fetch:
+                TRAFFIC_CACHE[coord_tuple] = {'val': mult, 'time': now}
+                results[coord_tuple] = mult
+        return results
+
     def fetch_single(item):
-        key, lat, lon = item
+        coord_tuple, lat, lon = item
         try:
             url = f"https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?point={lat},{lon}&unit=KMPH&key={TOMTOM_API_KEY}"
-            res = requests.get(url, timeout=0.3).json()
+            res = requests.get(url, timeout=0.8).json()
             flow = res.get("flowSegmentData", {})
             current = flow.get("currentSpeed", 1)
             free = flow.get("freeFlowSpeed", 1)
@@ -180,17 +212,18 @@ def get_traffic_multipliers_bulk(station_list: list) -> dict:
                 congestion = 0.25
             else:
                 congestion = max(0.0, min(1.0, (free - current) / free))
+            mult = round(1.0 + (max(0.0, congestion) * 0.40), 3)
             with CACHE_LOCK:
-                TRAFFIC_CACHE[key] = {'val': congestion, 'time': now}
-            return key, congestion
+                TRAFFIC_CACHE[coord_tuple] = {'val': mult, 'time': now}
+            return coord_tuple, mult
         except Exception:
-            return key, 0.25
+            return coord_tuple, 1.10
 
     with ThreadPoolExecutor(max_workers=min(12, len(to_fetch))) as executor:
         futures = [executor.submit(fetch_single, item) for item in to_fetch]
         for f in futures:
             try:
-                k, v = f.result(timeout=0.4)
+                k, v = f.result(timeout=1.0)
                 results[k] = v
             except Exception:
                 pass
@@ -198,28 +231,39 @@ def get_traffic_multipliers_bulk(station_list: list) -> dict:
     return results
 
 def get_traffic_multiplier(lat: float, lon: float) -> float:
-    key = f"{lat},{lon}"
+    coord_tuple = (round(lat, 4), round(lon, 4))
     now = time.time()
     with CACHE_LOCK:
-        if key in TRAFFIC_CACHE and (now - TRAFFIC_CACHE[key]['time']) < CACHE_TTL:
-            return TRAFFIC_CACHE[key]['val']
+        if coord_tuple in TRAFFIC_CACHE and (now - TRAFFIC_CACHE[coord_tuple]['time']) < CACHE_TTL:
+            return TRAFFIC_CACHE[coord_tuple]['val']
+
+    if not TOMTOM_API_KEY:
+        from datetime import datetime, timezone, timedelta
+        ist_now = datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)
+        hour_ist = ist_now.hour + ist_now.minute / 60.0
+        congestion = compute_diurnal_traffic_congestion(hour_ist)
+        mult = round(1.0 + (max(0.0, congestion) * 0.40), 3)
+        with CACHE_LOCK:
+            TRAFFIC_CACHE[coord_tuple] = {'val': mult, 'time': now}
+        return mult
 
     try:
         url = f"https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?point={lat},{lon}&unit=KMPH&key={TOMTOM_API_KEY}"
-        res = requests.get(url, timeout=1.2).json()
+        res = requests.get(url, timeout=1.0).json()
         flow = res.get("flowSegmentData", {})
         current = flow.get("currentSpeed", 1)
         free = flow.get("freeFlowSpeed", 1)
         if free <= 0: return 1.0
         
         congestion = (free - current) / free
-        multiplier = 1.0 + (max(0, congestion) * 0.4)
-        final_mult = min(multiplier, 1.5)
+        multiplier = 1.0 + (max(0.0, congestion) * 0.4)
+        final_mult = round(min(multiplier, 1.5), 3)
         with CACHE_LOCK:
-            TRAFFIC_CACHE[key] = {'val': final_mult, 'time': now}
+            TRAFFIC_CACHE[coord_tuple] = {'val': final_mult, 'time': now}
         return final_mult
     except Exception:
-        return 1.0
+        return 1.10
+
 
 router = APIRouter()
 
@@ -920,6 +964,13 @@ def get_city_data(city: str):
     center_aqi = round(total_aqi / num, 1) if monitored_count > 0 else 55.0
     center_aqi_in = round(total_aqi_in / num, 1) if monitored_count > 0 else 55.0
     center_aqi_us = round(total_aqi_us / num, 1) if monitored_count > 0 else 65.0
+
+    # Closed-loop active learning: feed live actual PM2.5 readings to verify maturing forecasts & update EMA bias
+    if stations:
+        valid_pm25 = [st.pm25 for st in stations if st.pm25 is not None]
+        if valid_pm25:
+            avg_city_pm25 = sum(valid_pm25) / len(valid_pm25)
+            ml_service.update_online_feedback(city, avg_city_pm25, now)
 
     # Persist genuine live observations to database so subsequent queries have persistent physical records
     if stations:
