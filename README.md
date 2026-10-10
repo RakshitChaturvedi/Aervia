@@ -72,10 +72,11 @@ flowchart TB
 
     subgraph FRONTEND ["🖥️ Aervia Geospatial Portal (Next.js 13)"]
         DASHBOARD["Executive Command Home (/)"]
-        LIVEMAP["3D Deck.gl Live Map (/live-map)"]
+        LIVEMAP["Live Map (/live-map)"]
+        TELEMETRY["Telemetry & Alerts (/events) · AWS IoT Core"]
         FORECAST["72h Atmospheric Forecast (/forecast)"]
-        COMPARE["Multi-City Analytics (/compare)"]
-        ADVISORY["Citizen Health Advisory (/advisory)"]
+        INTERVENTIONS["Interventions & Ground Truth (/interventions)"]
+        REPORTS["Reports & Compliance (/reports)"]
         
         REST_API --> FRONTEND
     end
@@ -99,14 +100,61 @@ flowchart TB
 
 ---
 
-## ⚡ Quick Start
+## ⚡ Quick Start & Run Commands
 
-### 1. Prerequisites
+### 🚀 Fast Run Cheat Sheet (Quick Access)
+
+Once setup is complete, use these commands to start the application quickly:
+
+#### Option A: One-Click Startup (Windows)
+Double-click or run from the project root:
+```cmd
+.\start-dev.bat
+```
+*or via PowerShell:*
+```powershell
+powershell -ExecutionPolicy Bypass -File .\start-dev.ps1
+```
+*(This automatically opens two separate terminal windows for the Backend and Frontend servers).*
+
+---
+
+#### Option B: Individual Terminals
+
+| Service | Working Directory | Command (Windows PowerShell) | Command (Linux / macOS) | Access URL |
+|---|---|---|---|---|
+| **Backend (FastAPI)** | `backend` | `.\venv\Scripts\activate`<br>`uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload` | `source venv/bin/activate`<br>`uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload` | [http://127.0.0.1:8000](http://127.0.0.1:8000) |
+| **Frontend (Next.js)** | `frontend` | `npm run dev` | `npm run dev` | [http://localhost:3000](http://localhost:3000) |
+
+> **Direct Root Launchers (No manual activation needed):**
+> - **Backend from Root**: `.\backend\venv\Scripts\python.exe -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 --reload`
+> - **Frontend from Root**: `npm --prefix frontend run dev`
+
+---
+
+### 🌐 Key Service URLs
+
+| Interface | URL | Description |
+|---|---|---|
+| 🖥️ **Command Portal** | [http://localhost:3000](http://localhost:3000) | Executive Urban Air Quality Intelligence Dashboard |
+| 🗺️ **Live Map** | [http://localhost:3000/live-map](http://localhost:3000/live-map) | Deck.gl geospatial particulate & dispersion layers |
+| 📡 **Telemetry & Alerts** | [http://localhost:3000/events](http://localhost:3000/events) | **AWS IoT Core** real-time sensor telemetry and episode alerts |
+| 🔮 **72h Forecaster** | [http://localhost:3000/forecast](http://localhost:3000/forecast) | Atmospheric ML predictions, PBLH & SHAP drivers |
+| 🛡️ **Interventions & Ground Truth** | [http://localhost:3000/interventions](http://localhost:3000/interventions) | Field mitigation tracking and manual observational logs |
+| 📋 **Reports & Compliance** | [http://localhost:3000/reports](http://localhost:3000/reports) | Sensor data quality manifests and compliance reports |
+| 📑 **Interactive API Docs** | [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) | FastAPI Swagger UI with IoT & Analytics endpoints |
+| 🩺 **System Health Check** | [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health) | Live DB, cache, and AWS IoT connectivity status |
+
+---
+
+### 🛠️ Initial Installation & Setup
+
+#### 1. Prerequisites
 - Python 3.10+
 - Node.js 18+ & npm
 - Git
 
-### 2. Environment Setup
+#### 2. Environment Setup
 Create a `.env` file in the root directory (or use `.env.example`):
 ```env
 DATAGOV_API_KEY=your_datagov_api_key
@@ -122,7 +170,7 @@ ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-### 3. Backend Setup
+#### 3. Backend Setup
 ```bash
 # From repository root
 cd backend
@@ -133,16 +181,27 @@ python -m venv venv
 pip install -r requirements.txt
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-API Documentation will be live at `http://127.0.0.1:8000/docs`.
 
-### 4. Frontend Setup
+#### 4. Frontend Setup
 ```bash
 # In a new terminal, from repository root
 cd frontend
 npm install
 npm run dev
 ```
-Open `http://localhost:3000` in your browser.
+
+---
+
+### 🧪 Useful Development & Pipeline Commands
+
+```bash
+# Run backend test suite
+cd backend
+.\venv\Scripts\pytest
+
+# Run the complete atmospheric analytics & report pipeline
+.\backend\venv\Scripts\python.exe backend/scripts/run_pipeline.py --minute backend/data/minute.csv --samples backend/data/samples.csv --dataset-id ft1_final_v2 --run-root backend/data/pipeline_runs/ft1_final_v2
+```
 
 
 ---

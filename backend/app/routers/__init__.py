@@ -10,6 +10,8 @@ from app.routers.notifications import router as notifications_router
 from app.routers.report import router as report_router
 from app.routers.atmospheric_forecast import router as atmospheric_forecast_router
 from app.routers.stubble_plume import router as stubble_plume_router
+from app.routers.analytics import router as analytics_router
+from app.routers.iot import router as iot_router
 
 api_router = APIRouter()
 
@@ -24,3 +26,5 @@ api_router.include_router(notifications_router)
 api_router.include_router(report_router)
 api_router.include_router(atmospheric_forecast_router)
 api_router.include_router(stubble_plume_router)
+api_router.include_router(analytics_router)
+api_router.include_router(iot_router)

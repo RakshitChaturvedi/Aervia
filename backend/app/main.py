@@ -22,6 +22,7 @@ from app.ingestion.scheduler import (
     stop_ingestion_scheduler,
     router as ingestion_router,
 )
+from app.iot_service import iot_service
 
 # Initialize database tables
 Base.metadata.create_all(bind=engine)
@@ -36,9 +37,17 @@ async def lifespan(app: FastAPI):
 
     # Startup: Start the background 15-minute CPCB/OpenAQ ingestion scheduler
     start_ingestion_scheduler(interval_seconds=900)
+
+    # Startup: Connect to AWS IoT Core MQTT streams
+    try:
+        iot_service.start()
+    except Exception as e:
+        print(f"Warning: could not start AWS IoT Core service: {e}")
+
     yield
     # Shutdown: cancel background scheduler thread gracefully
     stop_ingestion_scheduler()
+    iot_service.stop()
 
 
 app = FastAPI(

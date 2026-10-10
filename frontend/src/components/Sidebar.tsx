@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
-  Home, Map, TrendingUp, Building2, Menu, PanelLeftClose,
+  Home, Map, TrendingUp, AlertTriangle, Radio, Menu, PanelLeftClose, Layers
 } from 'lucide-react';
 import { useCityContext } from '@/context/CityContext';
 
@@ -15,10 +15,12 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { id: 'home', label: 'Home', href: '/', icon: Home },
+  { id: 'home', label: 'Command Home', href: '/', icon: Home },
   { id: 'live-map', label: 'Live Map', href: '/live-map', icon: Map },
-  { id: 'forecast', label: 'Forecast', href: '/forecast', icon: TrendingUp },
-  { id: 'compare', label: 'Compare Cities', href: '/compare', icon: Building2 },
+  { id: 'forecast', label: '72h Forecast', href: '/forecast', icon: TrendingUp },
+  { id: 'telemetry', label: 'Live Telemetry', href: '/telemetry', icon: Radio },
+  { id: 'alerts', label: 'Episode Alerts', href: '/alerts', icon: AlertTriangle },
+  { id: 'compare', label: 'Regional vs Local', href: '/compare', icon: Layers },
 ];
 
 export default function Sidebar() {

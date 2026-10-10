@@ -60,9 +60,9 @@ def generate_deterministic_report(req: ReportRequest) -> Dict[str, Any]:
     humidity = float(live.get("humidity") or 65.0)
     pblh = float(live.get("pblh") or 600.0)
     raw_voc = live.get("voc_index")
-    voc = round(float(raw_voc), 1) if raw_voc is not None else None
+    voc = round(float(raw_voc), 1) if raw_voc is not None else 60.0
     raw_nox = live.get("nox_index")
-    nox = round(float(raw_nox), 1) if raw_nox is not None else None
+    nox = round(float(raw_nox), 1) if raw_nox is not None else 1.0
     
     # Calculate NCAP Grade
     if avg_aqi <= 50:
@@ -319,7 +319,10 @@ def generate_report(req: ReportRequest):
         # If Gemini API is available and configured, synthesize tailored narrative
         if GEMINI_API_KEY and genai:
             try:
-                model = genai.GenerativeModel("gemini-1.5-flash")
+                try:
+                    model = genai.GenerativeModel("gemini-2.5-flash")
+                except Exception:
+                    model = genai.GenerativeModel("gemini-flash-latest")
                 prompt = (
                     f"You are the Chief Environmental Scientist and Urban Air Quality Auditor for Aervia.\n"
                     f"Synthesize an Executive Environmental Intelligence & NCAP Compliance Audit Report for:\n"

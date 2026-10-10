@@ -21,6 +21,7 @@ import {
   PolarRadiusAxis,
 } from 'recharts';
 import { FileText, Activity } from 'lucide-react';
+import RegionalLocalComparison from '@/components/RegionalLocalComparison';
 
 const ReportModal = dynamic(() => import('@/components/ReportModal'), { ssr: false });
 
@@ -630,7 +631,7 @@ export default function CompareCitiesPage() {
               { id: 'forecast', label: '72h Forecast' },
               { id: 'pollutants', label: 'Multi-Pollutants' },
               { id: 'attribution', label: 'Source Breakdown' },
-              { id: 'physics', label: 'Atmospheric Physics' },
+              { id: 'regional-local', label: 'Regional vs. Local' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -960,80 +961,47 @@ export default function CompareCitiesPage() {
               </div>
             )}
 
-            {/* ── Chart 4 & 5: Radar Chemical Fingerprint & Atmospheric Physics ── */}
-            {(activeTab === 'overview' || activeTab === 'physics') && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '16px' }}>
-                
-                {/* Radar Fingerprint */}
-                <div className="panel fade-in" style={{ padding: '16px 18px', background: 'var(--bg-surface)' }}>
-                  <div style={{ marginBottom: 8 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
-                        Multi-Axial Chemical Fingerprint
-                      </h3>
-                    </div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 2 }}>
-                      Relative pollutant signature normalized across 6 critical dimensions.
-                    </div>
-                  </div>
+            {/* ── Regional Ward vs. Local Sensor Microclimate Comparison ── */}
+            {(activeTab === 'overview' || activeTab === 'regional-local') && (
+              <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <RegionalLocalComparison />
+              </div>
+            )}
 
-                  <div style={{ width: '100%', height: 250 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RadarChart data={radarComparisonData} outerRadius="75%">
-                        <PolarGrid stroke="var(--border-primary)" opacity={0.4} />
-                        <PolarAngleAxis dataKey="axis" stroke="var(--text-secondary)" fontSize={9} />
-                        <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="var(--text-muted)" fontSize={8} />
-                        {selectedCityIds.map((cid) => (
-                          <Radar
-                            key={cid}
-                            name={citiesData[cid]?.name || cid}
-                            dataKey={cid}
-                            stroke={CITY_COLORS[cid]?.main || '#38bdf8'}
-                            fill={CITY_COLORS[cid]?.main || '#38bdf8'}
-                            fillOpacity={0.2}
-                          />
-                        ))}
-                        <Legend wrapperStyle={{ fontSize: '0.72rem' }} />
-                        <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-primary)', fontSize: '0.75rem' }} />
-                      </RadarChart>
-                    </ResponsiveContainer>
+            {/* ── Chart 4: Radar Chemical Fingerprint ── */}
+            {activeTab === 'pollutants' && (
+              <div className="panel fade-in" style={{ padding: '16px 18px', background: 'var(--bg-surface)' }}>
+                <div style={{ marginBottom: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
+                      Multi-Axial Chemical Fingerprint
+                    </h3>
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 2 }}>
+                    Relative pollutant signature normalized across 6 critical dimensions.
                   </div>
                 </div>
 
-                {/* Atmospheric Physics & Ventilation Comparison */}
-                <div className="panel fade-in" style={{ padding: '16px 18px', background: 'var(--bg-surface)' }}>
-                  <div style={{ marginBottom: 12 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
-                        Atmospheric Dispersion & Inversion Physics
-                      </h3>
-                      <span className="panel-badge badge-neutral" style={{ fontSize: '0.6rem' }}>BOUNDARY DYNAMICS</span>
-                    </div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 2 }}>
-                      Boundary Layer Height (PBLH in m) vs Wind Speed (m/s) vs Ventilation Capability.
-                    </div>
-                  </div>
-
-                  <div style={{ width: '100%', height: 250 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={physicsComparisonData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border-primary)" opacity={0.3} />
-                        <XAxis dataKey="city" stroke="var(--text-muted)" fontSize={11} />
-                        <YAxis stroke="var(--text-muted)" fontSize={10} />
-                        <Tooltip
-                          contentStyle={{
-                            background: 'var(--bg-surface)',
-                            border: '1px solid var(--border-primary)',
-                            borderRadius: '4px',
-                            fontSize: '0.78rem',
-                          }}
+                <div style={{ width: '100%', height: 280 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart data={radarComparisonData} outerRadius="75%">
+                      <PolarGrid stroke="var(--border-primary)" opacity={0.4} />
+                      <PolarAngleAxis dataKey="axis" stroke="var(--text-secondary)" fontSize={9} />
+                      <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="var(--text-muted)" fontSize={8} />
+                      {selectedCityIds.map((cid) => (
+                        <Radar
+                          key={cid}
+                          name={citiesData[cid]?.name || cid}
+                          dataKey={cid}
+                          stroke={CITY_COLORS[cid]?.main || '#38bdf8'}
+                          fill={CITY_COLORS[cid]?.main || '#38bdf8'}
+                          fillOpacity={0.2}
                         />
-                        <Legend wrapperStyle={{ fontSize: '0.72rem', paddingTop: '4px' }} />
-                        <Bar dataKey="PBLH" name="Boundary Layer Height (m)" fill="#38bdf8" radius={[2, 2, 0, 0]} />
-                        <Bar dataKey="VentilationIndex" name="Ventilation Index (x10 m²/s)" fill="#22c55e" radius={[2, 2, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
+                      ))}
+                      <Legend wrapperStyle={{ fontSize: '0.72rem' }} />
+                      <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-primary)', fontSize: '0.75rem' }} />
+                    </RadarChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
             )}

@@ -6,6 +6,7 @@ The backend layer for **Aervia** provides high-throughput telemetry ingestion, p
 
 1. **FastAPI High-Performance Async REST API**:
    - Live telemetry and historical station observations across monitored cities.
+   - **AWS IoT Core Edge Ingestion**: MQTT WebSockets SigV4 subscriber for continuous sensor ingestion (`/api/iot/latest`, `/api/iot/history`, `/api/iot/status`, `/api/iot/publish`).
    - 72-hour MAPIE conformal forecasting with XGBoost and CatBoost.
    - CAMS satellite atmospheric NO₂ and aerosol overlays.
    - Comprehensive urban air quality audit and NCAP report generation.

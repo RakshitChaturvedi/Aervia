@@ -4,10 +4,8 @@ import dynamic from 'next/dynamic';
 import { useCityContext } from '@/context/CityContext';
 
 import { CityId } from '@/types';
-import AtmosphericForecastPanel from '@/components/AtmosphericForecastPanel';
 
 const ForecastPanel = dynamic(() => import('@/components/ForecastPanel'), { ssr: false });
-const StubbleTransportPanel = dynamic(() => import('@/components/StubbleTransportPanel'), { ssr: false });
 
 export default function ForecastPage() {
   const { activeCity, setActiveCity, userCoords, liveData, cityData } = useCityContext();
@@ -57,11 +55,6 @@ export default function ForecastPage() {
         </div>
       </div>
       <div className="page-content">
-        <AtmosphericForecastPanel
-          city={activeCity}
-          coordinates={activeCity === 'My Location' ? userCoords : null}
-        />
-        <StubbleTransportPanel />
         <ForecastPanel city={activeCity} userCoords={userCoords} liveData={liveData} cityData={cityData} hoveredLocation={null} />
       </div>
     </div>

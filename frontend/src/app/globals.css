@@ -985,8 +985,18 @@ body.dark {
 .main-content {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   position: relative;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.view-container {
+  min-height: 100%;
+  padding-bottom: 80px;
+  overflow-y: visible;
 }
 
 /* ── Sidebar Spacer (pushes content when pinned) ── */
@@ -2232,11 +2242,13 @@ select.home-chart-select option {
    ══════════════════════════════════════════════════════════════ */
 
 .page-wrapper {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: transparent;
+  padding-bottom: 60px;
 }
 
 .page-header {
@@ -2306,7 +2318,7 @@ select.home-chart-select option {
 .page-content {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 28px;
+  padding: 16px 24px 28px 24px;
 }
 
 /* ══════════════════════════════════════════════════════════════

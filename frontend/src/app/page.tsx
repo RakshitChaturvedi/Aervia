@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { useCityContext } from '@/context/CityContext';
 import { CityId } from '@/types';
 import { getAqiCategory } from '@/utils/aqi';
@@ -118,11 +119,16 @@ export default function HomePage() {
 
   const [timeRange, setTimeRange] = useState<'6h' | '12h' | '24h'>('24h');
   const [chartMetric, setChartMetric] = useState<'aqi' | 'pm25' | 'pm10'>('aqi');
-  const [now, setNow] = useState(new Date());
+  const [timestampStr, setTimestampStr] = useState<string>('');
   const [realHistory, setRealHistory] = useState<any[]>([]);
 
   useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 60000);
+    const updateTime = () => {
+      const d = new Date();
+      setTimestampStr(`${d.toLocaleDateString('en-IN')} ${d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false })} IST`);
+    };
+    updateTime();
+    const id = setInterval(updateTime, 30000);
     return () => clearInterval(id);
   }, []);
 
@@ -425,7 +431,9 @@ export default function HomePage() {
           </p>
           <div className="home-timestamp" suppressHydrationWarning>
             <Activity size={14} />
-            <span>Telemetry Refreshed: {now.toLocaleDateString('en-IN')} {now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false })} IST</span>
+            <span suppressHydrationWarning>
+              {timestampStr ? `Telemetry Refreshed: ${timestampStr}` : 'Telemetry Refreshed: Live IST Sync'}
+            </span>
           </div>
         </div>
 
@@ -589,6 +597,84 @@ export default function HomePage() {
           }}>
             <ShieldCheck size={16} />
             <span>CPCB Health Protocol</span>
+          </div>
+        </div>
+
+        {/* ═══ Section 2.5: College Gate Field Capture & Study Overview (ft1_final_v2) ═══ */}
+        <div style={{
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--border-primary)',
+          borderRadius: 'var(--radius-md)',
+          padding: 20,
+          boxShadow: 'var(--shadow-sm)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 14
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: '1.2rem' }}>🏛️</span>
+              <div>
+                <div style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                  Field Capture & Event Episode Monitoring · College Gate
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                  Study ft1_final_v2 · 99 minute bins recorded (08:54–10:32 UTC)
+                </div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <Link href="/telemetry" style={{
+                padding: '6px 14px',
+                borderRadius: 'var(--radius-pill)',
+                background: 'var(--accent-emerald)',
+                color: '#fff',
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                textDecoration: 'none'
+              }}>
+                Live Telemetry →
+              </Link>
+              <Link href="/alerts" style={{
+                padding: '6px 14px',
+                borderRadius: 'var(--radius-pill)',
+                background: 'var(--bg-secondary)',
+                border: '1px solid var(--border-primary)',
+                color: 'var(--text-primary)',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                textDecoration: 'none'
+              }}>
+                Episode Alerts Queue
+              </Link>
+            </div>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: 12
+          }}>
+            <div style={{ padding: '10px 14px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-sm)' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Peak PM2.5</span>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-red)' }}>201.5 µg/m³</div>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Measured peak (10:32 UTC)</span>
+            </div>
+            <div style={{ padding: '10px 14px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-sm)' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Detected Events</span>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)' }}>4 Episodes</div>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Provisional event criteria</span>
+            </div>
+            <div style={{ padding: '10px 14px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-sm)' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Warnings Queue</span>
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-amber)' }}>4 Issued</div>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>2 Severe · 2 Elevated</span>
+            </div>
+            <div style={{ padding: '10px 14px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-sm)' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Analysis Readiness</span>
+              <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-emerald)', marginTop: 4 }}>Parameter: OK</div>
+              <span style={{ fontSize: '0.7rem', color: 'var(--accent-amber)' }}>Recovery: Partial</span>
+            </div>
           </div>
         </div>
 

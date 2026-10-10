@@ -1,0 +1,10 @@
+
+const toastBox = document.getElementById('toast');
+function toast(msg){ if(!toastBox)return; toastBox.textContent=msg; toastBox.classList.remove('hidden'); clearTimeout(window.__toastTimer); window.__toastTimer=setTimeout(()=>toastBox.classList.add('hidden'),3000); }
+document.querySelectorAll('[data-toast]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();toast(el.dataset.toast)}));
+document.querySelectorAll('[data-filter]').forEach(el=>el.addEventListener('input',()=>{const target=document.querySelector(el.dataset.filter);if(!target)return;const q=el.value.toLowerCase();target.querySelectorAll('tbody tr').forEach(tr=>tr.classList.toggle('hidden',!tr.innerText.toLowerCase().includes(q)));}));
+document.querySelectorAll('[data-nav]').forEach(el=>el.addEventListener('click',()=>{const href=el.getAttribute('href');if(href && href.endsWith('.html')) return; }));
+document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{const group=btn.closest('[data-tab-group]');if(!group)return;group.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b===btn));group.querySelectorAll('[data-tab-panel]').forEach(p=>p.classList.toggle('hidden',p.dataset.tabPanel!==btn.dataset.tab));}));
+document.querySelectorAll('[data-row-link]').forEach(row=>row.addEventListener('click',e=>{if(e.target.closest('button,a,input,select'))return;window.location.href=row.dataset.rowLink;}));
+document.querySelectorAll('form[data-demo-form]').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();toast('Prototype only: this form is not connected to a backend.');}));
+document.querySelectorAll('[data-export]').forEach(btn=>btn.addEventListener('click',()=>{const content=document.querySelector(btn.dataset.export);if(!content){toast('No export content available on this prototype page.');return;}const blob=new Blob([content.innerText],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(btn.dataset.filename||'aervia-export')+'.txt';a.click();URL.revokeObjectURL(a.href);toast('Prototype text export created. This is not a backend report.');}));
