@@ -1,0 +1,941 @@
+{
+  "report_id": "f0f81a1ddd03aca6",
+  "report_version": "0.1.0",
+  "generated_at_utc": "2026-10-10T10:37:01.000621+00:00",
+  "dataset_id": "ft1_final_v2",
+  "report_type": "daily",
+  "audience": "operator",
+  "window": {
+    "start_utc": null,
+    "end_utc": null
+  },
+  "summary": {
+    "warning_count": 4,
+    "warnings_by_severity": {
+      "SEVERE": 2,
+      "ELEVATED": 2
+    },
+    "advisory_count": 4,
+    "event_count": 4,
+    "max_warning_peak_pm2_5_ug_m3": 201.5312,
+    "max_warning_peak_excess_pm2_5_ug_m3": 167.62678,
+    "feature_data_quality": {
+      "status": "OK",
+      "rows": 99,
+      "timestamped_rows": 99,
+      "window_start_utc": "2026-10-09 08:54:00+00:00",
+      "window_end_utc": "2026-10-09 10:32:00+00:00",
+      "eligible_rows": 80,
+      "eligible_fraction": 0.8080808080808081,
+      "max_pm2_5_ug_m3": 201.5312,
+      "max_pm10_ug_m3": 323.3677,
+      "max_pm2_5_excess_ug_m3": 167.62678,
+      "gas_ready_rows": 0,
+      "humidity_high_rows": 0
+    }
+  },
+  "warnings": [
+    {
+      "warning_id": "ft1_final_v2:PM25:0004:warning",
+      "event_id": "ft1_final_v2:PM25:0004",
+      "status": "ISSUED",
+      "severity": "SEVERE",
+      "priority_score": 90,
+      "warning_type": "PM2_5_EVENT",
+      "pollutant": "PM2.5",
+      "start_utc": "2026-10-09T10:25:00+00:00",
+      "end_utc": "2026-10-09T10:32:00+00:00",
+      "peak_utc": "2026-10-09T10:32:00+00:00",
+      "peak_pm2_5_ug_m3": 201.5312,
+      "peak_baseline_pm2_5_ug_m3": 33.90442,
+      "peak_excess_pm2_5_ug_m3": 167.62678,
+      "mean_excess_pm2_5_ug_m3": 80.11099542857141,
+      "duration_elapsed_minutes": 7.0,
+      "coverage_fraction": 1.0,
+      "lifecycle": "OPEN_AT_CAPTURE_END",
+      "recovery_status": "INCOMPLETE_FOLLOWUP",
+      "positive_excess_integral_ug_h_m3": 7.687041849999999,
+      "current_gas_readiness": "NOT_READY",
+      "latest_parameter_feature_status": "OK",
+      "reasons": [
+        "peak excess crossed the prototype severe-priority threshold",
+        "event persisted for at least the configured duration threshold",
+        "event reaches the end of the available capture; live continuation is unknown"
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure."
+      ]
+    },
+    {
+      "warning_id": "ft1_final_v2:PM25:0003:warning",
+      "event_id": "ft1_final_v2:PM25:0003",
+      "status": "ISSUED",
+      "severity": "SEVERE",
+      "priority_score": 90,
+      "warning_type": "PM2_5_EVENT",
+      "pollutant": "PM2.5",
+      "start_utc": "2026-10-09T10:10:00+00:00",
+      "end_utc": "2026-10-09T10:13:00+00:00",
+      "peak_utc": "2026-10-09T10:10:00+00:00",
+      "peak_pm2_5_ug_m3": 116.9138,
+      "peak_baseline_pm2_5_ug_m3": 26.3962145,
+      "peak_excess_pm2_5_ug_m3": 90.5175855,
+      "mean_excess_pm2_5_ug_m3": 48.448393333333335,
+      "duration_elapsed_minutes": 3.0,
+      "coverage_fraction": 1.0,
+      "lifecycle": "OBSERVED_EVENT",
+      "recovery_status": "RECOVERY_OBSERVED",
+      "positive_excess_integral_ug_h_m3": 1.7543016625,
+      "current_gas_readiness": "NOT_READY",
+      "latest_parameter_feature_status": "OK",
+      "reasons": [
+        "peak excess crossed the prototype severe-priority threshold",
+        "event persisted for at least the configured duration threshold"
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure."
+      ]
+    },
+    {
+      "warning_id": "ft1_final_v2:PM25:0002:warning",
+      "event_id": "ft1_final_v2:PM25:0002",
+      "status": "ISSUED",
+      "severity": "ELEVATED",
+      "priority_score": 70,
+      "warning_type": "PM2_5_EVENT",
+      "pollutant": "PM2.5",
+      "start_utc": "2026-10-09T09:36:00+00:00",
+      "end_utc": "2026-10-09T09:39:00+00:00",
+      "peak_utc": "2026-10-09T09:36:00+00:00",
+      "peak_pm2_5_ug_m3": 86.2881,
+      "peak_baseline_pm2_5_ug_m3": 24.6685485,
+      "peak_excess_pm2_5_ug_m3": 61.6195515,
+      "mean_excess_pm2_5_ug_m3": 32.7035215,
+      "duration_elapsed_minutes": 3.0,
+      "coverage_fraction": 1.0,
+      "lifecycle": "OBSERVED_EVENT",
+      "recovery_status": "RECOVERY_OBSERVED",
+      "positive_excess_integral_ug_h_m3": 1.0767142000000003,
+      "current_gas_readiness": "NOT_READY",
+      "latest_parameter_feature_status": "OK",
+      "reasons": [
+        "peak excess crossed the prototype elevated-priority threshold",
+        "event persisted for at least the configured duration threshold"
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure."
+      ]
+    },
+    {
+      "warning_id": "ft1_final_v2:PM25:0001:warning",
+      "event_id": "ft1_final_v2:PM25:0001",
+      "status": "ISSUED",
+      "severity": "ELEVATED",
+      "priority_score": 70,
+      "warning_type": "PM2_5_EVENT",
+      "pollutant": "PM2.5",
+      "start_utc": "2026-10-09T09:29:00+00:00",
+      "end_utc": "2026-10-09T09:33:00+00:00",
+      "peak_utc": "2026-10-09T09:29:00+00:00",
+      "peak_pm2_5_ug_m3": 69.92566500000001,
+      "peak_baseline_pm2_5_ug_m3": 24.6685485,
+      "peak_excess_pm2_5_ug_m3": 45.25711650000001,
+      "mean_excess_pm2_5_ug_m3": 31.639801500000004,
+      "duration_elapsed_minutes": 4.0,
+      "coverage_fraction": 1.0,
+      "lifecycle": "OBSERVED_EVENT",
+      "recovery_status": "RECOVERY_OBSERVED",
+      "positive_excess_integral_ug_h_m3": 1.6079263083333333,
+      "current_gas_readiness": "NOT_READY",
+      "latest_parameter_feature_status": "OK",
+      "reasons": [
+        "peak excess crossed the prototype elevated-priority threshold",
+        "event persisted for at least the configured duration threshold"
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure."
+      ]
+    }
+  ],
+  "advisories": [
+    {
+      "advisory_id": "ft1_final_v2:PM25:0004:warning:advisory",
+      "warning_id": "ft1_final_v2:PM25:0004:warning",
+      "event_id": "ft1_final_v2:PM25:0004",
+      "status": "GENERATED",
+      "language": "en",
+      "summary": "A severe PM2.5 event was recorded, with peak PM2.5 of 201.5 µg/m³ and peak excess over the estimated baseline of 167.6 µg/m³.",
+      "reasoning": "Recommendations were selected using configured rules and the available warning evidence. A single monitoring node does not establish conditions across the campus. This event does not identify the pollution source. The recording ended during the event, so its current state is unknown.",
+      "actions": [
+        {
+          "action_id": "inspect_local_area",
+          "title": "Inspect the immediate area",
+          "instruction": "Have the site operator check for nearby activities or conditions that could coincide with the elevated reading, without assuming a source.",
+          "rationale": "The warning is classified as severe by the configured prototype rules.",
+          "urgency": "HIGH",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.severity",
+            "warning.peak_excess_pm2_5_ug_m3"
+          ]
+        },
+        {
+          "action_id": "verify_followup_readings",
+          "title": "Verify subsequent readings",
+          "instruction": "Check the next valid sensor readings and confirm whether PM2.5 remains elevated or begins to decline.",
+          "rationale": "Follow-up measurements are needed to determine whether the event persists.",
+          "urgency": "HIGH",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.peak_pm2_5_ug_m3",
+            "warning.lifecycle"
+          ]
+        },
+        {
+          "action_id": "confirm_current_state",
+          "title": "Confirm current conditions",
+          "instruction": "The recording ended during this event. Obtain a new measurement before treating the event as currently active or resolved.",
+          "rationale": "The capture boundary does not establish the live state.",
+          "urgency": "HIGH",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.lifecycle",
+            "warning.end_utc"
+          ]
+        },
+        {
+          "action_id": "note_gas_unavailable",
+          "title": "Do not infer gas conditions",
+          "instruction": "Do not infer that gases are absent or safe from this event; gas measurements are not currently ready for interpretation.",
+          "rationale": "Gas readiness is reported as unavailable or not ready.",
+          "urgency": "ROUTINE",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.current_gas_readiness"
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "field": "severity",
+          "label": "Warning severity",
+          "value": "SEVERE",
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_pm2_5_ug_m3",
+          "label": "Peak PM2.5",
+          "value": 201.5312,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_baseline_pm2_5_ug_m3",
+          "label": "Estimated baseline PM2.5",
+          "value": 33.90442,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_excess_pm2_5_ug_m3",
+          "label": "Peak excess over baseline",
+          "value": 167.62678,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "duration_elapsed_minutes",
+          "label": "Observed event duration",
+          "value": 7.0,
+          "unit": "minutes",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "coverage_fraction",
+          "label": "Eligible coverage fraction",
+          "value": 1.0,
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "lifecycle",
+          "label": "Event lifecycle",
+          "value": "OPEN_AT_CAPTURE_END",
+          "unit": null,
+          "source": "layer_4_warning"
+        }
+      ],
+      "uncertainty": [
+        "A single monitoring node does not establish conditions across the campus.",
+        "This event does not identify the pollution source.",
+        "Severity is a prototype triage category, not an official AQI category or medical-risk assessment.",
+        "The recording ended during the event; current continuation or recovery is unknown.",
+        "Gas measurements are not ready for interpretation; this is not evidence that gases are absent.",
+        "Particle-distribution interpretation is not validated for this dataset."
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure.",
+        "Recommendations are rule-based prototype guidance, not medical advice."
+      ],
+      "generation_mode": "DETERMINISTIC",
+      "generated_at_utc": "2026-10-10T10:37:00.723825+00:00",
+      "input_fingerprint": "c4e182ef7d036079bcf95c1130ed9ced8ebab01deb53bb4fb6630783d6bdd5af"
+    },
+    {
+      "advisory_id": "ft1_final_v2:PM25:0003:warning:advisory",
+      "warning_id": "ft1_final_v2:PM25:0003:warning",
+      "event_id": "ft1_final_v2:PM25:0003",
+      "status": "GENERATED",
+      "language": "en",
+      "summary": "A severe PM2.5 event was recorded, with peak PM2.5 of 116.9 µg/m³ and peak excess over the estimated baseline of 90.5 µg/m³.",
+      "reasoning": "Recommendations were selected using configured rules and the available warning evidence. A single monitoring node does not establish conditions across the campus. This event does not identify the pollution source.",
+      "actions": [
+        {
+          "action_id": "inspect_local_area",
+          "title": "Inspect the immediate area",
+          "instruction": "Have the site operator check for nearby activities or conditions that could coincide with the elevated reading, without assuming a source.",
+          "rationale": "The warning is classified as severe by the configured prototype rules.",
+          "urgency": "HIGH",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.severity",
+            "warning.peak_excess_pm2_5_ug_m3"
+          ]
+        },
+        {
+          "action_id": "verify_followup_readings",
+          "title": "Verify subsequent readings",
+          "instruction": "Check the next valid sensor readings and confirm whether PM2.5 remains elevated or begins to decline.",
+          "rationale": "Follow-up measurements are needed to determine whether the event persists.",
+          "urgency": "HIGH",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.peak_pm2_5_ug_m3",
+            "warning.lifecycle"
+          ]
+        },
+        {
+          "action_id": "note_gas_unavailable",
+          "title": "Do not infer gas conditions",
+          "instruction": "Do not infer that gases are absent or safe from this event; gas measurements are not currently ready for interpretation.",
+          "rationale": "Gas readiness is reported as unavailable or not ready.",
+          "urgency": "ROUTINE",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.current_gas_readiness"
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "field": "severity",
+          "label": "Warning severity",
+          "value": "SEVERE",
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_pm2_5_ug_m3",
+          "label": "Peak PM2.5",
+          "value": 116.9138,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_baseline_pm2_5_ug_m3",
+          "label": "Estimated baseline PM2.5",
+          "value": 26.3962145,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_excess_pm2_5_ug_m3",
+          "label": "Peak excess over baseline",
+          "value": 90.5175855,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "duration_elapsed_minutes",
+          "label": "Observed event duration",
+          "value": 3.0,
+          "unit": "minutes",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "coverage_fraction",
+          "label": "Eligible coverage fraction",
+          "value": 1.0,
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "lifecycle",
+          "label": "Event lifecycle",
+          "value": "OBSERVED_EVENT",
+          "unit": null,
+          "source": "layer_4_warning"
+        }
+      ],
+      "uncertainty": [
+        "A single monitoring node does not establish conditions across the campus.",
+        "This event does not identify the pollution source.",
+        "Severity is a prototype triage category, not an official AQI category or medical-risk assessment.",
+        "Gas measurements are not ready for interpretation; this is not evidence that gases are absent.",
+        "Particle-distribution interpretation is not validated for this dataset."
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure.",
+        "Recommendations are rule-based prototype guidance, not medical advice."
+      ],
+      "generation_mode": "DETERMINISTIC",
+      "generated_at_utc": "2026-10-10T10:37:00.729787+00:00",
+      "input_fingerprint": "cebbacf3d6326ef1af29fe58adf86175cc9acd6d2f8f2801b9c032da17da189d"
+    },
+    {
+      "advisory_id": "ft1_final_v2:PM25:0002:warning:advisory",
+      "warning_id": "ft1_final_v2:PM25:0002:warning",
+      "event_id": "ft1_final_v2:PM25:0002",
+      "status": "GENERATED",
+      "language": "en",
+      "summary": "A elevated PM2.5 event was recorded, with peak PM2.5 of 86.3 µg/m³ and peak excess over the estimated baseline of 61.6 µg/m³.",
+      "reasoning": "Recommendations were selected using configured rules and the available warning evidence. A single monitoring node does not establish conditions across the campus. This event does not identify the pollution source.",
+      "actions": [
+        {
+          "action_id": "review_elevated_reading",
+          "title": "Review the elevated reading",
+          "instruction": "Review the event and inspect the immediate monitoring area for relevant activity; do not assign a pollution source from this reading alone.",
+          "rationale": "The event exceeded the configured elevated-priority threshold.",
+          "urgency": "HIGH",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.severity",
+            "warning.peak_excess_pm2_5_ug_m3"
+          ]
+        },
+        {
+          "action_id": "check_next_readings",
+          "title": "Check the next readings",
+          "instruction": "Review subsequent valid measurements to see whether the elevation persists or recovers.",
+          "rationale": "The event's persistence and recovery affect the appropriate response.",
+          "urgency": "ROUTINE",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.lifecycle",
+            "warning.end_utc"
+          ]
+        },
+        {
+          "action_id": "note_gas_unavailable",
+          "title": "Do not infer gas conditions",
+          "instruction": "Do not infer that gases are absent or safe from this event; gas measurements are not currently ready for interpretation.",
+          "rationale": "Gas readiness is reported as unavailable or not ready.",
+          "urgency": "ROUTINE",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.current_gas_readiness"
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "field": "severity",
+          "label": "Warning severity",
+          "value": "ELEVATED",
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_pm2_5_ug_m3",
+          "label": "Peak PM2.5",
+          "value": 86.2881,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_baseline_pm2_5_ug_m3",
+          "label": "Estimated baseline PM2.5",
+          "value": 24.6685485,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_excess_pm2_5_ug_m3",
+          "label": "Peak excess over baseline",
+          "value": 61.6195515,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "duration_elapsed_minutes",
+          "label": "Observed event duration",
+          "value": 3.0,
+          "unit": "minutes",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "coverage_fraction",
+          "label": "Eligible coverage fraction",
+          "value": 1.0,
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "lifecycle",
+          "label": "Event lifecycle",
+          "value": "OBSERVED_EVENT",
+          "unit": null,
+          "source": "layer_4_warning"
+        }
+      ],
+      "uncertainty": [
+        "A single monitoring node does not establish conditions across the campus.",
+        "This event does not identify the pollution source.",
+        "Severity is a prototype triage category, not an official AQI category or medical-risk assessment.",
+        "Gas measurements are not ready for interpretation; this is not evidence that gases are absent.",
+        "Particle-distribution interpretation is not validated for this dataset."
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure.",
+        "Recommendations are rule-based prototype guidance, not medical advice."
+      ],
+      "generation_mode": "DETERMINISTIC",
+      "generated_at_utc": "2026-10-10T10:37:00.735685+00:00",
+      "input_fingerprint": "7ed44a124f6eda95cb8f0fe4303d2f96add6be3adabc33bf3e24b70bdb9a3c81"
+    },
+    {
+      "advisory_id": "ft1_final_v2:PM25:0001:warning:advisory",
+      "warning_id": "ft1_final_v2:PM25:0001:warning",
+      "event_id": "ft1_final_v2:PM25:0001",
+      "status": "GENERATED",
+      "language": "en",
+      "summary": "A elevated PM2.5 event was recorded, with peak PM2.5 of 69.9 µg/m³ and peak excess over the estimated baseline of 45.3 µg/m³.",
+      "reasoning": "Recommendations were selected using configured rules and the available warning evidence. A single monitoring node does not establish conditions across the campus. This event does not identify the pollution source.",
+      "actions": [
+        {
+          "action_id": "review_elevated_reading",
+          "title": "Review the elevated reading",
+          "instruction": "Review the event and inspect the immediate monitoring area for relevant activity; do not assign a pollution source from this reading alone.",
+          "rationale": "The event exceeded the configured elevated-priority threshold.",
+          "urgency": "HIGH",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.severity",
+            "warning.peak_excess_pm2_5_ug_m3"
+          ]
+        },
+        {
+          "action_id": "check_next_readings",
+          "title": "Check the next readings",
+          "instruction": "Review subsequent valid measurements to see whether the elevation persists or recovers.",
+          "rationale": "The event's persistence and recovery affect the appropriate response.",
+          "urgency": "ROUTINE",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.lifecycle",
+            "warning.end_utc"
+          ]
+        },
+        {
+          "action_id": "note_gas_unavailable",
+          "title": "Do not infer gas conditions",
+          "instruction": "Do not infer that gases are absent or safe from this event; gas measurements are not currently ready for interpretation.",
+          "rationale": "Gas readiness is reported as unavailable or not ready.",
+          "urgency": "ROUTINE",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.current_gas_readiness"
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "field": "severity",
+          "label": "Warning severity",
+          "value": "ELEVATED",
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_pm2_5_ug_m3",
+          "label": "Peak PM2.5",
+          "value": 69.92566500000001,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_baseline_pm2_5_ug_m3",
+          "label": "Estimated baseline PM2.5",
+          "value": 24.6685485,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_excess_pm2_5_ug_m3",
+          "label": "Peak excess over baseline",
+          "value": 45.25711650000001,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "duration_elapsed_minutes",
+          "label": "Observed event duration",
+          "value": 4.0,
+          "unit": "minutes",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "coverage_fraction",
+          "label": "Eligible coverage fraction",
+          "value": 1.0,
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "lifecycle",
+          "label": "Event lifecycle",
+          "value": "OBSERVED_EVENT",
+          "unit": null,
+          "source": "layer_4_warning"
+        }
+      ],
+      "uncertainty": [
+        "A single monitoring node does not establish conditions across the campus.",
+        "This event does not identify the pollution source.",
+        "Severity is a prototype triage category, not an official AQI category or medical-risk assessment.",
+        "Gas measurements are not ready for interpretation; this is not evidence that gases are absent.",
+        "Particle-distribution interpretation is not validated for this dataset."
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure.",
+        "Recommendations are rule-based prototype guidance, not medical advice."
+      ],
+      "generation_mode": "DETERMINISTIC",
+      "generated_at_utc": "2026-10-10T10:37:00.741705+00:00",
+      "input_fingerprint": "8c72426e30a5f05b2df9d6aa7b26a04cf02d77e084e4385bcb0200d10b72093b"
+    }
+  ],
+  "analytics": {
+    "event_detection": {
+      "status": "OK",
+      "records": [
+        {
+          "event_id": "ft1_final_v2:PM25:0001",
+          "start_utc": "2026-10-09T09:29:00+00:00",
+          "end_utc": "2026-10-09T09:33:00+00:00",
+          "boundary_at_capture_start": false,
+          "boundary_at_capture_end": false,
+          "duration_elapsed_minutes": 4.0,
+          "duration_inclusive_grid_minutes": 5.0,
+          "candidate_observations": 4,
+          "expected_grid_minutes": 5,
+          "eligible_minutes_in_window": 5,
+          "coverage_fraction": 1.0,
+          "peak_utc": "2026-10-09T09:29:00+00:00",
+          "peak_pm2_5_ug_m3": 69.92566500000001,
+          "peak_baseline_pm2_5_ug_m3": 24.6685485,
+          "peak_excess_pm2_5_ug_m3": 45.25711650000001,
+          "mean_excess_pm2_5_ug_m3": 31.639801500000004,
+          "quality_downgraded_candidate_count": 0,
+          "boundary_quality": "ADEQUATE_COVERAGE",
+          "supporting_parameter_features": {
+            "pm1_to_pm2_5_band": 15.304480000000012,
+            "pm2_5_to_pm4_band": 1.5502549999999928,
+            "pm4_to_pm10_band": 0.7682199999999995,
+            "particle_distribution_status": "CHANNELS_PRESENT_SEMANTICS_UNVERIFIED",
+            "particle_distribution_interpretable": false
+          }
+        },
+        {
+          "event_id": "ft1_final_v2:PM25:0002",
+          "start_utc": "2026-10-09T09:36:00+00:00",
+          "end_utc": "2026-10-09T09:39:00+00:00",
+          "boundary_at_capture_start": false,
+          "boundary_at_capture_end": false,
+          "duration_elapsed_minutes": 3.0,
+          "duration_inclusive_grid_minutes": 4.0,
+          "candidate_observations": 3,
+          "expected_grid_minutes": 4,
+          "eligible_minutes_in_window": 4,
+          "coverage_fraction": 1.0,
+          "peak_utc": "2026-10-09T09:36:00+00:00",
+          "peak_pm2_5_ug_m3": 86.2881,
+          "peak_baseline_pm2_5_ug_m3": 24.6685485,
+          "peak_excess_pm2_5_ug_m3": 61.6195515,
+          "mean_excess_pm2_5_ug_m3": 32.7035215,
+          "quality_downgraded_candidate_count": 0,
+          "boundary_quality": "ADEQUATE_COVERAGE",
+          "supporting_parameter_features": {
+            "pm1_to_pm2_5_band": 37.39676,
+            "pm2_5_to_pm4_band": 25.03845,
+            "pm4_to_pm10_band": 8.225650000000002,
+            "particle_distribution_status": "CHANNELS_PRESENT_SEMANTICS_UNVERIFIED",
+            "particle_distribution_interpretable": false
+          }
+        },
+        {
+          "event_id": "ft1_final_v2:PM25:0003",
+          "start_utc": "2026-10-09T10:10:00+00:00",
+          "end_utc": "2026-10-09T10:13:00+00:00",
+          "boundary_at_capture_start": false,
+          "boundary_at_capture_end": false,
+          "duration_elapsed_minutes": 3.0,
+          "duration_inclusive_grid_minutes": 4.0,
+          "candidate_observations": 3,
+          "expected_grid_minutes": 4,
+          "eligible_minutes_in_window": 4,
+          "coverage_fraction": 1.0,
+          "peak_utc": "2026-10-09T10:10:00+00:00",
+          "peak_pm2_5_ug_m3": 116.9138,
+          "peak_baseline_pm2_5_ug_m3": 26.3962145,
+          "peak_excess_pm2_5_ug_m3": 90.5175855,
+          "mean_excess_pm2_5_ug_m3": 48.448393333333335,
+          "quality_downgraded_candidate_count": 0,
+          "boundary_quality": "ADEQUATE_COVERAGE",
+          "supporting_parameter_features": {
+            "pm1_to_pm2_5_band": 55.982935,
+            "pm2_5_to_pm4_band": 41.11704999999999,
+            "pm4_to_pm10_band": 21.014250000000004,
+            "particle_distribution_status": "CHANNELS_PRESENT_SEMANTICS_UNVERIFIED",
+            "particle_distribution_interpretable": false
+          }
+        },
+        {
+          "event_id": "ft1_final_v2:PM25:0004",
+          "start_utc": "2026-10-09T10:25:00+00:00",
+          "end_utc": "2026-10-09T10:32:00+00:00",
+          "boundary_at_capture_start": false,
+          "boundary_at_capture_end": true,
+          "duration_elapsed_minutes": 7.0,
+          "duration_inclusive_grid_minutes": 8.0,
+          "candidate_observations": 7,
+          "expected_grid_minutes": 8,
+          "eligible_minutes_in_window": 8,
+          "coverage_fraction": 1.0,
+          "peak_utc": "2026-10-09T10:32:00+00:00",
+          "peak_pm2_5_ug_m3": 201.5312,
+          "peak_baseline_pm2_5_ug_m3": 33.90442,
+          "peak_excess_pm2_5_ug_m3": 167.62678,
+          "mean_excess_pm2_5_ug_m3": 80.11099542857141,
+          "quality_downgraded_candidate_count": 0,
+          "boundary_quality": "ADEQUATE_COVERAGE",
+          "supporting_parameter_features": {
+            "pm1_to_pm2_5_band": 104.76592,
+            "pm2_5_to_pm4_band": 81.46535,
+            "pm4_to_pm10_band": 40.37115,
+            "particle_distribution_status": "CHANNELS_PRESENT_SEMANTICS_UNVERIFIED",
+            "particle_distribution_interpretable": false
+          }
+        }
+      ]
+    },
+    "recovery_profile": {
+      "status": "PARTIAL",
+      "records": [
+        {
+          "event_id": "ft1_final_v2:PM25:0001",
+          "peak_utc": "2026-10-09T09:29:00+00:00",
+          "recovery_threshold_excess_pm2_5_ug_m3": 5.0,
+          "recovery_time_from_peak_min": 15.0,
+          "recovery_status": "RECOVERY_OBSERVED",
+          "post_peak_observed_rows": 60,
+          "post_peak_eligible_rows": 60,
+          "post_peak_coverage_fraction": 1.0,
+          "decay_fit": {
+            "status": "FIT_NOT_JUSTIFIED",
+            "decay_rate_per_min": null,
+            "half_life_min": null,
+            "r_squared": 0.03252358412425782,
+            "n_observations": 56,
+            "standard_error_log_slope": 0.009888775757650377,
+            "diagnostic": "Fitted slope is not decaying."
+          }
+        },
+        {
+          "event_id": "ft1_final_v2:PM25:0002",
+          "peak_utc": "2026-10-09T09:36:00+00:00",
+          "recovery_threshold_excess_pm2_5_ug_m3": 5.0,
+          "recovery_time_from_peak_min": 8.0,
+          "recovery_status": "RECOVERY_OBSERVED",
+          "post_peak_observed_rows": 56,
+          "post_peak_eligible_rows": 56,
+          "post_peak_coverage_fraction": 0.9333333333333333,
+          "decay_fit": {
+            "status": "FIT_NOT_JUSTIFIED",
+            "decay_rate_per_min": null,
+            "half_life_min": null,
+            "r_squared": 0.2958281690500276,
+            "n_observations": 52,
+            "standard_error_log_slope": 0.0107269182438461,
+            "diagnostic": "Fitted slope is not decaying."
+          }
+        },
+        {
+          "event_id": "ft1_final_v2:PM25:0003",
+          "peak_utc": "2026-10-09T10:10:00+00:00",
+          "recovery_threshold_excess_pm2_5_ug_m3": 5.0,
+          "recovery_time_from_peak_min": 12.0,
+          "recovery_status": "RECOVERY_OBSERVED",
+          "post_peak_observed_rows": 22,
+          "post_peak_eligible_rows": 22,
+          "post_peak_coverage_fraction": 0.36666666666666664,
+          "decay_fit": {
+            "status": "FIT_NOT_JUSTIFIED",
+            "decay_rate_per_min": null,
+            "half_life_min": null,
+            "r_squared": 0.28005446708192905,
+            "n_observations": 22,
+            "standard_error_log_slope": 0.03533882361553466,
+            "diagnostic": "Fitted slope is not decaying."
+          }
+        },
+        {
+          "event_id": "ft1_final_v2:PM25:0004",
+          "peak_utc": "2026-10-09T10:32:00+00:00",
+          "recovery_threshold_excess_pm2_5_ug_m3": 5.0,
+          "recovery_time_from_peak_min": null,
+          "recovery_status": "INCOMPLETE_FOLLOWUP",
+          "post_peak_observed_rows": 0,
+          "post_peak_eligible_rows": 0,
+          "post_peak_coverage_fraction": 0.0,
+          "decay_fit": {
+            "status": "FIT_NOT_JUSTIFIED",
+            "decay_rate_per_min": null,
+            "half_life_min": null,
+            "r_squared": null,
+            "n_observations": 0,
+            "standard_error_log_slope": null,
+            "diagnostic": "No valid post-peak observations or non-positive peak excess."
+          }
+        }
+      ]
+    },
+    "exposure_burden": {
+      "status": "OK",
+      "records": [
+        {
+          "window_id": "ft1_final_v2:PM25:0001",
+          "start_utc": "2026-10-09T09:29:00+00:00",
+          "end_utc": "2026-10-09T09:33:00+00:00",
+          "pollutant": "PM2.5",
+          "concentration_unit": "µg/m³",
+          "total_concentration_time_integral_ug_min_m3": 195.14977249999998,
+          "positive_excess_time_integral_ug_min_m3": 96.4755785,
+          "positive_excess_time_integral_ug_h_m3": 1.6079263083333333,
+          "baseline_time_integral_ug_min_m3": 98.674194,
+          "integrated_duration_min": 4.0,
+          "expected_duration_min": 4.0,
+          "coverage_fraction": 1.0,
+          "valid_segments": 4,
+          "rejected_gap_segments": 0,
+          "status": "OK"
+        },
+        {
+          "window_id": "ft1_final_v2:PM25:0002",
+          "start_utc": "2026-10-09T09:36:00+00:00",
+          "end_utc": "2026-10-09T09:39:00+00:00",
+          "pollutant": "PM2.5",
+          "concentration_unit": "µg/m³",
+          "total_concentration_time_integral_ug_min_m3": 138.6084975,
+          "positive_excess_time_integral_ug_min_m3": 64.60285200000001,
+          "positive_excess_time_integral_ug_h_m3": 1.0767142000000003,
+          "baseline_time_integral_ug_min_m3": 74.0056455,
+          "integrated_duration_min": 3.0,
+          "expected_duration_min": 3.0,
+          "coverage_fraction": 1.0,
+          "valid_segments": 3,
+          "rejected_gap_segments": 0,
+          "status": "OK"
+        },
+        {
+          "window_id": "ft1_final_v2:PM25:0003",
+          "start_utc": "2026-10-09T10:10:00+00:00",
+          "end_utc": "2026-10-09T10:13:00+00:00",
+          "pollutant": "PM2.5",
+          "concentration_unit": "µg/m³",
+          "total_concentration_time_integral_ug_min_m3": 187.2148325,
+          "positive_excess_time_integral_ug_min_m3": 105.25809975,
+          "positive_excess_time_integral_ug_h_m3": 1.7543016625,
+          "baseline_time_integral_ug_min_m3": 81.95673275,
+          "integrated_duration_min": 3.0,
+          "expected_duration_min": 3.0,
+          "coverage_fraction": 1.0,
+          "valid_segments": 3,
+          "rejected_gap_segments": 0,
+          "status": "OK"
+        },
+        {
+          "window_id": "ft1_final_v2:PM25:0004",
+          "start_utc": "2026-10-09T10:25:00+00:00",
+          "end_utc": "2026-10-09T10:32:00+00:00",
+          "pollutant": "PM2.5",
+          "concentration_unit": "µg/m³",
+          "total_concentration_time_integral_ug_min_m3": 696.8799300000001,
+          "positive_excess_time_integral_ug_min_m3": 461.22251099999994,
+          "positive_excess_time_integral_ug_h_m3": 7.687041849999999,
+          "baseline_time_integral_ug_min_m3": 235.65741900000006,
+          "integrated_duration_min": 7.0,
+          "expected_duration_min": 7.0,
+          "coverage_fraction": 1.0,
+          "valid_segments": 7,
+          "rejected_gap_segments": 0,
+          "status": "OK"
+        }
+      ]
+    },
+    "activity_association": {
+      "status": "INSUFFICIENT_CONTEXT_DATA",
+      "records": []
+    },
+    "intervention_check": {
+      "status": "NOT_RUN",
+      "records": []
+    }
+  },
+  "source_statuses": {
+    "warnings": "OK",
+    "advisories": "OK",
+    "event_detection": "OK",
+    "recovery_profile": "PARTIAL",
+    "exposure_burden": "OK",
+    "activity_association": "INSUFFICIENT_CONTEXT_DATA",
+    "intervention_check": "NOT_RUN",
+    "feature_summary": "OK"
+  },
+  "limitations": [
+    "Prototype report; results depend on a single monitoring node and the supplied capture window.",
+    "A single node does not establish campus-wide air quality or identify a pollution source.",
+    "Rule-based warning levels are prototype triage categories, not official AQI categories or medical thresholds.",
+    "Concentration-time integrals are not personal inhaled dose or population exposure.",
+    "Activity association and intervention results are descriptive and require synchronized context; they do not establish causality.",
+    "Gas indices are not calibrated gas concentrations; report only gas-readiness status where available.",
+    "This report does not interpolate missing measurements or infer missing timestamps."
+  ],
+  "provenance": {
+    "input_paths": {
+      "analytics_dir": "/home/rakshitchaturvedi/Desktop/Projects/Aervia/backend/data/pipeline_runs/ft1_final_v2/analytics",
+      "warnings": "/home/rakshitchaturvedi/Desktop/Projects/Aervia/backend/data/pipeline_runs/ft1_final_v2/warnings/warnings.json",
+      "advisories": "/home/rakshitchaturvedi/Desktop/Projects/Aervia/backend/data/pipeline_runs/ft1_final_v2/advisories/advisories.json",
+      "features": "/home/rakshitchaturvedi/Desktop/Projects/Aervia/backend/data/pipeline_runs/ft1_final_v2/parameter_intelligence/features.csv"
+    },
+    "aggregation": "deterministic",
+    "no_new_severity_classification": true
+  }
+}

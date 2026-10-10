@@ -1,0 +1,127 @@
+{
+  "module": "recovery_profile",
+  "status": "PARTIAL",
+  "units": {
+    "recovery_time": "min",
+    "decay_rate": "min⁻¹",
+    "half_life": "min"
+  },
+  "time_range": {
+    "start_utc": "2026-10-09T08:54:00+00:00",
+    "end_utc": "2026-10-09T10:32:00+00:00"
+  },
+  "coverage": {
+    "expected_minutes": 99.0,
+    "observed_minutes": 99.0,
+    "eligible_minutes": 80.0,
+    "coverage_fraction": 0.8080808080808081,
+    "notes": [
+      "Coverage uses elapsed minute-grid duration; missing grid minutes reduce coverage."
+    ]
+  },
+  "provenance": {
+    "dataset_id": "ft1_final_v2",
+    "config": {
+      "recovery_excess_threshold_ug_m3": 5.0,
+      "consecutive_minutes": 3,
+      "observation_window_minutes": 60,
+      "minimum_fit_observations": 8,
+      "minimum_fit_r_squared": 0.7,
+      "minimum_fit_dynamic_range_ug_m3": 2.0
+    },
+    "algorithm_version": "0.2.0",
+    "time_start_utc": "2026-10-09T08:54:00+00:00",
+    "time_end_utc": "2026-10-09T10:32:00+00:00",
+    "input_rows": 99,
+    "output_rows": 4,
+    "exclusions": [],
+    "input_fingerprint": "2dadcaef7792c1335f1c8304d57034788cb841c212a98a99b93ec278b5c2a6ef"
+  },
+  "results": [
+    {
+      "event_id": "ft1_final_v2:PM25:0001",
+      "peak_utc": "2026-10-09T09:29:00+00:00",
+      "recovery_threshold_excess_pm2_5_ug_m3": 5.0,
+      "recovery_time_from_peak_min": 15.0,
+      "recovery_status": "RECOVERY_OBSERVED",
+      "post_peak_observed_rows": 60,
+      "post_peak_eligible_rows": 60,
+      "post_peak_coverage_fraction": 1.0,
+      "decay_fit": {
+        "status": "FIT_NOT_JUSTIFIED",
+        "decay_rate_per_min": null,
+        "half_life_min": null,
+        "r_squared": 0.03252358412425782,
+        "n_observations": 56,
+        "standard_error_log_slope": 0.009888775757650377,
+        "diagnostic": "Fitted slope is not decaying."
+      }
+    },
+    {
+      "event_id": "ft1_final_v2:PM25:0002",
+      "peak_utc": "2026-10-09T09:36:00+00:00",
+      "recovery_threshold_excess_pm2_5_ug_m3": 5.0,
+      "recovery_time_from_peak_min": 8.0,
+      "recovery_status": "RECOVERY_OBSERVED",
+      "post_peak_observed_rows": 56,
+      "post_peak_eligible_rows": 56,
+      "post_peak_coverage_fraction": 0.9333333333333333,
+      "decay_fit": {
+        "status": "FIT_NOT_JUSTIFIED",
+        "decay_rate_per_min": null,
+        "half_life_min": null,
+        "r_squared": 0.2958281690500276,
+        "n_observations": 52,
+        "standard_error_log_slope": 0.0107269182438461,
+        "diagnostic": "Fitted slope is not decaying."
+      }
+    },
+    {
+      "event_id": "ft1_final_v2:PM25:0003",
+      "peak_utc": "2026-10-09T10:10:00+00:00",
+      "recovery_threshold_excess_pm2_5_ug_m3": 5.0,
+      "recovery_time_from_peak_min": 12.0,
+      "recovery_status": "RECOVERY_OBSERVED",
+      "post_peak_observed_rows": 22,
+      "post_peak_eligible_rows": 22,
+      "post_peak_coverage_fraction": 0.36666666666666664,
+      "decay_fit": {
+        "status": "FIT_NOT_JUSTIFIED",
+        "decay_rate_per_min": null,
+        "half_life_min": null,
+        "r_squared": 0.28005446708192905,
+        "n_observations": 22,
+        "standard_error_log_slope": 0.03533882361553466,
+        "diagnostic": "Fitted slope is not decaying."
+      }
+    },
+    {
+      "event_id": "ft1_final_v2:PM25:0004",
+      "peak_utc": "2026-10-09T10:32:00+00:00",
+      "recovery_threshold_excess_pm2_5_ug_m3": 5.0,
+      "recovery_time_from_peak_min": null,
+      "recovery_status": "INCOMPLETE_FOLLOWUP",
+      "post_peak_observed_rows": 0,
+      "post_peak_eligible_rows": 0,
+      "post_peak_coverage_fraction": 0.0,
+      "decay_fit": {
+        "status": "FIT_NOT_JUSTIFIED",
+        "decay_rate_per_min": null,
+        "half_life_min": null,
+        "r_squared": null,
+        "n_observations": 0,
+        "standard_error_log_slope": null,
+        "diagnostic": "No valid post-peak observations or non-positive peak excess."
+      }
+    }
+  ],
+  "limitations": [
+    "Recovery requires consecutive contiguous eligible minutes below threshold.",
+    "Decay fits are descriptive and emitted only when diagnostics pass.",
+    "Events near capture end may be right-censored."
+  ],
+  "valid_outputs": [
+    "observed recovery times when available",
+    "decay parameters only for FIT_OK"
+  ]
+}

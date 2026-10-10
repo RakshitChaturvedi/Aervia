@@ -1,0 +1,41 @@
+{
+  "module": "intervention_check",
+  "status": "NOT_RUN",
+  "units": {
+    "pm2_5": "µg/m³"
+  },
+  "time_range": {
+    "start_utc": "2026-10-09T08:54:00+00:00",
+    "end_utc": "2026-10-09T10:32:00+00:00"
+  },
+  "coverage": {
+    "expected_minutes": 99.0,
+    "observed_minutes": 99.0,
+    "eligible_minutes": 99.0,
+    "coverage_fraction": 1.0,
+    "notes": [
+      "Coverage uses elapsed minute-grid duration; missing grid minutes reduce coverage."
+    ]
+  },
+  "provenance": {
+    "dataset_id": "ft1_final_v2",
+    "config": {
+      "pre_window_minutes": 10,
+      "post_window_minutes": 10,
+      "minimum_eligible_minutes_per_window": 5,
+      "minimum_coverage_fraction": 0.7
+    },
+    "algorithm_version": "0.2.0",
+    "time_start_utc": "2026-10-09T08:54:00+00:00",
+    "time_end_utc": "2026-10-09T10:32:00+00:00",
+    "input_rows": 99,
+    "output_rows": 0,
+    "exclusions": [],
+    "input_fingerprint": "2dadcaef7792c1335f1c8304d57034788cb841c212a98a99b93ec278b5c2a6ef"
+  },
+  "results": [],
+  "limitations": [
+    "No intervention record supplied; no intervention is assumed."
+  ],
+  "valid_outputs": []
+}
