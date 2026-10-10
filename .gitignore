@@ -101,3 +101,14 @@ Thumbs.db
 *.tar.gz
 ml_model/data/*.tar.gz
 
+
+# Private hardware configuration and generated files
+hardware/.private/
+hardware/**/LocalConfig.h
+hardware/**/*.key
+hardware/**/*.crt
+hardware/**/*service-account*.json
+hardware/**/wifi.json
+hardware/**/*.bin
+hardware/**/*.elf
+hardware/**/*.map

@@ -8,14 +8,9 @@ This folder contains the ESP32-S3 hardware build used for live sensor telemetry,
 
 | Path | Purpose |
 | --- | --- |
-| `firmware/AerviaFieldLogger/` | Main Arduino sketch and sensor, UI, history, Sheets and AWS modules |
-| `config/LocalConfig.example.h` | Spreadsheet ID template; copy as the ignored sketch-local `LocalConfig.h` |
-| `config/wifi.example.json` | Wi-Fi provisioning template; actual credentials stay outside Git |
-| `config/aws-device-policy.example.json` | Publish-only IoT certificate policy; substitute the AWS account ID |
-| `config/validated-library-versions.json` | Library versions used for the verified firmware |
+| `firmware/AerviaFieldLogger/` | Main Arduino sketch and sensor, UI, history, Sheets and AWS code |
 | `tools/provision_field_logger.py` | Provision Wi-Fi and Google service-account credentials over USB |
 | `tools/provision_aervia_aws.py` | Validate a certificate/key pair and provision AWS configuration over USB |
-| `vendor/MQTT/` | MQTT 2.5.2 source and its original license |
 
 The public firmware defaults to an empty spreadsheet ID instead of publishing a personal spreadsheet destination. The installed prototype has its original destination configured. This publication changes no wiring and does not reflash the physical device.
 
@@ -106,16 +101,19 @@ arduino-cli core install esp32:esp32@3.3.11
 
 If Espressif's core is not available in the index, add its official Boards Manager URL in Arduino configuration: `https://espressif.github.io/arduino-esp32/package_esp32_index.json`.
 
-Install the exact library names and versions in `config/validated-library-versions.json`; for example:
+Install these validated library versions. MQTT 2.5.2 provides QoS 1 publishing:
 
 ```sh
-arduino-cli lib install "Adafruit BME280 Library@2.3.0" "Adafruit BusIO@1.17.4" "Adafruit GFX Library@1.12.6" "Adafruit ILI9341@1.6.3" "Adafruit Unified Sensor@1.1.15" "ArduinoJson@7.4.3" "Sensirion Core@0.7.3" "Sensirion Gas Index Algorithm@3.2.3" "Sensirion I2C SGP41@1.0.0" "Sensirion I2C SPS30@1.0.1"
+arduino-cli lib install "Adafruit BME280 Library@2.3.0" "Adafruit BusIO@1.17.4" "Adafruit GFX Library@1.12.6" "Adafruit ILI9341@1.6.3" "Adafruit Unified Sensor@1.1.15" "ArduinoJson@7.4.3" "Sensirion Core@0.7.3" "Sensirion Gas Index Algorithm@3.2.3" "Sensirion I2C SGP41@1.0.0" "Sensirion I2C SPS30@1.0.1" "MQTT@2.5.2"
 ```
 
 Prepare the non-secret spreadsheet destination:
 
 ```sh
-cp hardware/config/LocalConfig.example.h hardware/firmware/AerviaFieldLogger/LocalConfig.h
+cat > hardware/firmware/AerviaFieldLogger/LocalConfig.h <<'CONFIG'
+#pragma once
+#define AERVIA_GOOGLE_SHEET_ID "YOUR_GOOGLE_SPREADSHEET_ID"
+CONFIG
 ```
 
 Edit `AERVIA_GOOGLE_SHEET_ID` to the ID between `/d/` and `/edit` in your spreadsheet URL. The file is ignored by Git. Leaving it empty disables Sheets uploads with a visible setup message; AWS setup remains independent once Wi-Fi/time are available.
@@ -123,7 +121,7 @@ Edit `AERVIA_GOOGLE_SHEET_ID` to the ID between `/d/` and `/edit` in your spread
 Compile and identify the actual serial port:
 
 ```sh
-arduino-cli compile --fqbn 'esp32:esp32:esp32s3:CDCOnBoot=cdc,USBMode=hwcdc,PSRAM=opi' --libraries hardware/vendor --build-path /tmp/aervia-build hardware/firmware/AerviaFieldLogger
+arduino-cli compile --fqbn 'esp32:esp32:esp32s3:CDCOnBoot=cdc,USBMode=hwcdc,PSRAM=opi' --build-path /tmp/aervia-build hardware/firmware/AerviaFieldLogger
 arduino-cli board list
 ```
 
@@ -142,9 +140,11 @@ Install the Python tooling dependencies in a local environment:
 ```sh
 python3 -m venv hardware/.venv
 source hardware/.venv/bin/activate
-python -m pip install -r hardware/tools/requirements.txt
+python -m pip install "pyserial>=3.5,<4" "cryptography>=42,<47"
 mkdir -p hardware/.private
-cp hardware/config/wifi.example.json hardware/.private/wifi.json
+cat > hardware/.private/wifi.json <<'WIFI'
+{"ssid":"YOUR_2_4_GHZ_WIFI","password":"YOUR_WIFI_PASSWORD"}
+WIFI
 chmod 700 hardware/.private
 chmod 600 hardware/.private/wifi.json
 ```
@@ -165,7 +165,27 @@ Wi-Fi and Google credentials are stored in the existing device NVS namespace for
 
 7. Provision AWS IoT Core
 
-Use the project's chosen region, `ap-south-1` (Mumbai). Create a Thing named `Aervia_sensors`, an active X.509 device certificate attached to that Thing, and its matching private key. Substitute your 12-digit account ID in `config/aws-device-policy.example.json`, then attach that policy to the certificate. It allows only this client to connect and this telemetry topic to publish.
+Use the project's chosen region, `ap-south-1` (Mumbai). Create a Thing named `Aervia_sensors`, an active X.509 device certificate attached to that Thing, and its matching private key. Attach this policy to the certificate after substituting your 12-digit AWS account ID:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "iot:Connect",
+      "Resource": "arn:aws:iot:ap-south-1:YOUR_ACCOUNT_ID:client/Aervia_sensors"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Publish",
+      "Resource": "arn:aws:iot:ap-south-1:YOUR_ACCOUNT_ID:topic/aervia/Aervia_sensors/telemetry"
+    }
+  ]
+}
+```
+
+It allows only this client to connect and this telemetry topic to publish.
 
 Obtain the ATS data endpoint from AWS:
 
@@ -292,7 +312,6 @@ This folder delivers device telemetry to IoT Core and Sheets. It does not deploy
 References
 
 - Sensirion SPS30 datasheet: https://sensirion.com/resource/datasheet/sps30
-- Sensirion SPS30 mechanical assembly guide: https://sensirion.com/en/media/documents/7990F04A/616544B0/Sensirion_Particulate_Matter_AppNotes_SPS30_Mechanical_Design_and_As.pdf
 - Sensirion SGP41: https://sensirion.com/products/catalog/SGP41
 - Bosch BME280: https://www.bosch-sensortec.com/products/environmental-sensors/humidity-sensors-bme280/
 - Edgehax board reference: https://github.com/edgehax/esp32-s3-wroom1-n16r8
@@ -300,4 +319,4 @@ References
 - AWS IoT MQTT and QoS: https://docs.aws.amazon.com/iot/latest/developerguide/mqtt.html
 - AWS MQTT test client: https://docs.aws.amazon.com/iot/latest/developerguide/view-mqtt-messages.html
 - Google Sheets API: https://developers.google.com/workspace/sheets/api/reference/rest
-- MQTT library, retained license: https://github.com/256dpi/arduino-mqtt/tree/v2.5.2
+- MQTT library: https://github.com/256dpi/arduino-mqtt/tree/v2.5.2
