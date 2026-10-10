@@ -407,10 +407,6 @@ export default function RegionalLocalComparison() {
                     <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
                     <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
                   </linearGradient>
-                  <linearGradient id="excessGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.35} />
-                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0.0} />
-                  </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border-primary)" opacity={0.4} />
                 <XAxis
@@ -459,14 +455,6 @@ export default function RegionalLocalComparison() {
                       strokeDasharray="4 4"
                       fill="transparent"
                       activeDot={{ r: 4 }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="excess_pm25"
-                      name="Localized Microclimate Excess"
-                      stroke="#ef4444"
-                      strokeWidth={1.5}
-                      fill="url(#excessGrad)"
                     />
                   </>
                 )}

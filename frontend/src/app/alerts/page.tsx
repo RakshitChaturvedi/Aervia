@@ -126,6 +126,7 @@ export default function AlertsPage() {
       const matchesSearch =
         searchQuery === '' ||
         e.short_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        e.event_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
         e.lifecycle.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesSev && matchesSearch;
     });
@@ -138,6 +139,8 @@ export default function AlertsPage() {
         searchQuery === '' ||
         w.short_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
         w.short_event_id.toLowerCase().includes(searchQuery.toLowerCase());
+        w.warning_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        w.event_id.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesSev && matchesSearch;
     });
   }, [warnings, severityFilter, searchQuery]);
