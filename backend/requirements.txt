@@ -80,3 +80,5 @@ urllib3==2.8.0
 uvicorn==0.54.0
 websockets==16.1.1
 xgboost==3.4.1
+awsiotsdk>=1.21.0
+boto3>=1.34.0
