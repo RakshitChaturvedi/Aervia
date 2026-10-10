@@ -1,0 +1,64 @@
+{
+  "layer": "3B",
+  "algorithm_version": "0.2.0",
+  "dataset_id": "ft1_final_v2",
+  "input_features_path": "data/parameter_intelligence/ft1_final_v2/features.csv",
+  "input_rows": 99,
+  "config": {
+    "dataset_id": "ft1_final_v2",
+    "event": {
+      "excess_threshold_ug_m3": 15.0,
+      "concentration_threshold_ug_m3": null,
+      "persistence_minutes": 2,
+      "gap_tolerance_minutes": 1,
+      "minimum_coverage_fraction": 0.7,
+      "minimum_eligible_minutes": 2
+    },
+    "recovery": {
+      "recovery_excess_threshold_ug_m3": 5.0,
+      "consecutive_minutes": 3,
+      "observation_window_minutes": 60,
+      "minimum_fit_observations": 8,
+      "minimum_fit_r_squared": 0.7,
+      "minimum_fit_dynamic_range_ug_m3": 2.0
+    },
+    "exposure": {
+      "maximum_integration_gap_minutes": 2.0,
+      "minimum_coverage_fraction": 0.7
+    },
+    "activity": {
+      "minimum_coverage_fraction": 0.7,
+      "minimum_samples_per_group": 3
+    },
+    "intervention": {
+      "pre_window_minutes": 10,
+      "post_window_minutes": 10,
+      "minimum_eligible_minutes_per_window": 5,
+      "minimum_coverage_fraction": 0.7
+    }
+  },
+  "context_inputs": {
+    "activities_path": null,
+    "interventions_path": null
+  },
+  "module_statuses": {
+    "event_detection": "OK",
+    "recovery_profile": "PARTIAL",
+    "exposure_burden": "OK",
+    "activity_association": "INSUFFICIENT_CONTEXT_DATA",
+    "intervention_check": "NOT_RUN"
+  },
+  "output_counts": {
+    "event_detection": 4,
+    "recovery_profile": 4,
+    "exposure_burden": 4,
+    "activity_association": 0,
+    "intervention_check": 0
+  },
+  "limitations": [
+    "Thresholds are provisional exploratory defaults.",
+    "Known Layer 3A baseline-maturity timing discrepancy remains.",
+    "Activity and intervention analyses require synchronized context.",
+    "No source attribution, personal dose, population exposure, or causal effect is inferred."
+  ]
+}

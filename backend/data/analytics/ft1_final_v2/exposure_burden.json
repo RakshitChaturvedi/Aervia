@@ -1,0 +1,121 @@
+{
+  "module": "exposure_burden",
+  "status": "OK",
+  "units": {
+    "concentration": "µg/m³",
+    "integral_min": "µg·min/m³",
+    "integral_hour": "µg·h/m³",
+    "duration": "min"
+  },
+  "time_range": {
+    "start_utc": "2026-10-09T08:54:00+00:00",
+    "end_utc": "2026-10-09T10:32:00+00:00"
+  },
+  "coverage": {
+    "expected_minutes": 99.0,
+    "observed_minutes": 99.0,
+    "eligible_minutes": 80.0,
+    "coverage_fraction": 0.8080808080808081,
+    "notes": [
+      "Coverage uses elapsed minute-grid duration; missing grid minutes reduce coverage."
+    ]
+  },
+  "provenance": {
+    "dataset_id": "ft1_final_v2",
+    "config": {
+      "maximum_integration_gap_minutes": 2.0,
+      "minimum_coverage_fraction": 0.7
+    },
+    "algorithm_version": "0.2.0",
+    "time_start_utc": "2026-10-09T08:54:00+00:00",
+    "time_end_utc": "2026-10-09T10:32:00+00:00",
+    "input_rows": 99,
+    "output_rows": 4,
+    "exclusions": [
+      "ineligible_rows=19"
+    ],
+    "input_fingerprint": "2dadcaef7792c1335f1c8304d57034788cb841c212a98a99b93ec278b5c2a6ef"
+  },
+  "results": [
+    {
+      "window_id": "ft1_final_v2:PM25:0001",
+      "start_utc": "2026-10-09T09:29:00+00:00",
+      "end_utc": "2026-10-09T09:33:00+00:00",
+      "pollutant": "PM2.5",
+      "concentration_unit": "µg/m³",
+      "total_concentration_time_integral_ug_min_m3": 195.14977249999998,
+      "positive_excess_time_integral_ug_min_m3": 96.4755785,
+      "positive_excess_time_integral_ug_h_m3": 1.6079263083333333,
+      "baseline_time_integral_ug_min_m3": 98.674194,
+      "integrated_duration_min": 4.0,
+      "expected_duration_min": 4.0,
+      "coverage_fraction": 1.0,
+      "valid_segments": 4,
+      "rejected_gap_segments": 0,
+      "status": "OK"
+    },
+    {
+      "window_id": "ft1_final_v2:PM25:0002",
+      "start_utc": "2026-10-09T09:36:00+00:00",
+      "end_utc": "2026-10-09T09:39:00+00:00",
+      "pollutant": "PM2.5",
+      "concentration_unit": "µg/m³",
+      "total_concentration_time_integral_ug_min_m3": 138.6084975,
+      "positive_excess_time_integral_ug_min_m3": 64.60285200000001,
+      "positive_excess_time_integral_ug_h_m3": 1.0767142000000003,
+      "baseline_time_integral_ug_min_m3": 74.0056455,
+      "integrated_duration_min": 3.0,
+      "expected_duration_min": 3.0,
+      "coverage_fraction": 1.0,
+      "valid_segments": 3,
+      "rejected_gap_segments": 0,
+      "status": "OK"
+    },
+    {
+      "window_id": "ft1_final_v2:PM25:0003",
+      "start_utc": "2026-10-09T10:10:00+00:00",
+      "end_utc": "2026-10-09T10:13:00+00:00",
+      "pollutant": "PM2.5",
+      "concentration_unit": "µg/m³",
+      "total_concentration_time_integral_ug_min_m3": 187.2148325,
+      "positive_excess_time_integral_ug_min_m3": 105.25809975,
+      "positive_excess_time_integral_ug_h_m3": 1.7543016625,
+      "baseline_time_integral_ug_min_m3": 81.95673275,
+      "integrated_duration_min": 3.0,
+      "expected_duration_min": 3.0,
+      "coverage_fraction": 1.0,
+      "valid_segments": 3,
+      "rejected_gap_segments": 0,
+      "status": "OK"
+    },
+    {
+      "window_id": "ft1_final_v2:PM25:0004",
+      "start_utc": "2026-10-09T10:25:00+00:00",
+      "end_utc": "2026-10-09T10:32:00+00:00",
+      "pollutant": "PM2.5",
+      "concentration_unit": "µg/m³",
+      "total_concentration_time_integral_ug_min_m3": 696.8799300000001,
+      "positive_excess_time_integral_ug_min_m3": 461.22251099999994,
+      "positive_excess_time_integral_ug_h_m3": 7.687041849999999,
+      "baseline_time_integral_ug_min_m3": 235.65741900000006,
+      "integrated_duration_min": 7.0,
+      "expected_duration_min": 7.0,
+      "coverage_fraction": 1.0,
+      "valid_segments": 7,
+      "rejected_gap_segments": 0,
+      "status": "OK"
+    }
+  ],
+  "limitations": [
+    "Trapezoidal integration over adjacent eligible observations only.",
+    "Intervals exceeding the maximum gap are excluded, not interpolated.",
+    "Positive excess is max(PM2.5 - baseline, 0); PM fractions are not summed.",
+    "This is concentration-time, not personal dose or population exposure."
+  ],
+  "valid_outputs": [
+    "total concentration-time",
+    "positive excess integral",
+    "baseline integral",
+    "coverage"
+  ]
+}
