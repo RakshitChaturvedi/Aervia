@@ -151,10 +151,13 @@ class MLService:
         except Exception as e:
             print(f"Error loading dataset cache: {e}")
 
-    def _prepare_features(self, reading):
+    def _prepare_features(self, reading, model=None):
         """
-        Extracts the EXACT 7 features that the model was trained on with defensive sanitization.
+        Extracts features and engineered atmospheric/temporal proxies required by the model.
         """
+        import datetime
+        now = datetime.datetime.now(datetime.timezone.utc)
+
         pm25 = float(getattr(reading, 'pm25', 35.0) or 35.0)
         pm10 = float(getattr(reading, 'pm10', pm25 * 1.5) or (pm25 * 1.5))
         temp = float(getattr(reading, 'temp', 28.0) or 28.0)
@@ -162,6 +165,7 @@ class MLService:
         pressure = float(getattr(reading, 'pressure', 1008.0) or 1008.0)
         wind_speed = float(getattr(reading, 'wind_speed', 2.5) or 2.5)
         pblh = float(getattr(reading, 'pblh', 850.0) or 850.0)
+        vent_idx = pblh * wind_speed
 
         row = {
             'pm25': pm25,
@@ -170,9 +174,31 @@ class MLService:
             'humidity': humidity,
             'pressure': pressure,
             'wind_speed': wind_speed,
-            'pblh': pblh
+            'pblh': pblh,
+            'ventilation_index': vent_idx,
+            'pm25_lag_1h': float(getattr(reading, 'pm25_lag_1h', pm25) or pm25),
+            'pm25_lag_24h': float(getattr(reading, 'pm25_lag_24h', pm25) or pm25),
+            'pm25_rolling_24h': float(getattr(reading, 'pm25_rolling_24h', pm25) or pm25),
+            'hour_sin': float(np.sin(2 * np.pi * now.hour / 24)),
+            'hour_cos': float(np.cos(2 * np.pi * now.hour / 24)),
+            'month_sin': float(np.sin(2 * np.pi * now.month / 12)),
+            'month_cos': float(np.cos(2 * np.pi * now.month / 12)),
         }
-        return pd.DataFrame([row])[FEATURES]
+        df = pd.DataFrame([row])
+
+        expected = None
+        if model is not None:
+            if hasattr(model, 'feature_names_in_'):
+                expected = list(model.feature_names_in_)
+            elif hasattr(model, '_estimator') and hasattr(model._estimator, 'feature_names_in_'):
+                expected = list(model._estimator.feature_names_in_)
+            elif hasattr(model, 'estimator_') and hasattr(model.estimator_, 'feature_names_in_'):
+                expected = list(model.estimator_.feature_names_in_)
+
+        if expected:
+            cols = [c for c in expected if c in df.columns]
+            return df[cols]
+        return df
 
     def predict_forecast(self, reading):
         import time
@@ -187,16 +213,6 @@ class MLService:
         active_bias = self.city_ema_bias.get(city, 0.0)
         now_ts = time.time()
         
-        if city == "Delhi":
-            p24 = 63.2
-            p48 = 71.8
-            p72 = 81.5
-            return {
-                "horizon_h": 72,
-                "points": [p24, p48, p72],
-                "intervals": [[55.0, 72.0], [62.0, 82.0], [70.0, 95.0]],
-                "ventilation_index": 1456.0
-            }
 
         if not self.forecasters:
             # Physics-based dispersion fallback if model files are unmounted
@@ -211,7 +227,6 @@ class MLService:
             }
         
         try:
-            df = self._prepare_features(reading)
             points = []
             intervals = []
             for h_int, label in [(24, '24h'), (48, '48h'), (72, '72h')]:
@@ -221,8 +236,10 @@ class MLService:
                     model = self.forecasters.get(label)
                     
                 if model:
+                    df = self._prepare_features(reading, model)
                     # Request MAPIE predictions with 90% confidence interval
                     y_pred, y_pis = model.predict_interval(df)
+
                     raw_point = max(0.0, float(y_pred[0]))
                     lower_raw = max(0.0, float(y_pis[0, 0, 0]))
                     upper_raw = max(0.0, float(y_pis[0, 1, 0]))
@@ -306,7 +323,7 @@ class MLService:
             }
             
         try:
-            df = self._prepare_features(reading)
+            df = self._prepare_features(reading, self.classifier)
             probs = self.classifier._estimator.predict_proba(df)[0]
             classes = self.classifier._estimator.classes_
             prob_dict = {str(classes[i]): float(probs[i]) for i in range(len(classes))}
