@@ -217,59 +217,6 @@ export default function TelemetryPage() {
         </div>
       </div>
 
-      {/* Hardware Status Banner */}
-      {isOnline ? (
-        <div style={{
-          padding: '12px 18px',
-          borderRadius: 10,
-          background: 'rgba(16, 185, 129, 0.08)',
-          border: '1px solid rgba(16, 185, 129, 0.28)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 20,
-          gap: 12
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span className="live-pulse" style={{
-              width: 10,
-              height: 10,
-              borderRadius: '50%',
-              background: 'var(--accent-emerald)',
-              display: 'inline-block'
-            }} />
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>
-              <strong>Real-time Sensor Online:</strong> Receiving genuine continuous telemetry packets from physical College Gate node via AWS IoT Core MQTT (<code style={{ fontFamily: 'var(--font-mono)' }}>aervia/Aervia_sensors/telemetry</code>).
-            </div>
-          </div>
-          <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-emerald)', fontWeight: 600 }}>
-            INGEST: {iotData?.timestamp_ist || 'ACTIVE'}
-          </span>
-        </div>
-      ) : (
-        <div style={{
-          padding: '12px 18px',
-          borderRadius: 10,
-          background: 'rgba(239, 68, 68, 0.08)',
-          border: '1px solid rgba(239, 68, 68, 0.28)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 20,
-          gap: 12
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <AlertTriangle size={18} color="var(--accent-red)" />
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>
-              <strong style={{ color: 'var(--accent-red)' }}>Physical Sensor Hardware is in STANDBY:</strong> Node <code style={{ fontFamily: 'var(--font-mono)' }}>aervia-54a91ed9b4dc</code> is unpowered or idle. Displaying latest ground-truth database records with preserved IST timestamps.
-            </div>
-          </div>
-          <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-            Captured: {iotData?.timestamp_ist || '2026-10-10 21:50:57 IST'}
-          </span>
-        </div>
-      )}
-
       {/* Dynamic Real-Time AQI Hero Showcase Banner */}
       <div style={{
         padding: '22px 24px',
@@ -294,39 +241,34 @@ export default function TelemetryPage() {
           pointerEvents: 'none'
         }} />
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, marginBottom: 18 }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-              <span style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 30,
-                height: 30,
-                borderRadius: 8,
-                background: `${activeAqi.category.color}20`,
-                color: activeAqi.category.color
-              }}>
-                <Gauge size={17} />
-              </span>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
-                Edge Sensor Real-Time Computed AQI
-              </h2>
-              <span style={{
-                fontSize: '0.7rem',
-                fontWeight: 700,
-                padding: '2px 8px',
-                borderRadius: 'var(--radius-pill)',
-                background: 'rgba(6, 182, 212, 0.12)',
-                color: 'var(--accent-cyan)',
-                border: '1px solid rgba(6, 182, 212, 0.25)'
-              }}>
-                Dynamic Calculation
-              </span>
-            </div>
-            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0 }}>
-              Calculated dynamically from dual Sensirion SPS30 particulate channels (PM2.5: <strong style={{ color: 'var(--text-primary)' }}>{(iotData?.pm25 ?? 49.2).toFixed(1)} µg/m³</strong>, PM10: <strong style={{ color: 'var(--text-primary)' }}>{(iotData?.pm10 ?? 49.2).toFixed(1)} µg/m³</strong>) using official {aqiStandard === 'IN_NAQI' ? 'CPCB 2014 Indian National Air Quality Index guidelines' : 'US EPA 40 CFR Part 58 breakpoints'}.
-            </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 18 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 30,
+              height: 30,
+              borderRadius: 8,
+              background: `${activeAqi.category.color}20`,
+              color: activeAqi.category.color
+            }}>
+              <Gauge size={17} />
+            </span>
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
+              Edge Sensor Real-Time Computed AQI
+            </h2>
+            <span style={{
+              fontSize: '0.7rem',
+              fontWeight: 700,
+              padding: '2px 8px',
+              borderRadius: 'var(--radius-pill)',
+              background: 'rgba(6, 182, 212, 0.12)',
+              color: 'var(--accent-cyan)',
+              border: '1px solid rgba(6, 182, 212, 0.25)'
+            }}>
+              Dynamic Calculation
+            </span>
           </div>
 
           {/* Standards Toggle Pills */}
