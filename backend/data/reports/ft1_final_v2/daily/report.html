@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Aervia report</title>
+<style>body{font:15px/1.5 system-ui,sans-serif;max-width:1100px;margin:32px auto;padding:0 20px;color:#20252b}
+h1,h2{line-height:1.2}.metrics{display:flex;gap:12px;flex-wrap:wrap}.metric{border:1px solid #ddd;border-radius:8px;padding:12px 16px;min-width:130px}
+table{width:100%;border-collapse:collapse;margin:12px 0}th,td{border:1px solid #ddd;padding:8px;text-align:left;vertical-align:top}th{background:#f4f5f6}
+.small{color:#555;font-size:13px}@media print{body{margin:0;max-width:none}}</style></head><body>
+<h1>Aervia air-quality report</h1><p><b>Dataset:</b> ft1_final_v2 ·
+<b>Type:</b> daily · <b>Generated:</b> 2026-10-10T10:30:54.492032+00:00</p>
+<p><b>Window (UTC):</b> source range — source range</p>
+<div class="metrics"><div class="metric"><b>Warnings</b><br>4</div>
+<div class="metric"><b>Advisories</b><br>4</div><div class="metric"><b>Detected events</b><br>4</div>
+<div class="metric"><b>Max PM2.5 peak</b><br>201.5312 µg/m³</div>
+<div class="metric"><b>Max excess</b><br>167.62678 µg/m³</div></div>
+<h2>Warnings</h2><table><thead><tr><th>Start UTC</th><th>End UTC</th><th>Severity</th><th>Peak PM2.5 (µg/m³)</th><th>Peak excess (µg/m³)</th><th>Summary</th></tr></thead><tbody><tr><td>2026-10-09T10:25:00+00:00</td><td>2026-10-09T10:32:00+00:00</td><td>SEVERE</td><td>201.5312</td><td>167.62678</td><td>—</td></tr><tr><td>2026-10-09T10:10:00+00:00</td><td>2026-10-09T10:13:00+00:00</td><td>SEVERE</td><td>116.9138</td><td>90.5175855</td><td>—</td></tr><tr><td>2026-10-09T09:36:00+00:00</td><td>2026-10-09T09:39:00+00:00</td><td>ELEVATED</td><td>86.2881</td><td>61.6195515</td><td>—</td></tr><tr><td>2026-10-09T09:29:00+00:00</td><td>2026-10-09T09:33:00+00:00</td><td>ELEVATED</td><td>69.92566500000001</td><td>45.25711650000001</td><td>—</td></tr></tbody></table>
+<h2>Module status</h2><table><thead><tr><th>Module</th><th>Status</th></tr></thead><tbody><tr><td>warnings</td><td>OK</td></tr><tr><td>advisories</td><td>OK</td></tr><tr><td>event_detection</td><td>OK</td></tr><tr><td>recovery_profile</td><td>PARTIAL</td></tr><tr><td>exposure_burden</td><td>OK</td></tr><tr><td>activity_association</td><td>INSUFFICIENT_CONTEXT_DATA</td></tr><tr><td>intervention_check</td><td>NOT_RUN</td></tr><tr><td>feature_summary</td><td>OK</td></tr></tbody></table>
+<h2>Limitations</h2><ul><li>Prototype report; results depend on a single monitoring node and the supplied capture window.</li><li>A single node does not establish campus-wide air quality or identify a pollution source.</li><li>Rule-based warning levels are prototype triage categories, not official AQI categories or medical thresholds.</li><li>Concentration-time integrals are not personal inhaled dose or population exposure.</li><li>Activity association and intervention results are descriptive and require synchronized context; they do not establish causality.</li><li>Gas indices are not calibrated gas concentrations; report only gas-readiness status where available.</li><li>This report does not interpolate missing measurements or infer missing timestamps.</li></ul>
+<p class="small">Generated deterministically from supplied Aervia outputs. This report does not independently validate sensor calibration or establish source attribution, personal dose, or causality.</p>
+</body></html>
