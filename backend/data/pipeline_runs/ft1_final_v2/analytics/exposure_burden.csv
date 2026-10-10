@@ -1,0 +1,5 @@
+window_id,start_utc,end_utc,pollutant,concentration_unit,total_concentration_time_integral_ug_min_m3,positive_excess_time_integral_ug_min_m3,positive_excess_time_integral_ug_h_m3,baseline_time_integral_ug_min_m3,integrated_duration_min,expected_duration_min,coverage_fraction,valid_segments,rejected_gap_segments,status
+ft1_final_v2:PM25:0001,2026-10-09T09:29:00+00:00,2026-10-09T09:33:00+00:00,PM2.5,µg/m³,195.14977249999998,96.4755785,1.6079263083333333,98.674194,4.0,4.0,1.0,4,0,OK
+ft1_final_v2:PM25:0002,2026-10-09T09:36:00+00:00,2026-10-09T09:39:00+00:00,PM2.5,µg/m³,138.6084975,64.60285200000001,1.0767142000000003,74.0056455,3.0,3.0,1.0,3,0,OK
+ft1_final_v2:PM25:0003,2026-10-09T10:10:00+00:00,2026-10-09T10:13:00+00:00,PM2.5,µg/m³,187.2148325,105.25809975,1.7543016625,81.95673275,3.0,3.0,1.0,3,0,OK
+ft1_final_v2:PM25:0004,2026-10-09T10:25:00+00:00,2026-10-09T10:32:00+00:00,PM2.5,µg/m³,696.8799300000001,461.22251099999994,7.687041849999999,235.65741900000006,7.0,7.0,1.0,7,0,OK

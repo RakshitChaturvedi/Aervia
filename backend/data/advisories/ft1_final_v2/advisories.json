@@ -1,0 +1,479 @@
+{
+  "layer": "5",
+  "module": "advisory_engine",
+  "status": "OK",
+  "algorithm_version": "0.1.0",
+  "dataset_id": "ft1_final_v2",
+  "warning_input_count": 4,
+  "advisory_count": 4,
+  "llm_enabled": true,
+  "language": "en",
+  "advisories": [
+    {
+      "advisory_id": "ft1_final_v2:PM25:0004:warning:advisory",
+      "warning_id": "ft1_final_v2:PM25:0004:warning",
+      "event_id": "ft1_final_v2:PM25:0004",
+      "status": "GENERATED",
+      "language": "en",
+      "summary": "A severe PM2.5 event was recorded, with peak PM2.5 of 201.5 µg/m³ and peak excess over the estimated baseline of 167.6 µg/m³.",
+      "reasoning": "Recommendations were selected using configured rules and the available warning evidence. A single monitoring node does not establish conditions across the campus. This event does not identify the pollution source. The recording ended during the event, so its current state is unknown.",
+      "actions": [
+        {
+          "action_id": "inspect_local_area",
+          "title": "Inspect the immediate area",
+          "instruction": "Have the site operator check for nearby activities or conditions that could coincide with the elevated reading, without assuming a source.",
+          "rationale": "The warning is classified as severe by the configured prototype rules.",
+          "urgency": "HIGH",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.severity",
+            "warning.peak_excess_pm2_5_ug_m3"
+          ]
+        },
+        {
+          "action_id": "verify_followup_readings",
+          "title": "Verify subsequent readings",
+          "instruction": "Check the next valid sensor readings and confirm whether PM2.5 remains elevated or begins to decline.",
+          "rationale": "Follow-up measurements are needed to determine whether the event persists.",
+          "urgency": "HIGH",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.peak_pm2_5_ug_m3",
+            "warning.lifecycle"
+          ]
+        },
+        {
+          "action_id": "confirm_current_state",
+          "title": "Confirm current conditions",
+          "instruction": "The recording ended during this event. Obtain a new measurement before treating the event as currently active or resolved.",
+          "rationale": "The capture boundary does not establish the live state.",
+          "urgency": "HIGH",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.lifecycle",
+            "warning.end_utc"
+          ]
+        },
+        {
+          "action_id": "note_gas_unavailable",
+          "title": "Do not infer gas conditions",
+          "instruction": "Do not infer that gases are absent or safe from this event; gas measurements are not currently ready for interpretation.",
+          "rationale": "Gas readiness is reported as unavailable or not ready.",
+          "urgency": "ROUTINE",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.current_gas_readiness"
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "field": "severity",
+          "label": "Warning severity",
+          "value": "SEVERE",
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_pm2_5_ug_m3",
+          "label": "Peak PM2.5",
+          "value": 201.5312,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_baseline_pm2_5_ug_m3",
+          "label": "Estimated baseline PM2.5",
+          "value": 33.90442,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_excess_pm2_5_ug_m3",
+          "label": "Peak excess over baseline",
+          "value": 167.62678,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "duration_elapsed_minutes",
+          "label": "Observed event duration",
+          "value": 7.0,
+          "unit": "minutes",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "coverage_fraction",
+          "label": "Eligible coverage fraction",
+          "value": 1.0,
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "lifecycle",
+          "label": "Event lifecycle",
+          "value": "OPEN_AT_CAPTURE_END",
+          "unit": null,
+          "source": "layer_4_warning"
+        }
+      ],
+      "uncertainty": [
+        "A single monitoring node does not establish conditions across the campus.",
+        "This event does not identify the pollution source.",
+        "Severity is a prototype triage category, not an official AQI category or medical-risk assessment.",
+        "The recording ended during the event; current continuation or recovery is unknown.",
+        "Gas measurements are not ready for interpretation; this is not evidence that gases are absent.",
+        "Particle-distribution interpretation is not validated for this dataset."
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure.",
+        "Recommendations are rule-based prototype guidance, not medical advice."
+      ],
+      "generation_mode": "DETERMINISTIC_FALLBACK",
+      "generated_at_utc": "2026-10-10T10:21:30.570852+00:00",
+      "generation_note": "LLM generation/validation failed: ServerError",
+      "input_fingerprint": "c4e182ef7d036079bcf95c1130ed9ced8ebab01deb53bb4fb6630783d6bdd5af"
+    },
+    {
+      "advisory_id": "ft1_final_v2:PM25:0003:warning:advisory",
+      "warning_id": "ft1_final_v2:PM25:0003:warning",
+      "event_id": "ft1_final_v2:PM25:0003",
+      "status": "GENERATED",
+      "language": "en",
+      "summary": "An observed PM2.5 event reached a peak concentration of 116.9138 µg/m³ with a peak excess of 90.5175855 µg/m³ above the estimated baseline of 26.3962145 µg/m³ over an elapsed duration of 3.0 minutes, triggering a SEVERE prototype warning.",
+      "reasoning": "The event met the configured prototype criteria for a SEVERE warning due to a peak PM2.5 level of 116.9138 µg/m³ and peak excess of 90.5175855 µg/m³ during an observed 3.0-minute period. This categorization is a prototype triage designation rather than an official AQI rating or medical assessment. Readings reflect only a single monitoring node and do not represent campus-wide conditions, indicate a specific pollution source, or provide validated particle distribution. Furthermore, gas sensors report NOT_READY, meaning gas presence or safety cannot be determined.",
+      "actions": [
+        {
+          "action_id": "inspect_local_area",
+          "title": "Inspect the immediate area",
+          "instruction": "Have the site operator check for nearby activities or conditions that could coincide with the elevated reading, without assuming a source.",
+          "rationale": "The warning is classified as severe by the configured prototype rules.",
+          "urgency": "HIGH",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.severity",
+            "warning.peak_excess_pm2_5_ug_m3"
+          ]
+        },
+        {
+          "action_id": "verify_followup_readings",
+          "title": "Verify subsequent readings",
+          "instruction": "Check the next valid sensor readings and confirm whether PM2.5 remains elevated or begins to decline.",
+          "rationale": "Follow-up measurements are needed to determine whether the event persists.",
+          "urgency": "HIGH",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.peak_pm2_5_ug_m3",
+            "warning.lifecycle"
+          ]
+        },
+        {
+          "action_id": "note_gas_unavailable",
+          "title": "Do not infer gas conditions",
+          "instruction": "Do not infer that gases are absent or safe from this event; gas measurements are not currently ready for interpretation.",
+          "rationale": "Gas readiness is reported as unavailable or not ready.",
+          "urgency": "ROUTINE",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.current_gas_readiness"
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "field": "severity",
+          "label": "Warning severity",
+          "value": "SEVERE",
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_pm2_5_ug_m3",
+          "label": "Peak PM2.5",
+          "value": 116.9138,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_baseline_pm2_5_ug_m3",
+          "label": "Estimated baseline PM2.5",
+          "value": 26.3962145,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_excess_pm2_5_ug_m3",
+          "label": "Peak excess over baseline",
+          "value": 90.5175855,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "duration_elapsed_minutes",
+          "label": "Observed event duration",
+          "value": 3.0,
+          "unit": "minutes",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "coverage_fraction",
+          "label": "Eligible coverage fraction",
+          "value": 1.0,
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "lifecycle",
+          "label": "Event lifecycle",
+          "value": "OBSERVED_EVENT",
+          "unit": null,
+          "source": "layer_4_warning"
+        }
+      ],
+      "uncertainty": [
+        "A single monitoring node does not establish conditions across the campus.",
+        "This event does not identify the pollution source.",
+        "Severity is a prototype triage category, not an official AQI category or medical-risk assessment.",
+        "Gas measurements are not ready for interpretation; this is not evidence that gases are absent.",
+        "Particle-distribution interpretation is not validated for this dataset."
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure.",
+        "Recommendations are rule-based prototype guidance, not medical advice."
+      ],
+      "generation_mode": "GEMINI",
+      "generated_at_utc": "2026-10-10T10:21:49.303713+00:00",
+      "input_fingerprint": "cebbacf3d6326ef1af29fe58adf86175cc9acd6d2f8f2801b9c032da17da189d"
+    },
+    {
+      "advisory_id": "ft1_final_v2:PM25:0002:warning:advisory",
+      "warning_id": "ft1_final_v2:PM25:0002:warning",
+      "event_id": "ft1_final_v2:PM25:0002",
+      "status": "GENERATED",
+      "language": "en",
+      "summary": "An elevated PM2.5 event was recorded at the monitoring node, reaching a peak concentration of 86.2881 µg/m³ (an excess of 61.6195515 µg/m³ over the estimated baseline of 24.6685485 µg/m³) across an observed duration of 3.0 minutes. This reading reflects localized node data and does not indicate campus-wide conditions or identify a specific source.",
+      "reasoning": "The event met the criteria for ELEVATED severity based on the measured peak PM2.5 concentration of 86.2881 µg/m³ and excess over baseline. Gas sensors are reported as NOT_READY, meaning gas conditions cannot be determined. Severity is an operational triage metric rather than a medical risk assessment or regulatory index.",
+      "actions": [
+        {
+          "action_id": "review_elevated_reading",
+          "title": "Review the elevated reading",
+          "instruction": "Review the event and inspect the immediate monitoring area for relevant activity; do not assign a pollution source from this reading alone.",
+          "rationale": "The event exceeded the configured elevated-priority threshold.",
+          "urgency": "HIGH",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.severity",
+            "warning.peak_excess_pm2_5_ug_m3"
+          ]
+        },
+        {
+          "action_id": "check_next_readings",
+          "title": "Check the next readings",
+          "instruction": "Review subsequent valid measurements to see whether the elevation persists or recovers.",
+          "rationale": "The event's persistence and recovery affect the appropriate response.",
+          "urgency": "ROUTINE",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.lifecycle",
+            "warning.end_utc"
+          ]
+        },
+        {
+          "action_id": "note_gas_unavailable",
+          "title": "Do not infer gas conditions",
+          "instruction": "Do not infer that gases are absent or safe from this event; gas measurements are not currently ready for interpretation.",
+          "rationale": "Gas readiness is reported as unavailable or not ready.",
+          "urgency": "ROUTINE",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.current_gas_readiness"
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "field": "severity",
+          "label": "Warning severity",
+          "value": "ELEVATED",
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_pm2_5_ug_m3",
+          "label": "Peak PM2.5",
+          "value": 86.2881,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_baseline_pm2_5_ug_m3",
+          "label": "Estimated baseline PM2.5",
+          "value": 24.6685485,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_excess_pm2_5_ug_m3",
+          "label": "Peak excess over baseline",
+          "value": 61.6195515,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "duration_elapsed_minutes",
+          "label": "Observed event duration",
+          "value": 3.0,
+          "unit": "minutes",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "coverage_fraction",
+          "label": "Eligible coverage fraction",
+          "value": 1.0,
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "lifecycle",
+          "label": "Event lifecycle",
+          "value": "OBSERVED_EVENT",
+          "unit": null,
+          "source": "layer_4_warning"
+        }
+      ],
+      "uncertainty": [
+        "A single monitoring node does not establish conditions across the campus.",
+        "This event does not identify the pollution source.",
+        "Severity is a prototype triage category, not an official AQI category or medical-risk assessment.",
+        "Gas measurements are not ready for interpretation; this is not evidence that gases are absent.",
+        "Particle-distribution interpretation is not validated for this dataset."
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure.",
+        "Recommendations are rule-based prototype guidance, not medical advice."
+      ],
+      "generation_mode": "GEMINI",
+      "generated_at_utc": "2026-10-10T10:22:16.348065+00:00",
+      "input_fingerprint": "7ed44a124f6eda95cb8f0fe4303d2f96add6be3adabc33bf3e24b70bdb9a3c81"
+    },
+    {
+      "advisory_id": "ft1_final_v2:PM25:0001:warning:advisory",
+      "warning_id": "ft1_final_v2:PM25:0001:warning",
+      "event_id": "ft1_final_v2:PM25:0001",
+      "status": "GENERATED",
+      "language": "en",
+      "summary": "An observed event recorded an elevated PM2.5 concentration reaching a peak of 69.92566500000001 µg/m³ (45.25711650000001 µg/m³ above the estimated baseline of 24.6685485 µg/m³) over an observed duration of 4.0 minutes. This reading represents a single monitoring node and does not imply campus-wide conditions or identify a pollution source.",
+      "reasoning": "The event was categorized under an elevated prototype triage category due to PM2.5 levels exceeding the configured threshold with a peak excess of 45.25711650000001 µg/m³. Gas sensors are marked as not ready and cannot be interpreted, meaning gas absence cannot be assumed. This categorization is an operational alert rather than an official AQI category or medical assessment.",
+      "actions": [
+        {
+          "action_id": "review_elevated_reading",
+          "title": "Review the elevated reading",
+          "instruction": "Review the event and inspect the immediate monitoring area for relevant activity; do not assign a pollution source from this reading alone.",
+          "rationale": "The event exceeded the configured elevated-priority threshold.",
+          "urgency": "HIGH",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.severity",
+            "warning.peak_excess_pm2_5_ug_m3"
+          ]
+        },
+        {
+          "action_id": "check_next_readings",
+          "title": "Check the next readings",
+          "instruction": "Review subsequent valid measurements to see whether the elevation persists or recovers.",
+          "rationale": "The event's persistence and recovery affect the appropriate response.",
+          "urgency": "ROUTINE",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.lifecycle",
+            "warning.end_utc"
+          ]
+        },
+        {
+          "action_id": "note_gas_unavailable",
+          "title": "Do not infer gas conditions",
+          "instruction": "Do not infer that gases are absent or safe from this event; gas measurements are not currently ready for interpretation.",
+          "rationale": "Gas readiness is reported as unavailable or not ready.",
+          "urgency": "ROUTINE",
+          "audience": "SITE_OPERATOR",
+          "evidence_refs": [
+            "warning.current_gas_readiness"
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "field": "severity",
+          "label": "Warning severity",
+          "value": "ELEVATED",
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_pm2_5_ug_m3",
+          "label": "Peak PM2.5",
+          "value": 69.92566500000001,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_baseline_pm2_5_ug_m3",
+          "label": "Estimated baseline PM2.5",
+          "value": 24.6685485,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "peak_excess_pm2_5_ug_m3",
+          "label": "Peak excess over baseline",
+          "value": 45.25711650000001,
+          "unit": "µg/m³",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "duration_elapsed_minutes",
+          "label": "Observed event duration",
+          "value": 4.0,
+          "unit": "minutes",
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "coverage_fraction",
+          "label": "Eligible coverage fraction",
+          "value": 1.0,
+          "unit": null,
+          "source": "layer_4_warning"
+        },
+        {
+          "field": "lifecycle",
+          "label": "Event lifecycle",
+          "value": "OBSERVED_EVENT",
+          "unit": null,
+          "source": "layer_4_warning"
+        }
+      ],
+      "uncertainty": [
+        "A single monitoring node does not establish conditions across the campus.",
+        "This event does not identify the pollution source.",
+        "Severity is a prototype triage category, not an official AQI category or medical-risk assessment.",
+        "Gas measurements are not ready for interpretation; this is not evidence that gases are absent.",
+        "Particle-distribution interpretation is not validated for this dataset."
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure.",
+        "Recommendations are rule-based prototype guidance, not medical advice."
+      ],
+      "generation_mode": "GEMINI",
+      "generated_at_utc": "2026-10-10T10:23:03.248171+00:00",
+      "input_fingerprint": "8c72426e30a5f05b2df9d6aa7b26a04cf02d77e084e4385bcb0200d10b72093b"
+    }
+  ]
+}

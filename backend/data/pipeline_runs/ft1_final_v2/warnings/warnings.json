@@ -1,0 +1,165 @@
+{
+  "layer": "4",
+  "module": "warning_engine",
+  "status": "OK",
+  "algorithm_version": "0.1.0",
+  "generated_at_utc": "2026-10-10T10:37:00.463111+00:00",
+  "dataset_id": "ft1_final_v2",
+  "input_statuses": {
+    "event_detection": "OK",
+    "recovery_profile": "PARTIAL",
+    "exposure_burden": "OK"
+  },
+  "config": {
+    "watch_excess_ug_m3": 15.0,
+    "elevated_excess_ug_m3": 30.0,
+    "severe_excess_ug_m3": 75.0,
+    "elevated_duration_min": 3.0,
+    "minimum_event_coverage": 0.7,
+    "low_coverage_cutoff": 0.7,
+    "version": "0.1.0"
+  },
+  "input_fingerprint": "09a21981980950664d18350079c76e9d16002877083415ee57d31125d0f547e3",
+  "warning_count": 4,
+  "issued_warning_count": 4,
+  "warnings": [
+    {
+      "warning_id": "ft1_final_v2:PM25:0004:warning",
+      "event_id": "ft1_final_v2:PM25:0004",
+      "status": "ISSUED",
+      "severity": "SEVERE",
+      "priority_score": 90,
+      "warning_type": "PM2_5_EVENT",
+      "pollutant": "PM2.5",
+      "start_utc": "2026-10-09T10:25:00+00:00",
+      "end_utc": "2026-10-09T10:32:00+00:00",
+      "peak_utc": "2026-10-09T10:32:00+00:00",
+      "peak_pm2_5_ug_m3": 201.5312,
+      "peak_baseline_pm2_5_ug_m3": 33.90442,
+      "peak_excess_pm2_5_ug_m3": 167.62678,
+      "mean_excess_pm2_5_ug_m3": 80.11099542857141,
+      "duration_elapsed_minutes": 7.0,
+      "coverage_fraction": 1.0,
+      "lifecycle": "OPEN_AT_CAPTURE_END",
+      "recovery_status": "INCOMPLETE_FOLLOWUP",
+      "positive_excess_integral_ug_h_m3": 7.687041849999999,
+      "current_gas_readiness": "NOT_READY",
+      "latest_parameter_feature_status": "OK",
+      "reasons": [
+        "peak excess crossed the prototype severe-priority threshold",
+        "event persisted for at least the configured duration threshold",
+        "event reaches the end of the available capture; live continuation is unknown"
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure."
+      ]
+    },
+    {
+      "warning_id": "ft1_final_v2:PM25:0003:warning",
+      "event_id": "ft1_final_v2:PM25:0003",
+      "status": "ISSUED",
+      "severity": "SEVERE",
+      "priority_score": 90,
+      "warning_type": "PM2_5_EVENT",
+      "pollutant": "PM2.5",
+      "start_utc": "2026-10-09T10:10:00+00:00",
+      "end_utc": "2026-10-09T10:13:00+00:00",
+      "peak_utc": "2026-10-09T10:10:00+00:00",
+      "peak_pm2_5_ug_m3": 116.9138,
+      "peak_baseline_pm2_5_ug_m3": 26.3962145,
+      "peak_excess_pm2_5_ug_m3": 90.5175855,
+      "mean_excess_pm2_5_ug_m3": 48.448393333333335,
+      "duration_elapsed_minutes": 3.0,
+      "coverage_fraction": 1.0,
+      "lifecycle": "OBSERVED_EVENT",
+      "recovery_status": "RECOVERY_OBSERVED",
+      "positive_excess_integral_ug_h_m3": 1.7543016625,
+      "current_gas_readiness": "NOT_READY",
+      "latest_parameter_feature_status": "OK",
+      "reasons": [
+        "peak excess crossed the prototype severe-priority threshold",
+        "event persisted for at least the configured duration threshold"
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure."
+      ]
+    },
+    {
+      "warning_id": "ft1_final_v2:PM25:0002:warning",
+      "event_id": "ft1_final_v2:PM25:0002",
+      "status": "ISSUED",
+      "severity": "ELEVATED",
+      "priority_score": 70,
+      "warning_type": "PM2_5_EVENT",
+      "pollutant": "PM2.5",
+      "start_utc": "2026-10-09T09:36:00+00:00",
+      "end_utc": "2026-10-09T09:39:00+00:00",
+      "peak_utc": "2026-10-09T09:36:00+00:00",
+      "peak_pm2_5_ug_m3": 86.2881,
+      "peak_baseline_pm2_5_ug_m3": 24.6685485,
+      "peak_excess_pm2_5_ug_m3": 61.6195515,
+      "mean_excess_pm2_5_ug_m3": 32.7035215,
+      "duration_elapsed_minutes": 3.0,
+      "coverage_fraction": 1.0,
+      "lifecycle": "OBSERVED_EVENT",
+      "recovery_status": "RECOVERY_OBSERVED",
+      "positive_excess_integral_ug_h_m3": 1.0767142000000003,
+      "current_gas_readiness": "NOT_READY",
+      "latest_parameter_feature_status": "OK",
+      "reasons": [
+        "peak excess crossed the prototype elevated-priority threshold",
+        "event persisted for at least the configured duration threshold"
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure."
+      ]
+    },
+    {
+      "warning_id": "ft1_final_v2:PM25:0001:warning",
+      "event_id": "ft1_final_v2:PM25:0001",
+      "status": "ISSUED",
+      "severity": "ELEVATED",
+      "priority_score": 70,
+      "warning_type": "PM2_5_EVENT",
+      "pollutant": "PM2.5",
+      "start_utc": "2026-10-09T09:29:00+00:00",
+      "end_utc": "2026-10-09T09:33:00+00:00",
+      "peak_utc": "2026-10-09T09:29:00+00:00",
+      "peak_pm2_5_ug_m3": 69.92566500000001,
+      "peak_baseline_pm2_5_ug_m3": 24.6685485,
+      "peak_excess_pm2_5_ug_m3": 45.25711650000001,
+      "mean_excess_pm2_5_ug_m3": 31.639801500000004,
+      "duration_elapsed_minutes": 4.0,
+      "coverage_fraction": 1.0,
+      "lifecycle": "OBSERVED_EVENT",
+      "recovery_status": "RECOVERY_OBSERVED",
+      "positive_excess_integral_ug_h_m3": 1.6079263083333333,
+      "current_gas_readiness": "NOT_READY",
+      "latest_parameter_feature_status": "OK",
+      "reasons": [
+        "peak excess crossed the prototype elevated-priority threshold",
+        "event persisted for at least the configured duration threshold"
+      ],
+      "limitations": [
+        "Severity is a configurable prototype triage category, not an official AQI category or medical-risk assessment.",
+        "A single node does not establish conditions across the campus or identify the pollution source.",
+        "A concentration-time integral is not personal inhaled dose or population exposure."
+      ]
+    }
+  ],
+  "notes": [
+    "Warnings are rule-based prototype triage outputs; thresholds require later calibration."
+  ],
+  "limitations": [
+    "Prototype thresholds are not regulatory or health thresholds.",
+    "No source attribution is performed.",
+    "No live state is inferred from historical capture boundaries.",
+    "Gas and particle-distribution features are not used to increase severity unless their interpretation is validated."
+  ]
+}

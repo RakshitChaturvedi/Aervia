@@ -1,0 +1,44 @@
+{
+  "feature_version": "0.1.0",
+  "config": {
+    "rolling_window_min": 5,
+    "min_count_valid_points": 3,
+    "pm_ordering_tolerance": 5.0,
+    "high_humidity_pct": 90.0
+  },
+  "input_minute_rows": 99,
+  "output_rows": 99,
+  "timestamp_min": "2026-10-09T08:54:00+00:00",
+  "timestamp_max": "2026-10-09T10:32:00+00:00",
+  "available_pm_channels": [
+    "pm1",
+    "pm2_5",
+    "pm4",
+    "pm10"
+  ],
+  "available_particle_count_channels": [
+    "nc0_5_per_cm3",
+    "nc1_0_per_cm3",
+    "nc2_5_per_cm3",
+    "nc4_per_cm3",
+    "nc10_per_cm3"
+  ],
+  "available_environment_channels": [
+    "temperature_c",
+    "humidity_pct",
+    "pressure_hpa"
+  ],
+  "available_gas_channels": [
+    "voc_index",
+    "nox_index"
+  ],
+  "gas_ready_rows": 0,
+  "gas_concentration_estimates_enabled": false,
+  "particle_count_semantics_verified": false,
+  "pm_humidity_correction_applied": false,
+  "notes": [
+    "Particle count channel semantics must be confirmed before size-bin arithmetic.",
+    "VOC/NOx indices are not calibrated gas concentrations.",
+    "Environmental context does not correct or overwrite PM measurements."
+  ]
+}
