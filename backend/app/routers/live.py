@@ -69,7 +69,21 @@ def load_server_dataset() -> pd.DataFrame:
 # Perform initial load
 load_server_dataset()
 
-TOMTOM_API_KEY = os.environ.get("TOMTOM_API_KEY", "")
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(BASE_DIR, ".env"), override=True)
+except Exception:
+    pass
+
+def get_tomtom_api_key() -> str:
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(os.path.join(BASE_DIR, ".env"))
+    except Exception:
+        pass
+    return os.environ.get("TOMTOM_API_KEY", "").strip()
+
+TOMTOM_API_KEY = get_tomtom_api_key()
 TRAFFIC_CACHE = {}
 CITY_DATA_CACHE = {}
 CITY_HIST_CACHE = {}
@@ -332,24 +346,7 @@ def fetch_realtime_weather_and_aq(lat: float, lon: float) -> dict:
 @router.get("/live", response_model=LiveDataResponse)
 def get_live_data(lat: float, lon: float):
     try:
-        if abs(lat - 28.6) < 0.8 and abs(lon - 77.2) < 0.8:
-            live_obs = {
-                "temp": 29.5,
-                "humidity": 42.0,
-                "pressure": 1010.0,
-                "wind_speed": 2.8,
-                "wind_dir": 310.0,
-                "pblh": 520.0,
-                "pm25": 56.4,
-                "pm10": 142.0,
-                "no2": 38.5,
-                "so2": 12.4,
-                "co": 1.15,
-                "o3": 32.0,
-                "aqi": 152.0
-            }
-        else:
-            live_obs = fetch_realtime_weather_and_aq(lat, lon)
+        live_obs = fetch_realtime_weather_and_aq(lat, lon)
         temp = live_obs["temp"]
         humidity = live_obs["humidity"]
         pressure = live_obs["pressure"]
@@ -364,7 +361,7 @@ def get_live_data(lat: float, lon: float):
         o3 = live_obs["o3"]
         naqi = float(live_obs["aqi"])
     except Exception as e:
-        print(f"Failed to query Open-Meteo APIs: {e}")
+        print(f"Failed to query Open-Meteo APIs for ({lat}, {lon}): {e}")
         # Return HTTP 503 if real-time atmospheric service is unreachable
         raise HTTPException(
             status_code=503,
@@ -759,11 +756,6 @@ def build_delhi_calibrated_response() -> CityDataResponse:
 
 @router.get("/city-data", response_model=CityDataResponse)
 def get_city_data(city: str):
-    if city in ("Delhi", "Delhi NCR"):
-        res = build_delhi_calibrated_response()
-        res.city = city
-        return res
-
     now = time.time()
     with CACHE_LOCK:
         if city in CITY_DATA_CACHE:
@@ -1053,29 +1045,6 @@ def get_city_historical(city: str = "Hyderabad", lat: float = None, lon: float =
         
     cache_key = f"{city}_{lat}_{lon}"
     now_ts = time.time()
-    if city in ("Delhi", "Delhi NCR") or (lat is not None and abs(lat - 28.6) < 0.5):
-        from datetime import datetime as dt_hist, timedelta
-        now_dt = dt_hist.now()
-        history = []
-        for h in range(23, -1, -1):
-            t_point = now_dt - timedelta(hours=h)
-            hour_val = t_point.hour
-            diurnal = math.sin((hour_val - 2) * math.pi / 12.0)
-            pt_aqi = round(152.0 + 12.0 * diurnal, 0)
-            pt_pm25 = round(56.4 + 6.5 * diurnal, 1)
-            pt_pm10 = round(142.0 + 14.0 * diurnal, 1)
-            time_str = t_point.strftime("%I:00 %p").lstrip("0")
-            history.append(HourlyAqiPoint(
-                time=time_str,
-                timestamp=t_point.strftime("%Y-%m-%dT%H:00"),
-                aqi=pt_aqi,
-                pm25=pt_pm25,
-                pm10=pt_pm10
-            ))
-        res = CityHistoricalResponse(city=city, history=history)
-        with CACHE_LOCK:
-            CITY_HIST_CACHE[cache_key] = (now_ts, res)
-        return res
 
     with CACHE_LOCK:
         if cache_key in CITY_HIST_CACHE:

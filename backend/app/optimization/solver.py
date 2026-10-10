@@ -4,8 +4,14 @@ Computes optimal inspector and drone dispatch paths.
 """
 import math
 from typing import Dict, Any, List
-from ortools.constraint_solver import routing_enums_pb2
-from ortools.constraint_solver import pywrapcp
+try:
+    from ortools.constraint_solver import routing_enums_pb2
+    from ortools.constraint_solver import pywrapcp
+    ORTOOLS_AVAILABLE = True
+except Exception:
+    routing_enums_pb2 = None
+    pywrapcp = None
+    ORTOOLS_AVAILABLE = False
 from optimization.router import get_dispatch_details
 from optimization.roi import calculate_inspection_roi
 
@@ -67,6 +73,57 @@ class RouteSolver:
                 "van_1": {"route_id": "van_1", "vehicle_type": "van", "vehicle_label": "Enforcement Van Charlie", "total_time_min": 0, "stops": []},
                 "drone_1": {"route_id": "drone_1", "vehicle_type": "drone", "vehicle_label": "Drone Unit Bravo", "total_time_min": 0, "stops": []}
             }
+
+        vehicle_names = ["inspector", "van", "drone"]
+        vehicle_labels = ["Inspector Team Alpha", "Enforcement Van Charlie", "Drone Unit Bravo"]
+
+        if not ORTOOLS_AVAILABLE:
+            routes = {}
+            for v in range(num_vehicles):
+                v_name = vehicle_names[v]
+                r_id = f"{v_name}_1"
+                stops = []
+                cur_time = 0
+                prev_node = self.depot_index
+                speed = 30.0 if v == 0 else (25.0 if v == 1 else 50.0)
+                service_min = 10 if v == 2 else 30
+                multiplier = 1.0 if v == 2 else 1.3
+                assigned = [idx for idx in range(num_locations) if idx != self.depot_index and (idx % num_vehicles) == v]
+                for node in assigned:
+                    loc = self.locations[node]
+                    lat1, lon1 = get_coords(self.locations[prev_node])
+                    lat2, lon2 = get_coords(loc)
+                    dist_km = haversine_distance(lat1, lon1, lat2, lon2)
+                    travel_time_min = int(round((dist_km * multiplier) / (speed / 60.0)))
+                    cur_time += travel_time_min
+                    eta_str = format_eta(cur_time)
+                    severity = loc.get("severity", 0.0)
+                    pop = loc.get("population_exposed", 0.0)
+                    set_size = loc.get("set_size", 0)
+                    details = get_dispatch_details(severity, set_size, self.threshold)
+                    action = details["action"]
+                    aqi_reduction = severity * 0.05
+                    sev_diff = max(0.0, severity - self.threshold)
+                    cost = (10000.0 if v == 0 else (9000.0 if v == 1 else 5000.0)) + sev_diff * (36.0 if v == 0 else (40.0 if v == 1 else 50.0))
+                    roi_val = calculate_inspection_roi(pop, aqi_reduction, cost)
+                    stops.append({
+                        "source_id": loc.get("source_id"),
+                        "lat": get_coords(loc)[0],
+                        "lon": get_coords(loc)[1],
+                        "eta": eta_str,
+                        "action": action,
+                        "roi": round(roi_val, 1)
+                    })
+                    cur_time += service_min
+                    prev_node = node
+                routes[r_id] = {
+                    "route_id": r_id,
+                    "vehicle_type": v_name,
+                    "vehicle_label": vehicle_labels[v],
+                    "total_time_min": cur_time,
+                    "stops": stops
+                }
+            return routes
 
         # 1. Initialize Routing Manager and Model
         manager = pywrapcp.RoutingIndexManager(num_locations, num_vehicles, self.depot_index)
