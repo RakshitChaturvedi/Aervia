@@ -20,10 +20,12 @@ import {
   FileText,
   Sparkles
 } from 'lucide-react';
-import { EventItem, WarningItem } from '@/types/analytics';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ReferenceArea } from 'recharts';
+import { EventItem, TimelinePoint, WarningItem } from '@/types/analytics';
 import {
   fetchEvents,
   fetchWarnings,
+  fetchTimeline,
   acknowledgeWarningApi,
   FALLBACK_EVENTS
 } from '@/utils/analyticsApi';
@@ -32,13 +34,14 @@ import ReportModal from '@/components/ReportModal';
 export default function AlertsPage() {
   const [events, setEvents] = useState<EventItem[]>(FALLBACK_EVENTS);
   const [warnings, setWarnings] = useState<WarningItem[]>([]);
+  const [timeline, setTimeline] = useState<TimelinePoint[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Filter & interaction state
-  const [activeTab, setActiveTab] = useState<'events' | 'warnings'>('events');
+  const [activeTab, setActiveTab] = useState<'events' | 'warnings'>('warnings');
   const [severityFilter, setSeverityFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedEventId, setSelectedEventId] = useState<string>('E-0004');
+  const [selectedEventId, setSelectedEventId] = useState<string>('ft1_final_v2:PM25:0004');
   const [acknowledgedWarnings, setAcknowledgedWarnings] = useState<Record<string, boolean>>({});
 
   // Compliance Report Modal state
@@ -55,12 +58,14 @@ export default function AlertsPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [evs, warns] = await Promise.all([
+      const [evs, warns, points] = await Promise.all([
         fetchEvents(),
-        fetchWarnings()
+        fetchWarnings(),
+        fetchTimeline()
       ]);
       setEvents(evs);
       setWarnings(warns);
+      setTimeline(points);
     } catch (e) {
       console.warn('Failed to fetch events data:', e);
     } finally {
@@ -117,7 +122,7 @@ export default function AlertsPage() {
 
   const filteredEvents = useMemo(() => {
     return events.filter(e => {
-      const matchesSev = severityFilter === 'ALL' || e.warning_severity === severityFilter;
+      const matchesSev = severityFilter === 'ALL' || e.warning_severity.toUpperCase() === severityFilter;
       const matchesSearch =
         searchQuery === '' ||
         e.short_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -129,10 +134,11 @@ export default function AlertsPage() {
 
   const filteredWarnings = useMemo(() => {
     return warnings.filter(w => {
-      const matchesSev = severityFilter === 'ALL' || w.severity === severityFilter;
+      const matchesSev = severityFilter === 'ALL' || w.severity.toUpperCase() === severityFilter;
       const matchesSearch =
         searchQuery === '' ||
         w.short_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        w.short_event_id.toLowerCase().includes(searchQuery.toLowerCase());
         w.warning_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
         w.event_id.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesSev && matchesSearch;
@@ -140,9 +146,19 @@ export default function AlertsPage() {
   }, [warnings, severityFilter, searchQuery]);
 
   const selectedEvent = useMemo(() => {
-    return events.find(e => e.id === selectedEventId) || events[0];
+    return events.find(e => e.event_id === selectedEventId) || events[0];
   }, [events, selectedEventId]);
 
+  const chartData = useMemo(() => timeline.map(point => ({
+    ...point,
+    minute: point.time,
+    pm25: point.pm2_5,
+    baseline: point.baseline_pm2_5,
+  })), [timeline]);
+  const peakPm25 = events.length ? Math.max(...events.map(event => event.peak_pm25)) : 0;
+  const severeCount = warnings.filter(warning => warning.severity.toUpperCase() === 'SEVERE').length;
+  const elevatedCount = warnings.filter(warning => warning.severity.toUpperCase() === 'ELEVATED').length;
+  const unacknowledgedCount = warnings.filter(warning => !acknowledgedWarnings[warning.warning_id] && !warning.acknowledged).length;
   return (
     <div className="view-container" style={{ padding: '24px 28px 90px 28px', maxWidth: 1440, margin: '0 auto', minHeight: '100%', overflowY: 'visible' }}>
       
@@ -197,7 +213,7 @@ export default function AlertsPage() {
             </h1>
           </div>
           <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', margin: 0 }}>
-            Automated sensor incident detection, multi-threshold triage, and AI regulatory compliance audit
+            Review collected campus sensor data, detected episodes, and linked warnings
           </p>
         </div>
 
@@ -282,8 +298,8 @@ export default function AlertsPage() {
         }}>
           <AlertTriangle size={18} color="var(--accent-amber)" style={{ marginTop: 2, flexShrink: 0 }} />
           <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', lineHeight: 1.5 }}>
-            <strong>Continuous local incident tracking and triage queue.</strong>
-            {' '}Monitors detected PM2.5 baseline excess spikes, rapid onset thermal boundary layer accumulations, and recovery intervals. To generate a CPCB/NAAQS compliance report for this episode, use the <strong>View Compliance Report</strong> action in Evidence & Diagnostics below.
+              <strong>Recorded field capture review · 9 Oct 2026 · College campus.</strong>
+            {' '}This page aligns the collected sensor record and detected episodes from 14:24–16:02 IST. Events are computed from the capture; this is a static review, not a live replay or source attribution.
           </div>
         </div>
 
@@ -308,19 +324,19 @@ export default function AlertsPage() {
               Peak Concentration
             </div>
             <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--accent-red)', margin: '6px 0 2px' }}>
-              201.5 <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}>µg/m³</span>
+              {peakPm25.toFixed(1)} <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}>µg/m³</span>
             </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Measured during Event E-004</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Highest detected episode in this capture</div>
           </div>
 
           <div className="stat-card" style={{ padding: 18, background: 'var(--bg-surface)', border: '1px solid var(--border-primary)', borderRadius: 10 }}>
             <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              Warnings Active
+              Unacknowledged Warnings
             </div>
             <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--accent-amber)', margin: '6px 0 2px' }}>
-              {warnings.length}
+              {unacknowledgedCount}
             </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>2 Severe · 2 Elevated priority</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{severeCount} Severe · {elevatedCount} Elevated priority</div>
           </div>
 
           <div className="stat-card" style={{ padding: 18, background: 'var(--bg-surface)', border: '1px solid var(--border-primary)', borderRadius: 10 }}>
@@ -328,107 +344,31 @@ export default function AlertsPage() {
               Recovery Complete
             </div>
             <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--accent-emerald)', margin: '6px 0 2px' }}>
-              2 <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}>/ 4</span>
+              {events.filter(event => event.recovery_status === 'RECOVERY_OBSERVED').length} <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}>/ {events.length}</span>
             </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>1 Open at capture boundary</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{events.filter(event => event.boundary_at_end).length} reaches capture boundary</div>
           </div>
         </div>
 
-        {/* Tab & Controls Bar */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 12,
-          padding: '8px 0',
-          borderBottom: '1px solid var(--border-primary)'
-        }}>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              onClick={() => setActiveTab('events')}
-              style={{
-                padding: '8px 18px',
-                borderRadius: 'var(--radius-pill)',
-                background: activeTab === 'events' ? 'var(--accent-emerald)' : 'var(--bg-surface)',
-                color: activeTab === 'events' ? '#ffffff' : 'var(--text-secondary)',
-                border: '1px solid var(--border-primary)',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              Event Catalogue ({events.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('warnings')}
-              style={{
-                padding: '8px 18px',
-                borderRadius: 'var(--radius-pill)',
-                background: activeTab === 'warnings' ? 'var(--accent-emerald)' : 'var(--bg-surface)',
-                color: activeTab === 'warnings' ? '#ffffff' : 'var(--text-secondary)',
-                border: '1px solid var(--border-primary)',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              Warning Queue ({warnings.length})
-            </button>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', padding: '12px 14px', borderRadius: 12, background: 'var(--bg-surface)', border: '1px solid var(--border-primary)', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <button onClick={() => setActiveTab('warnings')} aria-pressed={activeTab === 'warnings'} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '9px 16px', borderRadius: 'var(--radius-pill)', border: `1px solid ${activeTab === 'warnings' ? '#991b1b' : 'rgba(220,38,38,.35)'}`, color: activeTab === 'warnings' ? '#fff' : '#991b1b', background: activeTab === 'warnings' ? '#b91c1c' : 'rgba(254,226,226,.5)', fontSize: '.82rem', fontWeight: 800, cursor: 'pointer' }}><AlertTriangle size={15} />Warnings <span style={{ padding: '1px 7px', borderRadius: 99, background: activeTab === 'warnings' ? 'rgba(255,255,255,.2)' : '#fee2e2' }}>{warnings.length}</span></button>
+            <button onClick={() => setActiveTab('events')} aria-pressed={activeTab === 'events'} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '9px 16px', borderRadius: 'var(--radius-pill)', border: `1px solid ${activeTab === 'events' ? 'var(--accent-emerald)' : 'var(--border-primary)'}`, color: activeTab === 'events' ? '#fff' : 'var(--text-secondary)', background: activeTab === 'events' ? 'var(--accent-emerald)' : 'var(--bg-surface)', fontSize: '.82rem', fontWeight: 800, cursor: 'pointer' }}><Activity size={15} />Event Catalogue <span style={{ padding: '1px 7px', borderRadius: 99, background: activeTab === 'events' ? 'rgba(255,255,255,.2)' : 'var(--bg-secondary)' }}>{events.length}</span></button>
           </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {/* Search */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border-primary)',
-              borderRadius: 'var(--radius-pill)',
-              padding: '4px 12px',
-              gap: 8
-            }}>
-              <Search size={14} color="var(--text-muted)" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search event, ID, lifecycle..."
-                style={{
-                  border: 'none',
-                  background: 'transparent',
-                  color: 'var(--text-primary)',
-                  fontSize: '0.82rem',
-                  outline: 'none',
-                  width: 170
-                }}
-              />
-            </div>
-
-            {/* Severity Filter */}
-            <select
-              value={severityFilter}
-              onChange={e => setSeverityFilter(e.target.value)}
-              style={{
-                padding: '6px 14px',
-                borderRadius: 'var(--radius-pill)',
-                background: 'var(--bg-surface)',
-                border: '1px solid var(--border-primary)',
-                color: 'var(--text-primary)',
-                fontSize: '0.82rem',
-                fontWeight: 600,
-                outline: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              <option value="ALL">All Severities</option>
-              <option value="SEVERE">Severe Only</option>
-              <option value="ELEVATED">Elevated Only</option>
-            </select>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: unacknowledgedCount ? '#991b1b' : 'var(--accent-emerald)', fontSize: '.76rem', fontWeight: 800 }}><span className={unacknowledgedCount ? 'live-pulse' : ''} style={{ width: 8, height: 8, borderRadius: '50%', background: unacknowledgedCount ? '#dc2626' : 'var(--accent-emerald)' }} />{unacknowledgedCount} unacknowledged</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)', borderRadius: 'var(--radius-pill)', padding: '5px 11px' }}><Search size={13} color="var(--text-muted)" /><input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder={activeTab === 'warnings' ? 'Search warnings…' : 'Search episodes…'} style={{ border: 'none', background: 'transparent', color: 'var(--text-primary)', fontSize: '.78rem', outline: 'none', width: 150 }} /></div>
+            <select value={severityFilter} onChange={e => setSeverityFilter(e.target.value)} aria-label="Filter by severity" style={{ padding: '6px 12px', borderRadius: 'var(--radius-pill)', background: 'var(--bg-surface)', border: '1px solid var(--border-primary)', color: 'var(--text-primary)', fontSize: '.78rem', fontWeight: 700, outline: 'none', cursor: 'pointer' }}><option value="ALL">All severities</option><option value="SEVERE">Severe</option><option value="ELEVATED">Elevated</option></select>
           </div>
         </div>
+        {activeTab === 'warnings' && <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 12 }}>
+          {[
+            { label: 'Severe warnings', value: severeCount, note: 'High priority review', color: '#b91c1c', bg: 'rgba(254,226,226,.65)' },
+            { label: 'Elevated warnings', value: elevatedCount, note: 'Review episode evidence', color: '#b45309', bg: 'rgba(255,237,213,.7)' },
+            { label: 'Need acknowledgement', value: unacknowledgedCount, note: unacknowledgedCount ? 'Operator action pending' : 'Queue reviewed', color: unacknowledgedCount ? '#991b1b' : '#166534', bg: unacknowledgedCount ? 'rgba(254,226,226,.65)' : 'rgba(220,252,231,.65)' },
+          ].map(item => <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 15px', borderRadius: 10, border: `1px solid ${item.color}33`, background: item.bg }}><div style={{ display: 'grid', placeItems: 'center', width: 34, height: 34, borderRadius: 9, color: item.color, background: '#ffffffb8' }}><AlertTriangle size={17} /></div><div><div style={{ fontSize: '.69rem', textTransform: 'uppercase', letterSpacing: '.04em', fontWeight: 800, color: item.color }}>{item.label}</div><div style={{ fontSize: '1.3rem', lineHeight: 1.1, fontWeight: 900, color: item.color }}>{item.value} <span style={{ fontSize: '.68rem', fontWeight: 600 }}>{item.note}</span></div></div></div>)}
+        </div>}
+
 
         {/* Main Content Layout: Table & Selected Evidence Drawer */}
         <div style={{
@@ -463,12 +403,11 @@ export default function AlertsPage() {
                   </thead>
                   <tbody>
                     {filteredEvents.map(event => {
-                      const eventKey = event.event_id || event.id || event.short_id;
-                      const isSelected = selectedEventId === eventKey;
+                      const isSelected = selectedEventId === event.event_id;
                       return (
                         <tr
-                          key={eventKey}
-                          onClick={() => setSelectedEventId(eventKey)}
+                          key={event.event_id}
+                          onClick={() => setSelectedEventId(event.event_id)}
                           style={{
                             borderBottom: '1px solid var(--border-subtle)',
                             background: isSelected ? 'rgba(16, 185, 129, 0.08)' : 'transparent',
@@ -481,10 +420,10 @@ export default function AlertsPage() {
                               {event.short_id}
                               {isSelected && <ChevronRight size={14} color="var(--accent-emerald)" />}
                             </div>
-                            <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>{event.title}</div>
+                            <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>PM2.5 episode</div>
                           </td>
                           <td style={{ padding: '12px 14px', whiteSpace: 'nowrap', fontFamily: 'var(--font-mono)' }}>
-                            {formatToISTTimeOnly(event.start_time)} – {formatToISTTimeOnly(event.end_time)}
+                            {event.start_ist || formatToISTTimeOnly(event.start_utc)} – {event.end_ist || formatToISTTimeOnly(event.end_utc)}
                           </td>
                           <td style={{ padding: '12px 14px', fontFamily: 'var(--font-mono)' }}>
                             {event.duration_min} min
@@ -496,15 +435,15 @@ export default function AlertsPage() {
                             +{event.peak_excess} µg/m³
                           </td>
                           <td style={{ padding: '12px 14px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                            {event.integrated_excess_ug_h_m3}
+                            {event.integrated_excess_ug_h_m3.toFixed(3)}
                           </td>
                           <td style={{ padding: '12px 14px' }}>
                             <span style={{
                               fontSize: '0.72rem',
                               fontWeight: 600,
-                              color: event.recovery_status === 'RECOVERED' ? 'var(--accent-emerald)' : 'var(--accent-amber)'
+                              color: event.recovery_status === 'RECOVERY_OBSERVED' ? 'var(--accent-emerald)' : 'var(--accent-amber)'
                             }}>
-                              {event.recovery_status === 'RECOVERED' ? '✓ RECOVERED' : '⏳ ACTIVE'}
+                              {event.recovery_status === 'RECOVERY_OBSERVED' ? `✓ ${event.recovery_label}` : '⏳ INCOMPLETE'}
                             </span>
                           </td>
                           <td style={{ padding: '12px 16px' }}>
@@ -513,11 +452,11 @@ export default function AlertsPage() {
                               fontWeight: 700,
                               padding: '2px 8px',
                               borderRadius: 'var(--radius-pill)',
-                              background: event.severity === 'SEVERE' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-                              color: event.severity === 'SEVERE' ? 'var(--accent-red)' : 'var(--accent-amber)',
-                              border: event.severity === 'SEVERE' ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(245, 158, 11, 0.3)'
+                              background: event.warning_severity.toUpperCase() === 'SEVERE' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                              color: event.warning_severity.toUpperCase() === 'SEVERE' ? 'var(--accent-red)' : 'var(--accent-amber)',
+                              border: event.warning_severity.toUpperCase() === 'SEVERE' ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(245, 158, 11, 0.3)'
                             }}>
-                              {event.severity}
+                              {event.warning_severity}
                             </span>
                           </td>
                         </tr>
@@ -528,7 +467,12 @@ export default function AlertsPage() {
               </div>
             ) : (
               /* Warnings Queue Table */
-              <div style={{ overflowX: 'auto' }}>
+              <div style={{ overflowX: 'auto', borderTop: '3px solid #b91c1c' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', background: 'linear-gradient(90deg, rgba(127,29,29,.96), rgba(185,28,28,.92))', color: '#fff' }}>
+                  <ShieldAlert size={18} />
+                  <div style={{ flex: 1 }}><strong style={{ display: 'block', fontSize: '0.84rem', letterSpacing: '.03em' }}>WARNING QUEUE</strong><span style={{ display: 'block', fontSize: '0.72rem', opacity: .88 }}>Detected conditions requiring review · {warnings.filter(w => !acknowledgedWarnings[w.warning_id] && !w.acknowledged).length} unacknowledged</span></div>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, padding: '4px 9px', borderRadius: 99, color: '#7f1d1d', background: '#fff' }}>{severeCount} SEVERE</span>
+                </div>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
                   <thead>
                     <tr style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-primary)', color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
@@ -542,54 +486,62 @@ export default function AlertsPage() {
                   </thead>
                   <tbody>
                     {filteredWarnings.map(warn => {
-                      const warnKey = warn.warning_id || warn.id || warn.short_id;
-                      const isAck = acknowledgedWarnings[warnKey] || warn.status === 'ACKNOWLEDGED';
+                      const isAck = acknowledgedWarnings[warn.warning_id] || warn.acknowledged;
                       return (
-                        <tr key={warnKey} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                        <tr key={warn.warning_id} style={{ borderBottom: '1px solid rgba(220,38,38,.12)', background: isAck ? 'var(--bg-surface)' : warn.severity === 'SEVERE' ? 'rgba(254,226,226,.55)' : 'rgba(255,247,237,.8)', boxShadow: isAck ? 'none' : 'inset 4px 0 0 ' + (warn.severity === 'SEVERE' ? '#dc2626' : '#d97706') }}>
                           <td style={{ padding: '12px 16px' }}>
                             <span style={{
                               fontSize: '0.72rem',
                               fontWeight: 700,
                               padding: '2px 8px',
                               borderRadius: 'var(--radius-pill)',
-                              background: warn.severity === 'SEVERE' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-                              color: warn.severity === 'SEVERE' ? 'var(--accent-red)' : 'var(--accent-amber)',
-                              border: warn.severity === 'SEVERE' ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(245, 158, 11, 0.3)'
+                              background: warn.severity === 'SEVERE' ? '#b91c1c' : '#b45309',
+                              color: '#fff',
+                              border: '1px solid transparent',
+                              boxShadow: warn.severity === 'SEVERE' ? '0 2px 7px rgba(185,28,28,.25)' : '0 2px 7px rgba(180,83,9,.2)'
                             }}>
                               {warn.severity}
                             </span>
                           </td>
                           <td style={{ padding: '12px 14px' }}>
-                            <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{warn.title}</div>
-                            <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>{warn.trigger_rule}</div>
+                            <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{warn.short_event_id} · PM2.5 episode</div>
+                            <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>{warn.short_id} · recorded warning</div>
                           </td>
                           <td style={{ padding: '12px 14px', whiteSpace: 'nowrap', fontFamily: 'var(--font-mono)' }}>
-                            {formatToISTTimeOnly(warn.created_at)} IST
+                            {warn.start_ist || formatToISTTimeOnly(warn.start_utc)} IST
                           </td>
                           <td style={{ padding: '12px 14px', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
-                            {warn.trigger_value}
+                            {warn.peak_pm25.toFixed(1)} µg/m³ · +{warn.peak_excess.toFixed(1)} excess
                           </td>
                           <td style={{ padding: '12px 14px' }}>
                             <span style={{
-                              fontSize: '0.72rem',
-                              fontWeight: 600,
-                              color: isAck ? 'var(--accent-emerald)' : 'var(--accent-amber)'
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 5,
+                              fontSize: '0.7rem',
+                              fontWeight: 800,
+                              letterSpacing: '.03em',
+                              padding: '5px 8px',
+                              borderRadius: 6,
+                              color: isAck ? '#166534' : '#991b1b',
+                              background: isAck ? '#dcfce7' : '#fee2e2',
+                              border: `1px solid ${isAck ? '#86efac' : '#fca5a5'}`
                             }}>
-                              {isAck ? '✓ ACKNOWLEDGED' : '⏳ ACTIVE'}
+                              {isAck ? <><CheckCircle size={13} /> ACKNOWLEDGED</> : <><AlertTriangle size={13} /> ACTIVE WARNING</>}
                             </span>
                           </td>
                           <td style={{ padding: '12px 16px' }}>
                             {!isAck ? (
                               <button
-                                onClick={() => handleAcknowledge(warnKey)}
+                                onClick={() => handleAcknowledge(warn.warning_id)}
                                 style={{
                                   padding: '4px 10px',
                                   borderRadius: 'var(--radius-pill)',
-                                  background: 'var(--bg-secondary)',
-                                  border: '1px solid var(--border-primary)',
-                                  color: 'var(--text-primary)',
+                                  background: '#b91c1c',
+                                  border: '1px solid #991b1b',
+                                  color: '#fff',
                                   fontSize: '0.75rem',
-                                  fontWeight: 600,
+                                  fontWeight: 800,
                                   cursor: 'pointer'
                                 }}
                               >
@@ -623,7 +575,7 @@ export default function AlertsPage() {
                     Evidence & Diagnostics
                   </div>
                   <h3 style={{ margin: '4px 0 0', fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                    {selectedEvent.short_id}: {selectedEvent.title}
+                    {selectedEvent.short_id}: PM2.5 episode
                   </h3>
                 </div>
                 <span style={{
@@ -631,10 +583,10 @@ export default function AlertsPage() {
                   fontWeight: 700,
                   padding: '3px 8px',
                   borderRadius: 20,
-                  background: selectedEvent.severity === 'SEVERE' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-                  color: selectedEvent.severity === 'SEVERE' ? 'var(--accent-red)' : 'var(--accent-amber)'
+                  background: selectedEvent.warning_severity.toUpperCase() === 'SEVERE' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                  color: selectedEvent.warning_severity.toUpperCase() === 'SEVERE' ? 'var(--accent-red)' : 'var(--accent-amber)'
                 }}>
-                  {selectedEvent.severity}
+                  {selectedEvent.warning_severity}
                 </span>
               </div>
 
@@ -643,7 +595,7 @@ export default function AlertsPage() {
                 <div style={{ padding: 10, borderRadius: 8, background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)' }}>
                   <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Interval (IST)</span>
                   <div style={{ fontWeight: 700, fontSize: '0.82rem', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)', marginTop: 2 }}>
-                    {formatToISTTimeOnly(selectedEvent.start_time)} – {formatToISTTimeOnly(selectedEvent.end_time)}
+                    {selectedEvent.start_ist || formatToISTTimeOnly(selectedEvent.start_utc)} – {selectedEvent.end_ist || formatToISTTimeOnly(selectedEvent.end_utc)}
                   </div>
                 </div>
 
@@ -682,7 +634,7 @@ export default function AlertsPage() {
                     <strong style={{ color: 'var(--accent-blue)' }}>Calculated:</strong> Peak excess of +{selectedEvent.peak_excess} µg/m³ above time-filtered baseline.
                   </div>
                   <div style={{ padding: '8px 12px', borderRadius: 'var(--radius-xs)', background: 'var(--bg-secondary)', borderLeft: '3px solid var(--accent-amber)', fontSize: '0.78rem' }}>
-                    <strong style={{ color: 'var(--accent-amber)' }}>Hypothesis:</strong> Localized emission onset; regulatory attribution audit recommended.
+                    <strong style={{ color: 'var(--accent-amber)' }}>Interpretation limit:</strong> This sensor record flags a PM2.5 episode, but does not establish its source or campus-wide impact.
                   </div>
                 </div>
               </div>
@@ -734,6 +686,58 @@ export default function AlertsPage() {
             </div>
           )}
 
+        </div>
+
+        {/* Recorded field capture: static sensor timeline */}
+        <section style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-primary)', borderRadius: 12, padding: 18, boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
+            <div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent-emerald)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Field capture · FT1</div>
+              <h2 style={{ margin: '3px 0 0', fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>Sensor record & detected episodes</h2>
+              <p style={{ margin: '4px 0 0', color: 'var(--text-muted)', fontSize: '0.78rem' }}>9 Oct 2026 · 14:24–16:02 IST · minute aggregates from the collected dataset</p>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, color: 'var(--text-muted)', fontSize: '0.74rem' }}><Activity size={14} color="var(--accent-cyan)" /> Static time series · select an episode to inspect</div>
+          </div>
+          <div style={{ minWidth: 0, height: 310, padding: '10px 8px 4px 0', background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)', borderRadius: 10 }}>
+              {chartData.length ? <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 8, right: 14, left: 0, bottom: 4 }}>
+                  <defs><linearGradient id="pm25Fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#ef4444" stopOpacity={0.25} /><stop offset="100%" stopColor="#ef4444" stopOpacity={0.02} /></linearGradient></defs>
+                  <CartesianGrid stroke="var(--border-primary)" strokeDasharray="3 4" vertical={false} />
+                  <XAxis dataKey="minute" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} minTickGap={28} />
+                  <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} width={42} unit="" />
+                  <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-primary)', borderRadius: 8, color: 'var(--text-primary)', fontSize: 12 }} formatter={(value: number, name: string) => [`${Number(value).toFixed(1)} µg/m³`, name === 'pm25' ? 'PM2.5' : 'Baseline']} labelFormatter={label => `${label} IST`} />
+                  {events.map(event => {
+                    const startTime = event.start_ist || formatToISTTimeOnly(event.start_utc);
+                    const endTime = event.end_ist || formatToISTTimeOnly(event.end_utc);
+                    const active = event.event_id === selectedEvent?.event_id;
+                    const severe = String(event.warning_severity).toUpperCase() === 'SEVERE';
+                    const tint = severe ? 'rgba(239, 68, 68, 0.12)' : 'rgba(245, 158, 11, 0.13)';
+                    const edge = severe ? '#dc2626' : '#d97706';
+                    return <ReferenceArea key={event.event_id} x1={startTime} x2={endTime} fill={active ? (severe ? 'rgba(239,68,68,.22)' : 'rgba(245,158,11,.25)') : tint} fillOpacity={1} stroke={edge} strokeOpacity={active ? 1 : 0.8} strokeWidth={active ? 2 : 1} onClick={() => setSelectedEventId(event.event_id)} />;
+                  })}
+                  <ReferenceLine y={60} stroke="var(--accent-amber)" strokeDasharray="4 4" />
+                  <Area type="monotone" dataKey="baseline" stroke="#0d9488" strokeWidth={2} fill="transparent" connectNulls={false} dot={false} name="Baseline" />
+                  <Area type="monotone" dataKey="pm25" stroke="#ef4444" strokeWidth={2} fill="url(#pm25Fill)" connectNulls={false} dot={false} name="PM2.5" />
+                </AreaChart>
+              </ResponsiveContainer> : <div style={{ height: '100%', display: 'grid', placeItems: 'center', color: 'var(--text-muted)', fontSize: '0.82rem' }}>Loading collected minute series…</div>}
+          </div>
+          <div style={{ display: 'flex', gap: 16, padding: '8px 12px 0', fontSize: '0.72rem', color: 'var(--text-muted)', flexWrap: 'wrap' }}><span><i style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#ef4444', marginRight: 6 }} />Measured PM2.5</span><span><i style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#0d9488', marginRight: 6 }} />Baseline</span><span><i style={{ display: 'inline-block', width: 12, borderTop: '2px dashed var(--accent-amber)', margin: '0 6px 3px 0' }} />60 µg/m³ guide</span></div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(205px, 1fr))', gap: 8, marginTop: 12 }}>
+            {events.map(event => {
+              const selected = event.event_id === selectedEvent?.event_id;
+              const severe = String(event.warning_severity).toUpperCase() === 'SEVERE';
+              const color = severe ? '#b91c1c' : '#b45309';
+              return <button key={event.event_id} onClick={() => setSelectedEventId(event.event_id)} style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: 9, padding: '9px 11px', textAlign: 'left', borderRadius: 9, border: `1px solid ${selected ? color : 'var(--border-primary)'}`, background: selected ? (severe ? 'rgba(254,226,226,.75)' : 'rgba(255,237,213,.75)') : 'var(--bg-surface)', boxShadow: selected ? `0 0 0 2px ${color}22` : 'none', cursor: 'pointer' }}>
+                <span style={{ flex: '0 0 auto', display: 'grid', placeItems: 'center', width: 28, height: 28, borderRadius: 7, color: '#fff', background: color, fontSize: '.66rem', fontWeight: 900 }}>{event.short_id.slice(-1)}</span>
+                <span style={{ minWidth: 0, display: 'block' }}><strong style={{ display: 'block', color, fontSize: '.73rem', lineHeight: 1.2 }}>{event.short_id} · {event.warning_severity}</strong><span style={{ display: 'block', marginTop: 3, color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', fontSize: '.68rem', whiteSpace: 'nowrap' }}>{event.start_ist || formatToISTTimeOnly(event.start_utc)}–{event.end_ist || formatToISTTimeOnly(event.end_utc)} IST</span></span>
+              </button>;
+            })}
+          </div>
+        </section>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12, marginTop: -8 }}>
+          <div style={{ padding: '12px 14px', borderRadius: 10, background: 'var(--bg-surface)', border: '1px solid var(--border-primary)' }}><div style={{ fontSize: '.69rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '.04em' }}>Capture coverage</div><div style={{ marginTop: 3, fontSize: '.9rem', fontWeight: 800, color: 'var(--text-primary)' }}>80.8% eligible minutes</div><div style={{ marginTop: 2, fontSize: '.72rem', color: 'var(--text-muted)' }}>99 one-minute bins · 80 eligible for PM analysis</div></div>
+          <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(255,247,237,.75)', border: '1px solid rgba(217,119,6,.25)' }}><div style={{ fontSize: '.69rem', fontWeight: 800, textTransform: 'uppercase', color: '#b45309', letterSpacing: '.04em' }}>How to read severity</div><div style={{ marginTop: 3, fontSize: '.78rem', fontWeight: 700, color: 'var(--text-primary)' }}>Exploratory triage labels</div><div style={{ marginTop: 2, fontSize: '.72rem', lineHeight: 1.45, color: 'var(--text-muted)' }}>Based on provisional baseline-excess criteria; not official AQI categories or a health assessment.</div></div>
+          <div style={{ padding: '12px 14px', borderRadius: 10, background: 'var(--bg-surface)', border: '1px solid var(--border-primary)' }}><div style={{ fontSize: '.69rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '.04em' }}>Attribution limit</div><div style={{ marginTop: 3, fontSize: '.78rem', fontWeight: 700, color: 'var(--text-primary)' }}>One campus sensor node</div><div style={{ marginTop: 2, fontSize: '.72rem', lineHeight: 1.45, color: 'var(--text-muted)' }}>An episode alone does not identify its source or represent exposure across the campus.</div></div>
         </div>
 
       </div>
