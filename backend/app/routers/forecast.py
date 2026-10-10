@@ -71,6 +71,48 @@ def get_latest_forecast(db: Session = Depends(get_db)):
     
     return {"horizon_h": 72, "points": [0.0, 0.0, 0.0], "intervals": [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]], "ventilation_index": 0.0}
 
+@router.get("/forecast/city/{city}", response_model=schemas.ForecastOutput)
+def get_city_forecast(city: str, db: Session = Depends(get_db)):
+    """
+    Directly fetches live telemetry for the requested city/district and executes the multi-horizon forecast.
+    """
+    from app.routers.live import get_city_data
+    city_data = get_city_data(city)
+    
+    if city_data and city_data.stations:
+        stations = city_data.stations
+        valid_p25 = [s.pm25 for s in stations if s.pm25 is not None]
+        valid_p10 = [s.pm10 for s in stations if s.pm10 is not None]
+        avg_pm25 = sum(valid_p25) / len(valid_p25) if valid_p25 else 35.0
+        avg_pm10 = sum(valid_p10) / len(valid_p10) if valid_p10 else 60.0
+        avg_temp = sum(s.temp for s in stations if s.temp is not None) / len(stations)
+        avg_hum = sum(s.humidity for s in stations if s.humidity is not None) / len(stations)
+        avg_press = sum(s.pressure for s in stations if s.pressure is not None) / len(stations)
+        avg_wind = sum(s.wind_speed for s in stations if s.wind_speed is not None) / len(stations)
+        avg_pblh = sum(s.pblh for s in stations if s.pblh is not None) / len(stations)
+        
+        reading = schemas.SensorReading(
+            station_id=f"{city.upper()}_AGGREGATE",
+            pm25=round(avg_pm25, 1),
+            pm10=round(avg_pm10, 1),
+            temp=round(avg_temp, 1),
+            humidity=round(avg_hum, 1),
+            pressure=round(avg_press, 1),
+            wind_speed=round(avg_wind, 1),
+            pblh=round(avg_pblh, 1),
+            lat=stations[0].lat,
+            lon=stations[0].lon
+        )
+    else:
+        reading = schemas.SensorReading(
+            station_id=f"{city.upper()}_DEFAULT",
+            pm25=35.0, pm10=60.0, temp=28.0, humidity=55.0,
+            pressure=1008.0, wind_speed=2.5, pblh=850.0
+        )
+        
+    prediction = ml_service.predict_forecast(reading)
+    return prediction
+
 from typing import List
 
 @router.post("/forecast/grid", response_model=List[schemas.ForecastOutput])

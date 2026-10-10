@@ -250,7 +250,7 @@ class MLService:
                     bias_adj = active_bias * decay_factor
                     
                     point = max(5.0, raw_point + bias_adj)
-                    lower_bound = max(0.0, lower_raw + bias_adj)
+                    lower_bound = min(max(0.0, point * 0.95), max(0.0, lower_raw + bias_adj))
                     upper_bound = max(point * 1.05, upper_raw + bias_adj)
                     
                     points.append(round(point, 1))
