@@ -1,5 +1,5 @@
 """
-Validation suite for VayuBudhi ML models.
+Validation suite for Aervia ML models.
 Includes RMSE benchmarks, JSD (Jensen-Shannon Divergence), and Wasserstein checks.
 """
 from typing import Dict, Any, List

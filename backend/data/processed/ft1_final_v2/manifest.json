@@ -1,0 +1,41 @@
+{
+  "summary": {
+    "input_path": "data/validation/ft1_replay_v2",
+    "samples_total": 5910,
+    "samples_timestamped": 5838,
+    "samples_untimestamped": 72,
+    "samples_quality_ok": 5850,
+    "samples_quality_excluded": 60,
+    "minute_bins": 99,
+    "five_minute_bins": 21,
+    "baseline_window_min": 20,
+    "baseline_percentile": 10.0,
+    "baseline_causal": true,
+    "baseline_min_valid_fraction": 0.5,
+    "baseline_mature_valid_fraction": 0.8,
+    "note": "Untimestamped records are retained but never assigned fabricated wall-clock timestamps. No interpolation or humidity correction is applied."
+  },
+  "config": {
+    "timezone": "Asia/Kolkata",
+    "pm_min": 0.0,
+    "pm_max": 1000.0,
+    "humidity_unreliable_pct": 90.0,
+    "flatline_samples": 120,
+    "spike_window_samples": 15,
+    "spike_n_sigma": 5.0,
+    "restart_warmup_s": 60.0,
+    "min_valid_fraction_per_minute": 0.8,
+    "min_valid_fraction_per_five_minutes": 0.8,
+    "baseline_window_min": 20,
+    "baseline_percentile": 10.0,
+    "baseline_causal": true,
+    "baseline_min_valid_fraction": 0.5,
+    "baseline_mature_valid_fraction": 0.8
+  },
+  "outputs": [
+    "aligned/samples.csv",
+    "aligned/exclusions.csv",
+    "minute/minute.csv",
+    "five_minute/five_minute.csv"
+  ]
+}
