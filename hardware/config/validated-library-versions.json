@@ -1,0 +1,12 @@
+{
+  "Adafruit BME280 Library": "2.3.0",
+  "Adafruit BusIO": "1.17.4",
+  "Adafruit GFX Library": "1.12.6",
+  "Adafruit ILI9341": "1.6.3",
+  "Adafruit Unified Sensor": "1.1.15",
+  "ArduinoJson": "7.4.3",
+  "Sensirion Core": "0.7.3",
+  "Sensirion Gas Index Algorithm": "3.2.3",
+  "Sensirion I2C SGP41": "1.0.0",
+  "Sensirion I2C SPS30": "1.0.1"
+}

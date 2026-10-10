@@ -5,6 +5,8 @@
 
 ---
 
+Hardware prototype: [complete hardware guide, firmware, wiring and cloud setup](hardware/README.md).
+
 ## 🌟 Overview
 
 **Aervia** is an enterprise-grade urban air quality intelligence and predictive atmospheric platform designed for municipal environmental authorities, policymakers, and public citizens. Built with a central operational focus on **Hyderabad** and extensible to major metropolitan clusters nationwide, Aervia combines real-time ground-station telemetry, physics-informed machine learning, and satellite atmospheric composition modeling.

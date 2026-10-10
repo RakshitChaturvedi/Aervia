@@ -1,0 +1,18 @@
+# Local credentials and generated outputs
+.private/
+**/LocalConfig.h
+*.key
+*.pem
+*.crt
+*service-account*.json
+wifi.json
+.env
+.env.*
+__pycache__/
+*.pyc
+.venv/
+build/
+*.bin
+*.elf
+*.map
+.DS_Store
