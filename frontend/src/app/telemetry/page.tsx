@@ -408,53 +408,6 @@ export default function TelemetryPage() {
         </div>
       </div>
 
-      {/* Sensor Hardware Specs Matrix */}
-      <div style={{
-        background: 'var(--bg-surface)',
-        borderRadius: 10,
-        border: '1px solid var(--border-primary)',
-        padding: 20,
-        marginBottom: 24
-      }}>
-        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-          Physical Sensor Modular Stack
-        </div>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: 16
-        }}>
-          <div style={{ padding: 14, borderRadius: 8, background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <Gauge size={16} color="var(--accent-emerald)" />
-              <strong style={{ fontSize: '0.82rem', color: 'var(--text-primary)' }}>Sensirion SPS30</strong>
-            </div>
-            <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
-              Optical particle counter with contamination-resistance tech. Measures mass concentration PM1.0, PM2.5, PM4.0, PM10 alongside particle count sizes 0.5 to 10 µm.
-            </div>
-          </div>
-
-          <div style={{ padding: 14, borderRadius: 8, background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <Thermometer size={16} color="#f97316" />
-              <strong style={{ fontSize: '0.82rem', color: 'var(--text-primary)' }}>Bosch BME280</strong>
-            </div>
-            <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
-              Precision barometric pressure, relative humidity, and temperature sensor. Powers boundary-layer thermal inversion detection and hygroscopic growth adjustments.
-            </div>
-          </div>
-
-          <div style={{ padding: 14, borderRadius: 8, background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <Sparkles size={16} color="var(--accent-purple)" />
-              <strong style={{ fontSize: '0.82rem', color: 'var(--text-primary)' }}>Sensirion SGP41</strong>
-            </div>
-            <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
-              Multi-pixel gas sensor for VOC and NOx detection. Gas indices computed continuously on-chip for industrial exhaust and local combustion tracing.
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Recent Ingested Packets Ledger (Last 5 records) */}
       <div style={{
