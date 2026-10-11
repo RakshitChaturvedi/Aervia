@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { AlertTriangle, Download, FileText, MapPin, X } from 'lucide-react';
+import { apiUrl } from '@/utils/api';
 
-const API = 'http://127.0.0.1:8000/api/analytics/report/local-capture';
+const getApi = () => apiUrl('/api/analytics/report/local-capture');
 
 type Report = {
   title?: string;
@@ -44,7 +45,7 @@ export default function LocalNodeReportModal({ isOpen, onClose }: { isOpen: bool
     let active = true;
     setLoading(true);
     setError('');
-    fetch(API).then(async response => {
+    fetch(getApi()).then(async response => {
       if (!response.ok) throw new Error(`Report request failed (${response.status})`);
       return response.json();
     }).then(data => { if (active) setReport(data); })

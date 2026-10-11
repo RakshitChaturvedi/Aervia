@@ -14,6 +14,7 @@ import { getAqiCategory, pm25ToAqi } from '@/utils/aqi';
 import { fetchLatestIotTelemetry, fetchIotHistory } from '@/utils/analyticsApi';
 import { IotTelemetry } from '@/types/analytics';
 import RegionalLocalComparison from './RegionalLocalComparison';
+import { apiUrl } from '@/utils/api';
 
 export interface ForecastPoint {
   hour: number;
@@ -135,7 +136,7 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
 
   // Load Regional Municipal Ward (Kukatpally, Hyderabad) Ground Truth
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/city-data?city=Hyderabad')
+    fetch(apiUrl('/api/city-data?city=Hyderabad'))
       .then(res => res.json())
       .then(result => {
         if (result && result.stations) {
@@ -257,7 +258,7 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
       lon: targetSensor.lon || (city === 'Delhi' ? 77.2090 : city === 'Bengaluru' ? 77.5946 : 78.45),
     };
 
-    fetch('http://127.0.0.1:8000/api/forecast', {
+    fetch(apiUrl('/api/forecast'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -272,7 +273,7 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
       })
       .catch(err => console.error('Failed to fetch ML forecast:', err));
 
-    fetch('http://127.0.0.1:8000/api/attribution', {
+    fetch(apiUrl('/api/attribution'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)

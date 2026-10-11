@@ -8,6 +8,7 @@ import {
 import ReportModal from './ReportModal';
 import { useCityContext } from '@/context/CityContext';
 import { getAqiCategory } from '@/utils/aqi';
+import { apiUrl } from '@/utils/api';
 
 export default function DeepDivePanel({ district, city, onReset, recommendedDeployments = [] }: { district: any, city: string, onReset: () => void, recommendedDeployments?: any[] }) {
   const { aqiStandard } = useCityContext();
@@ -42,25 +43,25 @@ export default function DeepDivePanel({ district, city, onReset, recommendedDepl
     };
 
     // 1. Fetch Attribution & Geospatial Evidence
-    fetch('http://127.0.0.1:8000/api/attribution', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+    fetch(apiUrl('/api/attribution'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
       .then(res => res.json())
       .then(data => setAttribution(data))
       .catch(err => console.error("Failed to fetch ML attribution", err));
 
     // 2. Fetch Fingerprint Radar
-    fetch('http://127.0.0.1:8000/api/attribution/fingerprint', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+    fetch(apiUrl('/api/attribution/fingerprint'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
       .then(res => res.json())
       .then(data => setFingerprint(data))
       .catch(err => console.error("Failed to fetch fingerprint", err));
 
     // 3. Fetch SHAP values
-    fetch(`http://127.0.0.1:8000/api/forecast/shap?horizon=24`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+    fetch(apiUrl('/api/forecast/shap?horizon=24'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
       .then(res => res.json())
       .then(data => setShap(data))
       .catch(err => console.error("Failed to fetch SHAP", err));
 
     // 4. Fetch Diurnal
-    fetch(`http://127.0.0.1:8000/api/forecast/diurnal?lat=${payload.lat}&lon=${payload.lon}`, { method: 'POST' })
+    fetch(apiUrl(`/api/forecast/diurnal?lat=${payload.lat}&lon=${payload.lon}`), { method: 'POST' })
       .then(res => res.json())
       .then(data => setDiurnal(data))
       .catch(err => console.error("Failed to fetch Diurnal", err));

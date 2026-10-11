@@ -54,7 +54,13 @@ const AuthContext = createContext<AuthContextType>({
   hasRole: () => false,
 });
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+import { apiUrl } from '@/utils/api';
+
+const API_BASE = {
+  toString() {
+    return apiUrl('');
+  }
+};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(GUEST_USER);
