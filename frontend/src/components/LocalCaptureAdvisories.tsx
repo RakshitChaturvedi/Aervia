@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Clock3, MapPin, ShieldAlert } from 'lucide-react';
+import { apiUrl } from '@/utils/api';
 
-const API = 'http://127.0.0.1:8000/api/analytics/advisories';
+const getApi = () => apiUrl('/api/analytics/advisories');
 
 type Advisory = {
   advisory_id: string;
@@ -90,7 +91,7 @@ export default function LocalCaptureAdvisories() {
 
   useEffect(() => {
     let active = true;
-    fetch(API).then(async response => {
+    fetch(getApi()).then(async response => {
       if (!response.ok) throw new Error(`Advisories request failed (${response.status})`);
       return response.json();
     }).then(payload => {

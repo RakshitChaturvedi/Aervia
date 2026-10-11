@@ -8,8 +8,13 @@ import {
   ObservationItem,
   IotTelemetry,
 } from '@/types/analytics';
+import { apiUrl } from './api';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+const API_BASE = {
+  toString() {
+    return apiUrl('');
+  }
+};
 
 // Fallback initial data in case backend is offline
 export const FALLBACK_OVERVIEW: AnalyticsOverview = {

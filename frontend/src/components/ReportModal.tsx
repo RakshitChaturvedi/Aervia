@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { computeHyderabadDistricts, computeBengaluruDistricts, computeGuwahatiDistricts } from '@/data/otherDistricts';
 import { computeDelhiDistricts } from '@/data/delhiDistricts';
+import { apiUrl } from '@/utils/api';
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -121,8 +122,8 @@ export default function ReportModal({
 
       // 1. Fetch live city stations and historical trends
       const [cityRes, histRes] = await Promise.all([
-        fetch(`http://127.0.0.1:8000/api/city-data?city=${city}`).catch(() => null),
-        fetch(`http://127.0.0.1:8000/api/city-historical?city=${city}`).catch(() => null)
+        fetch(apiUrl(`/api/city-data?city=${city}`)).catch(() => null),
+        fetch(apiUrl(`/api/city-historical?city=${city}`)).catch(() => null)
       ]);
 
       let stations: any[] = [];
@@ -225,7 +226,7 @@ export default function ReportModal({
               o3: targetDist.o3 || 35.0
             };
 
-            const attrRes = await fetch('http://127.0.0.1:8000/api/attribution', {
+            const attrRes = await fetch(apiUrl('/api/attribution'), {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(mlPayload)
@@ -270,7 +271,7 @@ export default function ReportModal({
         forecast: forecastData || {}
       };
 
-      const res = await fetch('http://127.0.0.1:8000/api/report/generate', {
+      const res = await fetch(apiUrl('/api/report/generate'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

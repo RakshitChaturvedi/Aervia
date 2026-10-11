@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo } from '
 import { Station, CityId, District, AqiStandard } from '@/types';
 import { computeDelhiDistricts } from '@/data/delhiDistricts';
 import { computeHyderabadDistricts, computeGuwahatiDistricts, computeBengaluruDistricts } from '@/data/otherDistricts';
+import { apiUrl } from '@/utils/api';
 
 interface CityContextType {
   activeCity: CityId;
@@ -61,7 +62,7 @@ export function CityProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (activeCity === 'My Location' && userCoords) {
       setLiveLoading(true);
-      fetch(`http://127.0.0.1:8000/api/live?lat=${userCoords.lat}&lon=${userCoords.lon}`)
+      fetch(apiUrl(`/api/live?lat=${userCoords.lat}&lon=${userCoords.lon}`))
         .then((r) => r.json())
         .then((data) => { setLiveData(data); setLiveLoading(false); })
         .catch(() => setLiveLoading(false));
@@ -80,7 +81,7 @@ export function CityProvider({ children }: { children: React.ReactNode }) {
       }
       
       const fetchCity = (retryCount = 0) => {
-        fetch(`http://127.0.0.1:8000/api/city-data?city=${activeCity}`)
+        fetch(apiUrl(`/api/city-data?city=${activeCity}`))
           .then((r) => {
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
             return r.json();

@@ -94,7 +94,13 @@ const SERIES: { key: SeriesKey; label: string; unit: string }[] = [
   { key: 'co_ug_m3', label: 'Carbon monoxide (CO)', unit: 'µg/m³' },
 ];
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+import { apiUrl } from '@/utils/api';
+
+const API_BASE = {
+  toString() {
+    return apiUrl('');
+  }
+};
 
 function formatValue(value: number | null | undefined, digits = 1): string {
   return value === null || value === undefined || !Number.isFinite(value)

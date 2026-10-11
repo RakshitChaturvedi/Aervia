@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { ShieldCheck, MapPin, TrendingUp } from 'lucide-react';
+import { apiUrl } from '@/utils/api';
 
 export const languageLabels: Record<string, string> = {
   en: 'English',
@@ -145,7 +146,7 @@ export default function AdvisoryPanel({
     }
 
     setLoading(true);
-    fetch('http://127.0.0.1:8000/api/advisory', {
+    fetch(apiUrl('/api/advisory'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)

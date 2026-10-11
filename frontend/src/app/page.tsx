@@ -7,6 +7,7 @@ import { CityId } from '@/types';
 import { getAqiCategory } from '@/utils/aqi';
 import { BarChart, Bar, LineChart, Line, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Wind, Droplets, Thermometer, Gauge, Sparkles, Activity, ShieldCheck, Leaf, ArrowUpRight, ArrowDownRight, Layers, TrendingUp } from 'lucide-react';
+import { apiUrl } from '@/utils/api';
 
 // ── Health recommendations by AQI band ──
 function getHealthInfo(aqi: number, standard: string = 'IN_NAQI') {
@@ -136,7 +137,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await fetch(`http://127.0.0.1:8000/api/city-historical?city=${activeCity}`);
+        const res = await fetch(apiUrl(`/api/city-historical?city=${activeCity}`));
         if (res.ok) {
           const data = await res.json();
           if (data.history && data.history.length > 0) {
