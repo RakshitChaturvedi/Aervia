@@ -111,16 +111,11 @@ export default function RegionalLocalComparison() {
 
   return (
     <div
-      className="panel"
       style={{
-        background: 'var(--bg-surface)',
-        border: '1px solid var(--border-primary)',
-        borderRadius: 'var(--radius-xl)',
-        padding: '24px 26px',
-        boxShadow: 'var(--shadow-md)',
+        padding: '4px 0',
         display: 'flex',
         flexDirection: 'column',
-        gap: 20,
+        gap: 14,
       }}
     >
       {/* ══════════════════════════════════════════════════════════════
@@ -128,10 +123,8 @@ export default function RegionalLocalComparison() {
           ══════════════════════════════════════════════════════════════ */}
       <div
         style={{
-          background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%)',
-          border: '1px solid rgba(56, 189, 248, 0.3)',
-          borderRadius: 'var(--radius-lg)',
-          padding: '16px 20px',
+          padding: '2px 0 14px',
+          borderBottom: '1px solid var(--border-primary)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -149,19 +142,19 @@ export default function RegionalLocalComparison() {
                 width: 30,
                 height: 30,
                 borderRadius: 8,
-                background: 'rgba(56, 189, 248, 0.2)',
+                background: 'rgba(56, 189, 248, 0.12)',
                 color: 'var(--accent-blue)',
               }}
             >
               <Calendar size={18} />
             </span>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-              Comparison of Regional vs. Local Sensor Telemetry
+            <div style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+              Recorded regional and node comparison
             </div>
           </div>
 
           {/* Explicit Time and Date Display on Top */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap', fontSize: '0.86rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', fontSize: '0.76rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-primary)', fontWeight: 700 }}>
               <Calendar size={15} color="var(--accent-cyan)" />
               <span>DATE: <strong style={{ color: 'var(--accent-cyan)' }}>09 October 2026</strong></span>
@@ -185,7 +178,7 @@ export default function RegionalLocalComparison() {
               display: 'flex',
               alignItems: 'center',
               gap: 8,
-              padding: '6px 14px',
+              padding: '5px 10px',
               borderRadius: 'var(--radius-pill)',
               background: 'rgba(56, 189, 248, 0.12)',
               border: '1px solid rgba(56, 189, 248, 0.35)',
@@ -202,7 +195,7 @@ export default function RegionalLocalComparison() {
               display: 'flex',
               alignItems: 'center',
               gap: 8,
-              padding: '6px 14px',
+              padding: '5px 10px',
               borderRadius: 'var(--radius-pill)',
               background: 'rgba(16, 185, 129, 0.12)',
               border: '1px solid rgba(16, 185, 129, 0.35)',
@@ -220,13 +213,10 @@ export default function RegionalLocalComparison() {
       {/* ══════════════════════════════════════════════════════════════
           METRIC CARDS SUMMARY (OCTOBER 9 EPISODE METRICS)
           ══════════════════════════════════════════════════════════════ */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 190px), 1fr))', gap: 0, padding: '6px 0 14px', borderBottom: '1px solid var(--border-primary)' }}>
         <div
           style={{
-            background: 'var(--bg-elevated)',
-            border: '1px solid var(--border-primary)',
-            borderRadius: 'var(--radius-md)',
-            padding: '14px 16px',
+            padding: '8px 14px',
             borderLeft: '4px solid #ef4444',
           }}
         >
@@ -243,10 +233,7 @@ export default function RegionalLocalComparison() {
 
         <div
           style={{
-            background: 'var(--bg-elevated)',
-            border: '1px solid var(--border-primary)',
-            borderRadius: 'var(--radius-md)',
-            padding: '14px 16px',
+            padding: '8px 14px',
             borderLeft: '4px solid #0284c7',
           }}
         >
@@ -263,10 +250,7 @@ export default function RegionalLocalComparison() {
 
         <div
           style={{
-            background: 'var(--bg-elevated)',
-            border: '1px solid var(--border-primary)',
-            borderRadius: 'var(--radius-md)',
-            padding: '14px 16px',
+            padding: '8px 14px',
             borderLeft: '4px solid #f97316',
           }}
         >
@@ -283,10 +267,7 @@ export default function RegionalLocalComparison() {
 
         <div
           style={{
-            background: 'var(--bg-elevated)',
-            border: '1px solid var(--border-primary)',
-            borderRadius: 'var(--radius-md)',
-            padding: '14px 16px',
+            padding: '8px 14px',
             borderLeft: '4px solid #10b981',
           }}
         >
@@ -305,7 +286,7 @@ export default function RegionalLocalComparison() {
       {/* ══════════════════════════════════════════════════════════════
           GRAPH CONTROLS & METRIC SELECTOR TABS
           ══════════════════════════════════════════════════════════════ */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, padding: '0 0 12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
             Pollutant Channel:
@@ -320,7 +301,7 @@ export default function RegionalLocalComparison() {
               key={tab.id}
               onClick={() => setSelectedMetric(tab.id as any)}
               style={{
-                padding: '6px 14px',
+                padding: '5px 10px',
                 borderRadius: 'var(--radius-pill)',
                 fontSize: '0.76rem',
                 fontWeight: 700,
@@ -331,7 +312,7 @@ export default function RegionalLocalComparison() {
                 transition: 'all 0.2s ease',
               }}
             >
-              {tab.label}
+              {tab.id === 'pm25' ? 'PM2.5' : tab.id === 'pm10' ? 'PM10' : tab.id === 'pm1' ? 'PM1' : tab.label}
             </button>
           ))}
         </div>
@@ -375,10 +356,10 @@ export default function RegionalLocalComparison() {
           ══════════════════════════════════════════════════════════════ */}
       <div
         style={{
-          background: 'var(--bg-elevated)',
-          border: '1px solid var(--border-primary)',
-          borderRadius: 'var(--radius-lg)',
-          padding: '18px 20px 10px 10px',
+          background: 'transparent',
+          borderTop: '1px solid var(--border-primary)',
+          borderBottom: '1px solid var(--border-primary)',
+          padding: '14px 0 8px',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, paddingLeft: 10 }}>
@@ -639,10 +620,8 @@ export default function RegionalLocalComparison() {
           ══════════════════════════════════════════════════════════════ */}
       <div
         style={{
-          background: 'rgba(56, 189, 248, 0.04)',
-          border: '1px solid rgba(56, 189, 248, 0.2)',
-          borderRadius: 'var(--radius-md)',
-          padding: '14px 18px',
+          background: 'transparent',
+          padding: '12px 2px 0',
           display: 'flex',
           alignItems: 'flex-start',
           gap: 12,

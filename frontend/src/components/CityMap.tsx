@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { getAqiCategory } from '@/utils/aqi';
 import { Station, RecommendedDeployment, AqiStandard } from '@/types';
 import { computeDelhiDistricts, District } from '@/data/delhiDistricts';
@@ -20,6 +20,7 @@ import DeckGL from '@deck.gl/react';
 import Map from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { ColumnLayer, PolygonLayer, ScatterplotLayer, TextLayer, BitmapLayer } from '@deck.gl/layers';
+import { Crosshair } from 'lucide-react';
 
 const CITY_CENTERS: Record<string, {longitude: number, latitude: number, zoom: number}> = {
   'Delhi': { longitude: 77.17, latitude: 28.62, zoom: 11 },
@@ -48,6 +49,8 @@ const CITY_SATELLITE_BOUNDS: Record<string, [number, number, number, number]> = 
   'Hyderabad': [78.20, 17.20, 78.65, 17.60],
   'Bengaluru': [77.40, 12.80, 77.80, 13.15],
 };
+const VNR_NODE_LOCATION = { longitude: 78.3867778, latitude: 17.5398333 };
+const VNR_CAMPUS_MAP_CENTER = { longitude: 78.38546, latitude: 17.53905 };
 
 // Cache-busting: refresh satellite image every hour
 const getSatelliteHourKey = () => Math.floor(Date.now() / 3600000);
@@ -200,6 +203,8 @@ export default function CityMap({
   onDistrictsComputed,
   monitoringLocation,
   recommendedDeployments = [],
+  nodeView = false,
+  nodeAlert = true,
 }: { 
   alertStation?: Station | null, 
   city?: string, 
@@ -213,13 +218,17 @@ export default function CityMap({
   onDistrictsComputed?: (districts: any[]) => void,
   monitoringLocation?: { lat: number; lon: number; name?: string } | null;
   recommendedDeployments?: RecommendedDeployment[];
+  nodeView?: boolean;
+  nodeAlert?: boolean;
 }) {
   const { aqiStandard, setAqiStandard } = useCityContext();
   const [hoveredHex, setHoveredHex] = useState<HexDataPoint | null>(null);
   const [hoveredDistrict, setHoveredDistrict] = useState<District | null>(null);
   const [hoveredStation, setHoveredStation] = useState<Station | null>(null);
   const [hoveredRecommended, setHoveredRecommended] = useState<any | null>(null);
-  const [viewState, setViewState] = useState<any>(getInitialViewState(city, userCoords));
+  const [viewState, setViewState] = useState<any>(() => nodeView
+    ? { ...getInitialViewState(city, userCoords), ...VNR_CAMPUS_MAP_CENTER, zoom: 16.1, pitch: 0, bearing: 0, minZoom: 5, maxZoom: 22 }
+    : getInitialViewState(city, userCoords));
   const [showSatellite, setShowSatellite] = useState(false);
   const [showWind, setShowWind] = useState(false);
 
@@ -279,6 +288,7 @@ export default function CityMap({
   }, [recommendedDeployments, dynamicDistricts, stations]);
 
   React.useEffect(() => {
+    if (nodeView) return;
     if (onDistrictsComputed) {
       onDistrictsComputed(dynamicDistricts);
     }
@@ -297,6 +307,7 @@ export default function CityMap({
 
   // Handle fly-to on city or coords change — two-phase zoom-out → zoom-in
   React.useEffect(() => {
+    if (nodeView) return;
     // Clear any pending phase-2 timer from a previous rapid switch
     if (cityTransitionTimer.current) {
       clearTimeout(cityTransitionTimer.current);
@@ -319,11 +330,28 @@ export default function CityMap({
     });
 
     return () => {};
-  }, [city, userCoords]);
+  }, [city, userCoords, nodeView]);
+
+  useEffect(() => {
+    if (!nodeView) return;
+    setViewState((previous: any) => ({
+      ...previous,
+      ...VNR_CAMPUS_MAP_CENTER,
+      zoom: 16.1,
+      pitch: 0,
+      bearing: 0,
+      minZoom: 5,
+      maxZoom: 22,
+      transitionDuration: 900,
+    }));
+    setHoveredStation(null);
+    setHoveredDistrict(null);
+    setHoveredHex(null);
+  }, [nodeView]);
 
   // Handle fly-to on alert
   React.useEffect(() => {
-    if (!alertStation) return;
+    if (nodeView || !alertStation) return;
     setViewState((prev: any) => ({
       ...prev,
       longitude: alertStation.lon,
@@ -333,12 +361,12 @@ export default function CityMap({
       bearing: -15,
       transitionDuration: 1500,
     }));
-  }, [alertStation, city]);
+  }, [alertStation, city, nodeView]);
 
   // Handle camera restoration when Deep Dive panel is dismissed (selectedDistrictId becomes null)
   const prevSelectedDistrictId = React.useRef<string | null | undefined>(selectedDistrictId);
   React.useEffect(() => {
-    if (prevSelectedDistrictId.current && !selectedDistrictId) {
+    if (!nodeView && prevSelectedDistrictId.current && !selectedDistrictId) {
       const target = getInitialViewState(city, userCoords);
       setViewState((prev: any) => ({
         ...prev,
@@ -351,10 +379,26 @@ export default function CityMap({
       }));
     }
     prevSelectedDistrictId.current = selectedDistrictId;
-  }, [selectedDistrictId, city, userCoords]);
+  }, [selectedDistrictId, city, userCoords, nodeView]);
 
   // Build deck.gl layers
   const layers = useMemo(() => {
+    if (nodeView) {
+      const node = [{ ...VNR_NODE_LOCATION, name: 'VNR VJIET College Gate Sensor' }];
+      return [
+        new ScatterplotLayer({
+          id: 'vnr-node-halo', data: node, pickable: false, stroked: false, filled: true,
+          radiusMinPixels: 15, radiusMaxPixels: 22, getPosition: (d: any) => [d.longitude, d.latitude],
+          getFillColor: nodeAlert ? [248, 113, 113, 30] : [74, 222, 128, 30], getRadius: 110,
+        }),
+        new ScatterplotLayer({
+          id: 'vnr-node-marker', data: node, pickable: false, stroked: true, filled: true,
+          radiusMinPixels: 7, radiusMaxPixels: 9, lineWidthMinPixels: 2,
+          getPosition: (d: any) => [d.longitude, d.latitude], getFillColor: nodeAlert ? [248, 113, 113, 205] : [74, 222, 128, 205],
+          getLineColor: [255, 255, 255, 210], getRadius: 55,
+        }),
+      ];
+    }
     // Layer 0: Live NO₂ satellite overlay (from Open-Meteo CAMS via backend)
     const satelliteBounds = CITY_SATELLITE_BOUNDS[city];
     const satelliteLayer = new BitmapLayer({
@@ -674,7 +718,7 @@ export default function CityMap({
     } else {
       return [satelliteLayer, columnLayer, stationGlowLayer, stationDotLayer, ...alertLayers, ...monitoringLayers, ...windLayers];
     }
-  }, [alertStation, stations, hexGrid, city, hoveredDistrict, dynamicDistricts, showSatellite, monitoringLocation, selectedDistrictId, showWind, windArrowLayers, windParticleLayer, aqiStandard]);
+  }, [nodeView, nodeAlert, alertStation, stations, hexGrid, city, hoveredDistrict, dynamicDistricts, showSatellite, monitoringLocation, selectedDistrictId, showWind, windArrowLayers, windParticleLayer, aqiStandard]);
 
   const onViewStateChange = useCallback(({ viewState: vs }: any) => {
     setViewState(vs);
@@ -730,14 +774,14 @@ export default function CityMap({
   const tooltipCat = (tooltipData && typeof tooltipData.aqi === 'number') ? getAqiCategory(tooltipData.aqi, aqiStandard) : null;
 
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (onHover) {
       onHover(tooltipData);
     }
   }, [tooltipData, onHover]);
 
   return (
-    <div className="map-container" style={{ position: 'relative', background: '#080c14' }}>
+    <div className="map-container" style={{ position: 'relative', width: '100%', height: '100%', minHeight: 0, background: '#080c14' }}>
       <DeckGL
         viewState={viewState}
         onViewStateChange={onViewStateChange}
@@ -747,12 +791,28 @@ export default function CityMap({
         getTooltip={() => null}
       >
         <Map
-          mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+          mapStyle={{
+            version: 8,
+            sources: {
+              'osm-raster': {
+                type: 'raster',
+                tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                tileSize: 256,
+                attribution: '© OpenStreetMap contributors',
+              },
+            },
+            layers: [{ id: 'osm-raster-layer', type: 'raster', source: 'osm-raster', minzoom: 0, maxzoom: 19 }],
+          }}
         />
       </DeckGL>
 
       {/* Overlay Stats & Controls */}
-      <div className="map-overlay-stats" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+      {nodeView && <div style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, display: 'flex', flexDirection: 'column', gap: 5, padding: 5, borderRadius: 10, background: 'rgba(255,255,255,.94)', border: '1px solid rgba(15,23,42,.14)', boxShadow: '0 3px 12px rgba(15,23,42,.18)' }}>
+        <button aria-label="Zoom in" title="Zoom in" onClick={() => setViewState((previous: any) => ({ ...previous, zoom: Math.min(22, previous.zoom + 0.7), transitionDuration: 180 }))} style={{ width: 32, height: 30, border: 0, borderRadius: 6, background: '#fff', color: '#0f172a', fontSize: 20, lineHeight: 1, fontWeight: 600, cursor: 'pointer' }}>+</button>
+        <button aria-label="Zoom out" title="Zoom out" onClick={() => setViewState((previous: any) => ({ ...previous, zoom: Math.max(5, previous.zoom - 0.7), transitionDuration: 180 }))} style={{ width: 32, height: 30, border: 0, borderRadius: 6, background: '#fff', color: '#0f172a', fontSize: 20, lineHeight: 1, fontWeight: 600, cursor: 'pointer' }}>−</button>
+        <button aria-label="Reset to VNR campus" title="Reset to VNR campus" onClick={() => setViewState((previous: any) => ({ ...previous, ...VNR_CAMPUS_MAP_CENTER, zoom: 16.1, pitch: 0, bearing: 0, transitionDuration: 500 }))} style={{ display: 'grid', placeItems: 'center', width: 32, height: 30, border: 0, borderRadius: 6, background: '#fff', color: '#0f766e', cursor: 'pointer' }}><Crosshair size={16} /></button>
+      </div>}
+      {!nodeView && <div className="map-overlay-stats" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         {/* Standard Toggle: India NAQI vs US EPA */}
         <div style={{
           display: 'flex',
@@ -834,10 +894,10 @@ export default function CityMap({
             <>Hex Cells: <span className="chip-value" style={{ color: 'var(--accent-cyan)' }}>{hexGrid.length}</span></>
           )}
         </div>
-      </div>
+      </div>}
 
       {/* Dual Standard AQI Color Legend */}
-      <div style={{
+      {!nodeView && <div style={{
         position: 'absolute', bottom: 12, left: 12, zIndex: 5,
         background: 'var(--bg-surface)', backdropFilter: 'blur(12px)',
         border: '1px solid var(--border-primary)', borderRadius: 'var(--radius-md)',
@@ -887,11 +947,11 @@ export default function CityMap({
             </div>
           </>
         )}
-      </div>
+      </div>}
 
 
       {/* Wind Compass Legend */}
-      {showWind && windSummary.speed > 0 && (
+      {!nodeView && showWind && windSummary.speed > 0 && (
         <div style={{
           position: 'absolute', bottom: 80, left: 12, zIndex: 5,
           background: 'var(--bg-surface)', backdropFilter: 'blur(12px)',
@@ -931,14 +991,14 @@ export default function CityMap({
       )}
 
       {/* Map Legend: Simplified and Authentic */}
-      <div className="map-legend" style={{ left: 'auto', right: 12, bottom: 12, gap: '12px' }}>
+      {!nodeView && <div className="map-legend" style={{ left: 'auto', right: 12, bottom: 12, gap: '12px' }}>
         <div className="legend-item"><div className="legend-dot" style={{ background: '#3b82f6' }} />Monitored Ward</div>
         <div className="legend-item"><div className="legend-dot" style={{ background: '#64748b' }} />Unmonitored Ward (No Center)</div>
         <div className="legend-item"><div className="legend-dot" style={{ background: '#22c55e', border: '1.5px solid #ffffff', boxShadow: '0 0 6px rgba(34, 197, 94, 0.6)' }} />Active CAAQMS Center (Exact Coords)</div>
-      </div>
+      </div>}
 
       {/* Hover tooltip — detailed district/station info */}
-      {tooltipData && (
+      {!nodeView && tooltipData && (
         <div style={{
           position: 'absolute', bottom: 80, right: 12,
           background: 'var(--bg-surface)', backdropFilter: 'blur(14px)',

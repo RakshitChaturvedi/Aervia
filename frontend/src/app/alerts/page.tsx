@@ -29,7 +29,7 @@ import {
   acknowledgeWarningApi,
   FALLBACK_EVENTS
 } from '@/utils/analyticsApi';
-import ReportModal from '@/components/ReportModal';
+import LocalNodeReportModal from '@/components/LocalNodeReportModal';
 
 export default function AlertsPage() {
   const [events, setEvents] = useState<EventItem[]>(FALLBACK_EVENTS);
@@ -742,14 +742,7 @@ export default function AlertsPage() {
 
       </div>
 
-      {/* Compliance Report Modal (Powered by Gemini AI) */}
-      <ReportModal
-        isOpen={isReportModalOpen}
-        onClose={() => setIsReportModalOpen(false)}
-        initialCity="Hyderabad"
-        initialDistrict="Kukatpally"
-        initialMode="district_audit"
-      />
+      <LocalNodeReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} />
 
     </div>
   );

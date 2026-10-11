@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import {
   Wifi,
   Battery,
@@ -27,6 +28,8 @@ import { IotTelemetry } from '@/types/analytics';
 import { AqiStandard } from '@/types';
 import { calculateDynamicAqi } from '@/utils/aqi';
 import { fetchLatestIotTelemetry, fetchIotHistory } from '@/utils/analyticsApi';
+
+const VnrNodeMap = dynamic(() => import('@/components/CityMap'), { ssr: false });
 
 export default function TelemetryPage() {
   const [iotData, setIotData] = useState<IotTelemetry | null>(null);
@@ -216,6 +219,20 @@ export default function TelemetryPage() {
           </Link>
         </div>
       </div>
+
+      <div className="telemetry-overview-grid">
+      <section style={{ width: '100%', marginBottom: 20, overflow: 'hidden', borderRadius: 13, border: '1px solid var(--border-primary)', background: 'var(--bg-surface)', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '11px 15px', borderBottom: '1px solid var(--border-subtle)' }}>
+          <div>
+            <h2 style={{ margin: 0, color: 'var(--text-primary)', fontSize: '.9rem', fontWeight: 800 }}>VNR campus node map</h2>
+            <p style={{ margin: '3px 0 0', color: 'var(--text-muted)', fontSize: '.7rem' }}>College Gate · 17°32′23.4″ N, 78°23′12.4″ E</p>
+          </div>
+          <span style={{ flex: '0 0 auto', padding: '4px 8px', borderRadius: 999, background: '#f0fdfa', border: '1px solid #99f6e4', color: '#0f766e', fontSize: '.64rem', fontWeight: 800 }}>FIELD NODE · RECORDED</span>
+        </div>
+        <div style={{ height: 320, minHeight: 280, position: 'relative' }}>
+          <VnrNodeMap city="Hyderabad" nodeView nodeAlert />
+        </div>
+      </section>
 
       {/* Dynamic Real-Time AQI Hero Showcase Banner */}
       <div style={{
@@ -530,6 +547,8 @@ export default function TelemetryPage() {
         </div>
       </div>
 
+      </div>
+
       {/* Primary Telemetry Metric Cards Grid */}
       <div style={{
         display: 'grid',
@@ -537,42 +556,6 @@ export default function TelemetryPage() {
         gap: 16,
         marginBottom: 24
       }}>
-        {/* Dynamic Calculated AQI Metric Card */}
-        <div style={{
-          padding: 18,
-          borderRadius: 10,
-          background: 'var(--bg-surface)',
-          border: `1px solid ${activeAqi.category.color}55`,
-          position: 'relative'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              Calculated AQI
-            </span>
-            <span style={{
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              padding: '2px 8px',
-              borderRadius: 20,
-              color: activeAqi.category.color,
-              background: activeAqi.category.bg,
-              border: `1px solid ${activeAqi.category.color}44`
-            }}>
-              {activeAqi.category.label}
-            </span>
-          </div>
-          <div style={{ fontSize: '2.3rem', fontWeight: 800, color: 'var(--text-primary)', margin: '10px 0 4px', display: 'flex', alignItems: 'baseline', gap: 6 }}>
-            {activeAqi.aqi}
-            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: activeAqi.category.color }}>
-              {aqiStandard === 'IN_NAQI' ? 'CPCB' : 'EPA'}
-            </span>
-          </div>
-          <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
-            <span>Gov: <strong style={{ color: 'var(--text-primary)' }}>{activeAqi.governingPollutant}</strong></span>
-            <span>•</span>
-            <span>Sub: <strong style={{ color: 'var(--text-primary)' }}>{activeAqi.pm25SubIndex}</strong> / <strong style={{ color: 'var(--text-primary)' }}>{activeAqi.pm10SubIndex}</strong></span>
-          </div>
-        </div>
         {/* PM2.5 Main Card */}
         {(() => {
           const pm25Val = iotData?.pm25 ?? 49.2;
