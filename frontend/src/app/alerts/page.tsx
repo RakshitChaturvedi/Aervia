@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import {
   AlertTriangle,
@@ -18,7 +18,8 @@ import {
   Activity,
   ArrowRight,
   FileText,
-  Sparkles
+  Sparkles,
+  Play
 } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ReferenceArea } from 'recharts';
 import { EventItem, TimelinePoint, WarningItem } from '@/types/analytics';
@@ -46,6 +47,12 @@ export default function AlertsPage() {
 
   // Compliance Report Modal state
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [demoMode, setDemoMode] = useState(false);
+  const [replayElapsed, setReplayElapsed] = useState(0);
+  const [replayTriggeredEvents, setReplayTriggeredEvents] = useState<string[]>([]);
+  const [replayStarted, setReplayStarted] = useState(false);
+  const replayVideoRef = useRef<HTMLVideoElement>(null);
+  const triggeredEventsRef = useRef<string[]>([]);
 
   // Toast feedback
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -138,7 +145,7 @@ export default function AlertsPage() {
       const matchesSearch =
         searchQuery === '' ||
         w.short_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        w.short_event_id.toLowerCase().includes(searchQuery.toLowerCase());
+        w.short_event_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
         w.warning_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
         w.event_id.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesSev && matchesSearch;
@@ -159,6 +166,85 @@ export default function AlertsPage() {
   const severeCount = warnings.filter(warning => warning.severity.toUpperCase() === 'SEVERE').length;
   const elevatedCount = warnings.filter(warning => warning.severity.toUpperCase() === 'ELEVATED').length;
   const unacknowledgedCount = warnings.filter(warning => !acknowledgedWarnings[warning.warning_id] && !warning.acknowledged).length;
+
+  const startRecordedReplay = async () => {
+    const video = replayVideoRef.current;
+    if (!video) return;
+    triggeredEventsRef.current = [];
+    setReplayTriggeredEvents([]);
+    setReplayElapsed(0);
+    setReplayStarted(true);
+    video.currentTime = 0;
+    try { await video.play(); } catch { showToast('Press play on the recorded capture to start the replay.'); }
+  };
+
+  const updateReplayTime = () => {
+    const video = replayVideoRef.current;
+    if (!video) return;
+    setReplayElapsed(video.currentTime);
+    // Timings follow the full capture's visible timestamp: E-0003 near 15:40, E-0004 near 15:55.
+    const dueEvents = [
+      { id: 'E-0003', at: 10 },
+      { id: 'E-0004', at: 29.1 },
+    ].filter(event => video.currentTime >= event.at && !triggeredEventsRef.current.includes(event.id));
+    if (dueEvents.length) {
+      const next = [...triggeredEventsRef.current, ...dueEvents.map(event => event.id)];
+      triggeredEventsRef.current = next;
+      setReplayTriggeredEvents(next);
+    }
+  };
+
+  if (demoMode) {
+    const interpolateCaptureMinute = (seconds: number) => {
+      const anchors = [[0, 15 * 60 + 33.6], [10, 15 * 60 + 40], [29.1, 15 * 60 + 55], [39.4, 16 * 60 + 1.9]];
+      const rightIndex = anchors.findIndex(([at]) => seconds <= at);
+      if (rightIndex <= 0) return anchors[0][1];
+      const [leftTime, leftMinute] = anchors[rightIndex - 1];
+      const [rightTime, rightMinute] = anchors[rightIndex];
+      return leftMinute + ((seconds - leftTime) / (rightTime - leftTime)) * (rightMinute - leftMinute);
+    };
+    const replayAbsoluteMinute = Math.round(interpolateCaptureMinute(replayElapsed));
+    const replayClock = `${String(Math.floor(replayAbsoluteMinute / 60)).padStart(2, '0')}:${String(replayAbsoluteMinute % 60).padStart(2, '0')}`;
+    const replayChartData = chartData.filter(point => point.minute >= '15:33' && point.minute <= '16:02');
+    const replayEventSpecs = [
+      { id: 'E-0003', start: '15:40', end: '15:43', peak: 116.9, excess: 90.5, trigger: 10 },
+      { id: 'E-0004', start: '15:55', end: '16:02', peak: 201.5, excess: 167.6, trigger: 29.1 },
+    ];
+    return <div style={{ minHeight: '100vh', padding: '12px 18px 18px', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
+      <div style={{ maxWidth: 1740, margin: '0 auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 14, flexWrap: 'wrap' }}>
+          <div><div style={{ color: '#059669', fontSize: '.72rem', fontWeight: 900, letterSpacing: '.08em' }}>DEMO PRESENTATION · RECORDED REPLAY</div><h1 style={{ margin: '3px 0', fontSize: '1.35rem' }}>VNR College Gate · Episode alerts</h1><div style={{ color: 'var(--text-muted)', fontSize: '.78rem' }}>9 Oct 2026 · Historical sensor readings and field video · IST</div></div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}><span style={{ borderRadius: 99, padding: '6px 10px', background: '#fff7ed', color: '#9a3412', fontSize: '.72rem', fontWeight: 800 }}>RECORDED · NOT LIVE</span><button onClick={() => { replayVideoRef.current?.pause(); setDemoMode(false); }} style={{ padding: '8px 12px', borderRadius: 9, border: '1px solid var(--border-primary)', background: 'var(--bg-surface)', color: 'var(--text-primary)', fontWeight: 700, cursor: 'pointer' }}>Exit demo view</button></div>
+        </div>
+
+        <div className="alert-demo-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 14, alignItems: 'stretch' }}>
+          <section style={{ minWidth: 0, padding: 14, borderRadius: 14, border: '1px solid var(--border-primary)', background: 'var(--bg-surface)', boxShadow: 'var(--shadow-sm)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', marginBottom: 10 }}><div><h2 style={{ margin: 0, fontSize: '1rem' }}>Sensor readings & detected episodes</h2><p style={{ margin: '3px 0 0', color: 'var(--text-muted)', fontSize: '.73rem' }}>Both warning moments are marked on the captured PM2.5 trace.</p></div><span style={{ color: '#64748b', fontFamily: 'var(--font-mono)', fontSize: '.75rem' }}>{replayStarted ? replayClock : '15:33 IST'}</span></div>
+            <div style={{ height: 'min(42vh, 390px)', minHeight: 285, borderRadius: 10, background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)', padding: '8px 8px 2px 0' }}>
+              {replayChartData.length > 0 ? <ResponsiveContainer width="100%" height="100%"><AreaChart data={replayChartData} margin={{ top: 6, right: 14, left: 0, bottom: 2 }}><defs><linearGradient id="replayPm25Fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#ef4444" stopOpacity={.25} /><stop offset="100%" stopColor="#ef4444" stopOpacity={.02} /></linearGradient></defs><CartesianGrid stroke="var(--border-primary)" strokeDasharray="3 4" vertical={false} /><XAxis dataKey="minute" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} minTickGap={18} /><YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} width={42} /><Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-primary)', borderRadius: 8, fontSize: 11 }} formatter={(value: number, name: string) => [`${Number(value).toFixed(1)} µg/m³`, name === 'pm25' ? 'PM2.5' : 'Baseline']} labelFormatter={label => `${label} IST`} /><ReferenceArea x1="15:40" x2="15:43" fill={replayTriggeredEvents.includes('E-0003') ? 'rgba(220,38,38,.19)' : 'rgba(220,38,38,.07)'} stroke="#dc2626" strokeWidth={replayTriggeredEvents.includes('E-0003') ? 2 : 1} /><ReferenceArea x1="15:55" x2="16:02" fill={replayTriggeredEvents.includes('E-0004') ? 'rgba(220,38,38,.19)' : 'rgba(220,38,38,.07)'} stroke="#dc2626" strokeWidth={replayTriggeredEvents.includes('E-0004') ? 2 : 1} /><ReferenceLine y={60} stroke="#f59e0b" strokeDasharray="4 4" />{replayStarted && <ReferenceLine x={replayClock} stroke="#0f172a" strokeWidth={2} label={{ value: 'PLAYHEAD', position: 'insideTopRight', fill: '#0f172a', fontSize: 9 }} />}<Area type="monotone" dataKey="baseline" stroke="#0d9488" strokeWidth={2} fill="transparent" dot={false} name="Baseline" /><Area type="monotone" dataKey="pm25" stroke="#ef4444" strokeWidth={2.5} fill="url(#replayPm25Fill)" dot={false} name="PM2.5" /></AreaChart></ResponsiveContainer> : <div style={{ height: '100%', display: 'grid', placeItems: 'center', color: 'var(--text-muted)' }}>Loading recorded sensor timeline…</div>}
+            </div>
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', color: 'var(--text-muted)', fontSize: '.68rem', padding: '8px 4px' }}><span>🔴 Measured PM2.5</span><span>🟢 Estimated baseline</span><span>🟠 60 µg/m³ guide</span><span>Red bands · episode windows</span></div>
+
+            <div style={{ display: 'grid', gap: 7, marginTop: 5 }}>{replayEventSpecs.map(event => { const triggered = replayTriggeredEvents.includes(event.id); return triggered ? <div key={event.id} role="alert" style={{ padding: '10px 12px', borderRadius: 10, border: '1px solid #fca5a5', borderLeft: '6px solid #b91c1c', background: '#fff1f2', boxShadow: '0 5px 15px rgba(185,28,28,.10)', animation: 'alertPop .35s ease-out' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}><strong style={{ color: '#991b1b', fontSize: '.76rem' }}>⚠ SEVERE WARNING · {event.id}</strong><span style={{ padding: '3px 8px', borderRadius: 99, background: '#b91c1c', color: '#fff', fontSize: '.62rem', fontWeight: 900 }}>TRIGGERED · {event.start} IST</span></div><div style={{ marginTop: 4, fontSize: '.84rem', fontWeight: 850 }}>PM2.5 episode · peak {event.peak} µg/m³ <span style={{ color: '#7f1d1d', fontWeight: 600 }}>· +{event.excess} over baseline</span></div></div> : null; })}{!replayTriggeredEvents.length && <div style={{ padding: 11, borderRadius: 10, border: '1px dashed var(--border-primary)', color: 'var(--text-muted)', fontSize: '.74rem' }}>Replay ready · E-0003 warning appears near 15:40, followed by E-0004 near 15:55.</div>}</div>
+
+            <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 9 }}><div style={{ padding: 10, borderRadius: 9, background: 'var(--bg-secondary)' }}><div style={{ color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: '.63rem', fontWeight: 800 }}>Episodes</div><strong style={{ fontSize: '1.15rem' }}>{events.length}</strong></div><div style={{ padding: 10, borderRadius: 9, background: 'var(--bg-secondary)' }}><div style={{ color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: '.63rem', fontWeight: 800 }}>Capture peak</div><strong style={{ color: '#b91c1c', fontSize: '1.15rem' }}>{peakPm25.toFixed(1)} µg/m³</strong></div><div style={{ padding: 10, borderRadius: 9, background: 'var(--bg-secondary)' }}><div style={{ color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: '.63rem', fontWeight: 800 }}>Warnings</div><strong style={{ fontSize: '1.15rem' }}>{warnings.length || events.length}</strong></div></div>
+          </section>
+
+          <div style={{ display: 'grid', gridTemplateRows: 'auto 1fr', gap: 10, minWidth: 0 }}>
+            <section style={{ overflow: 'hidden', borderRadius: 14, border: '1px solid var(--border-primary)', background: '#080e18', boxShadow: 'var(--shadow-sm)' }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 13px', color: '#fff' }}><strong style={{ fontSize: '.82rem' }}>Full field recording · 40 seconds</strong><span style={{ fontSize: '.68rem', color: '#cbd5e1' }}>3:33–4:02 PM · timelapse</span></div><video ref={replayVideoRef} src="/demo/vnr-ft1-alert4-replay.mp4" onTimeUpdate={updateReplayTime} onEnded={() => setReplayStarted(false)} controls playsInline preload="metadata" style={{ display: 'block', width: '100%', height: 'min(55vh, 570px)', minHeight: 320, background: '#000', objectFit: 'contain' }} /><div style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 12px', color: '#cbd5e1', fontSize: '.66rem' }}><span>Original timestamp remains visible in video</span><span>Both warning cards sync to this playback</span></div></section>
+
+            <section style={{ padding: '12px 14px', borderRadius: 14, border: '1px solid #fed7aa', borderTop: '4px solid #d97706', background: 'linear-gradient(135deg,#fff7ed,#fff 75%)', boxShadow: 'var(--shadow-sm)' }}><div style={{ display: 'flex', alignItems: 'center', gap: 7, color: '#9a3412', fontSize: '.72rem', fontWeight: 900, textTransform: 'uppercase' }}><ShieldAlert size={15} /> Quick campus follow-up · E-0003 & E-0004</div><div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 8, marginTop: 9 }}><div style={{ padding: '9px 10px', borderRadius: 9, background: '#fff', border: '1px solid #fed7aa' }}><strong style={{ display: 'block', color: '#9a3412', fontSize: '.69rem' }}>Security</strong><span style={{ display: 'block', marginTop: 3, color: '#431407', fontSize: '.69rem', lineHeight: 1.35 }}>Check gate notes near 3:40 and 3:55.</span></div><div style={{ padding: '9px 10px', borderRadius: 9, background: '#fff', border: '1px solid #fed7aa' }}><strong style={{ display: 'block', color: '#9a3412', fontSize: '.69rem' }}>Transport</strong><span style={{ display: 'block', marginTop: 3, color: '#431407', fontSize: '.69rem', lineHeight: 1.35 }}>Review bus queue and staging logs.</span></div><div style={{ padding: '9px 10px', borderRadius: 9, background: '#fff', border: '1px solid #fed7aa' }}><strong style={{ display: 'block', color: '#9a3412', fontSize: '.69rem' }}>Admin</strong><span style={{ display: 'block', marginTop: 3, color: '#431407', fontSize: '.69rem', lineHeight: 1.35 }}>Get a fresh reading; E-0004 ended with capture.</span></div></div><div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, color: '#92400e', fontSize: '.65rem' }}><Info size={13} />Both events overlap first-year dismissal (3:40–4:10); schedule is context, not source evidence.</div></section>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginTop: 12, padding: 10, borderRadius: 12, background: 'var(--bg-surface)', border: '1px solid var(--border-primary)' }}><div style={{ color: 'var(--text-muted)', fontSize: '.72rem' }}>{replayStarted ? `Replay running · ${replayElapsed.toFixed(1)}s · ${replayTriggeredEvents.length}/2 warnings shown` : replayTriggeredEvents.length === 2 ? 'Replay complete · both recorded warnings remain visible' : 'Press once to start the full clip and synchronized warning replay'}</div><div style={{ display: 'flex', gap: 8 }}><button onClick={startRecordedReplay} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '9px 14px', border: 0, borderRadius: 9, background: '#059669', color: '#fff', fontWeight: 850, cursor: 'pointer' }}><Play size={15} fill="currentColor" />{replayStarted || replayTriggeredEvents.length ? 'Replay full capture' : 'Play full 40-second capture'}</button><button onClick={() => setIsReportModalOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '9px 13px', borderRadius: 9, border: '1px solid #0f766e', background: '#ecfdf5', color: '#065f46', fontWeight: 800, cursor: 'pointer' }}><FileText size={15} />Generate local node report</button></div></div>
+        <div style={{ marginTop: 6, color: 'var(--text-muted)', fontSize: '.66rem' }}>Recorded demonstration · alerts are synchronized to the timestamps and do not create live warnings.</div>
+      </div>
+      <style>{`@keyframes alertPop { from { opacity: .35; transform: translateY(8px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } } @media(max-width: 900px) { .alert-demo-layout { grid-template-columns: 1fr !important; } }`}</style>
+      <LocalNodeReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} />
+    </div>;
+  }
+
   return (
     <div className="view-container" style={{ padding: '24px 28px 90px 28px', maxWidth: 1440, margin: '0 auto', minHeight: '100%', overflowY: 'visible' }}>
       
@@ -219,6 +305,7 @@ export default function AlertsPage() {
 
         {/* Action Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <button onClick={() => setDemoMode(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '8px 14px', borderRadius: 'var(--radius-pill)', background: '#0f172a', color: '#fff', fontSize: '.8rem', fontWeight: 800, border: 'none', cursor: 'pointer' }}><Play size={13} fill="currentColor" />Recorded demo</button>
           <button
             onClick={() => setIsReportModalOpen(true)}
             style={{
