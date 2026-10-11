@@ -235,15 +235,36 @@ export async function fetchTimeline(): Promise<TimelinePoint[]> {
   }
 }
 
+export const FALLBACK_WARNINGS: WarningItem[] = FALLBACK_EVENTS.map(ev => ({
+  warning_id: ev.warning_id || `${ev.event_id}:warning`,
+  short_id: ev.short_id.replace('E-', 'W-'),
+  event_id: ev.event_id,
+  short_event_id: ev.short_id,
+  severity: ev.warning_severity.toUpperCase(),
+  status: 'ISSUED',
+  acknowledged: ev.warning_acknowledged,
+  start_utc: ev.start_utc,
+  end_utc: ev.end_utc,
+  start_ist: ev.start_ist,
+  end_ist: ev.end_ist,
+  peak_excess: ev.peak_excess,
+  peak_pm25: ev.peak_pm25,
+  lifecycle: ev.lifecycle,
+  coverage_fraction: ev.coverage_fraction,
+  reasons: ev.reasons,
+  limitations: ev.limitations,
+  next_check: 'Check gate-side vehicle queue and idling',
+}));
+
 export async function fetchWarnings(): Promise<WarningItem[]> {
   try {
     const res = await fetch(`${API_BASE}/api/analytics/warnings`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to fetch warnings');
     const data = await res.json();
-    return data.warnings || [];
+    return data.warnings || FALLBACK_WARNINGS;
   } catch (e) {
     console.warn('Failed to fetch warnings:', e);
-    return [];
+    return FALLBACK_WARNINGS;
   }
 }
 

@@ -27,13 +27,14 @@ import {
   fetchWarnings,
   fetchTimeline,
   acknowledgeWarningApi,
-  FALLBACK_EVENTS
+  FALLBACK_EVENTS,
+  FALLBACK_WARNINGS
 } from '@/utils/analyticsApi';
 import LocalNodeReportModal from '@/components/LocalNodeReportModal';
 
 export default function AlertsPage() {
   const [events, setEvents] = useState<EventItem[]>(FALLBACK_EVENTS);
-  const [warnings, setWarnings] = useState<WarningItem[]>([]);
+  const [warnings, setWarnings] = useState<WarningItem[]>(FALLBACK_WARNINGS);
   const [timeline, setTimeline] = useState<TimelinePoint[]>([]);
   const [loading, setLoading] = useState(true);
 

@@ -29,8 +29,11 @@ export function getApiBaseUrl(): string {
   );
 }
 
-export function apiUrl(path: string): string {
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+export function apiUrl(path: string = ''): string {
   const base = getApiBaseUrl().replace(/\/$/, '');
+  if (!path || !path.trim()) {
+    return base;
+  }
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
   return `${base}${cleanPath}`;
 }
