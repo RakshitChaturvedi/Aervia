@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
-  Home, Map, TrendingUp, AlertTriangle, Radio, Menu, PanelLeftClose,
+  Home, Map, TrendingUp, AlertTriangle, Radio, Menu, PanelLeftClose, ClipboardCheck,
 } from 'lucide-react';
 import { useCityContext } from '@/context/CityContext';
 
@@ -20,6 +20,7 @@ const navItems: NavItem[] = [
   { id: 'forecast', label: '72h Forecast', href: '/forecast', icon: TrendingUp },
   { id: 'telemetry', label: 'Live Telemetry', href: '/telemetry', icon: Radio },
   { id: 'alerts', label: 'Episode Alerts', href: '/alerts', icon: AlertTriangle },
+  { id: 'advisory', label: 'Node Advisories', href: '/advisory', icon: ClipboardCheck },
 ];
 
 export default function Sidebar() {

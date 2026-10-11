@@ -10,6 +10,7 @@ const CityMap = dynamic(() => import('@/components/CityMap'), { ssr: false });
 const DeepDivePanel = dynamic(() => import('@/components/DeepDivePanel'), { ssr: false });
 const AdvisoryPanel = dynamic(() => import('@/components/AdvisoryPanel'), { ssr: false });
 const ReportModal = dynamic(() => import('@/components/ReportModal'), { ssr: false });
+const LocalNodeReportModal = dynamic(() => import('@/components/LocalNodeReportModal'), { ssr: false });
 
 function LiveClock() {
   const [time, setTime] = useState('--:--:--');
@@ -40,6 +41,7 @@ export default function LiveMapPage() {
   const [monitoringLocation, setMonitoringLocation] = useState<{ lat: number; lon: number; name?: string } | null>(null);
   const [advisoryOpen, setAdvisoryOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [mapView, setMapView] = useState<'live' | 'node'>('live');
 
   React.useEffect(() => {
     setSelectedDistrict(null);
@@ -114,7 +116,7 @@ export default function LiveMapPage() {
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 500, marginLeft: '10px' }}>
             Live Air Quality Map
           </span>
-          <select
+          {mapView === 'live' && <select
             value={activeCity}
             onChange={(e) => setActiveCity(e.target.value as CityId)}
             style={{ marginLeft: '20px', padding: '5px 10px', borderRadius: '6px', background: '#1c2128', color: 'white', border: '1px solid #30363d', cursor: 'pointer', fontSize: '0.8rem' }}
@@ -143,10 +145,15 @@ export default function LiveMapPage() {
               <option value="Bhopal">Bhopal</option>
               <option value="Patna">Patna</option>
             </optgroup>
-          </select>
+          </select>}
         </div>
 
         <div className="header-metrics">
+          {mapView === 'node' ? <>
+            <div className="metric-item"><span className="metric-label">Field node</span><span className="metric-value" style={{ color: 'var(--text-primary)' }}>VNR · College Gate</span></div>
+            <div className="metric-item"><span className="metric-label">Capture peak · 9 Oct</span><span className="metric-value" style={{ color: 'var(--accent-red)' }}>201.5 µg/m³</span></div>
+            <div className="metric-item"><span className="metric-label">Detected episodes</span><span className="metric-value" style={{ color: 'var(--accent-amber)' }}>4</span></div>
+          </> : <>
           <div className="metric-item">
             <span className="metric-label">City Avg ({aqiStandard === 'IN_NAQI' ? 'NAQI' : 'US EPA'})</span>
             <span className="metric-value" style={{ color: avgCat.color }}>{avgAqi}</span>
@@ -159,6 +166,7 @@ export default function LiveMapPage() {
             <span className="metric-label">Active Alerts</span>
             <span className="metric-value" style={{ color: 'var(--accent-amber)' }}>{alertCount}</span>
           </div>
+          </>}
         </div>
 
         <div className="header-status" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -181,7 +189,7 @@ export default function LiveMapPage() {
                 borderRadius: 4,
                 cursor: 'pointer',
                 background: aqiStandard === 'IN_NAQI' ? '#3b82f6' : 'transparent',
-                color: aqiStandard === 'IN_NAQI' ? '#ffffff' : '#8b949e',
+                color: aqiStandard === 'IN_NAQI' ? '#ffffff' : '#e2e8f0',
                 transition: 'all 0.2s',
               }}
             >
@@ -197,7 +205,7 @@ export default function LiveMapPage() {
                 borderRadius: 4,
                 cursor: 'pointer',
                 background: aqiStandard === 'US_EPA' ? '#3b82f6' : 'transparent',
-                color: aqiStandard === 'US_EPA' ? '#ffffff' : '#8b949e',
+                color: aqiStandard === 'US_EPA' ? '#ffffff' : '#e2e8f0',
                 transition: 'all 0.2s',
               }}
             >
@@ -222,18 +230,21 @@ export default function LiveMapPage() {
               transition: 'var(--transition-fast)'
             }}
           >
-            📄 AI Report
+            📄 {mapView === 'node' ? 'Node report' : 'AI Report'}
           </button>
-          <div className="status-badge live">
-            <div className="dot" />
-            Live
-          </div>
-          <LiveClock />
+          {mapView === 'live' ? <><div className="status-badge live"><div className="dot" />Live</div><LiveClock /></> : <div className="status-badge" style={{ color: '#fca5a5', borderColor: 'rgba(239,68,68,.35)' }}>Recorded node view</div>}
         </div>
       </header>
 
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 16px', background: '#10151e', borderBottom: '1px solid #28313d' }}>
+        <span style={{ marginRight: 5, color: '#94a3b8', fontSize: '.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.06em' }}>Map view</span>
+        <button onClick={() => setMapView('live')} aria-pressed={mapView === 'live'} style={{ padding: '6px 13px', borderRadius: 7, color: mapView === 'live' ? '#fff' : '#e2e8f0', background: mapView === 'live' ? '#2563eb' : 'transparent', border: `1px solid ${mapView === 'live' ? '#3b82f6' : '#64748b'}`, cursor: 'pointer', fontSize: '.74rem', fontWeight: 800 }}>Live regional map</button>
+        <button onClick={() => { setMapView('node'); setSelectedDistrict(null); }} aria-pressed={mapView === 'node'} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '6px 13px', borderRadius: 7, color: mapView === 'node' ? '#fff' : '#e2e8f0', background: mapView === 'node' ? '#991b1b' : 'transparent', border: `1px solid ${mapView === 'node' ? '#dc2626' : '#64748b'}`, cursor: 'pointer', fontSize: '.74rem', fontWeight: 800 }}><span style={{ color: mapView === 'node' ? '#fca5a5' : '#ef4444' }}>●</span> VNR campus node</button>
+        {mapView === 'node' && <span style={{ marginLeft: 'auto', color: '#fca5a5', fontSize: '.68rem', fontWeight: 700 }}>Static field-capture marker · not a live node status</span>}
+      </div>
+
       {/* ── Body: Map + optional DeepDive panel ── */}
-      <div className={`livemap-body${selectedDistrict ? ' with-panel' : ''}`}>
+      <div className={`livemap-body${selectedDistrict && mapView === 'live' ? ' with-panel' : ''}`}>
         <CityMap
           alertStation={alertStation}
           city={activeCity}
@@ -249,9 +260,11 @@ export default function LiveMapPage() {
           onDistrictsComputed={() => {}}
           monitoringLocation={monitoringLocation}
           recommendedDeployments={recommendedDeployments}
+          nodeView={mapView === 'node'}
+          nodeAlert={true}
         />
 
-        {selectedDistrict && (
+        {selectedDistrict && mapView === 'live' && (
           <aside className="livemap-deep-panel">
             <DeepDivePanel
               district={selectedDistrict}
@@ -311,14 +324,15 @@ export default function LiveMapPage() {
       )}
 
       {/* Executive AI Report Modal */}
-      <ReportModal
+      {mapView === 'node' && <LocalNodeReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} />}
+      {mapView === 'live' && <ReportModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         initialCity={activeCity}
         initialMode="city_audit"
         telemetryData={{ aqi: avgAqi, pm25: stations[0]?.pm25 || 42, pm10: stations[0]?.pm10 || 68 }}
         historicalData={cityData}
-      />
+      />}
     </div>
   );
 }

@@ -286,6 +286,170 @@ def get_warnings():
     return {"warnings": results}
 
 
+@router.get("/advisories")
+def get_local_advisories():
+    """Return generated field-capture advisories joined to their event warning evidence."""
+    advisory_data = _read_json_file("advisories/ft1_final_v2/advisories.json") or {}
+    warning_data = _read_json_file("warnings/ft1_final_v2/warnings.json") or {}
+    event_data = _read_json_file("analytics/ft1_final_v2/event_detection.json") or {}
+    warnings_by_event = {item.get("event_id"): item for item in warning_data.get("warnings", [])}
+    events_by_id = {item.get("event_id"): item for item in event_data.get("results", [])}
+    advisories = []
+    for item in advisory_data.get("advisories", []):
+        event_id = item.get("event_id")
+        warning = warnings_by_event.get(event_id, {})
+        event = events_by_id.get(event_id, {})
+        peak = float(warning.get("peak_pm2_5_ug_m3") or event.get("peak_pm2_5_ug_m3") or 0)
+        excess = float(warning.get("peak_excess_pm2_5_ug_m3") or event.get("peak_excess_pm2_5_ug_m3") or 0)
+        baseline = max(0.0, peak - excess)
+        severity = warning.get("severity", "UNSPECIFIED")
+        lifecycle = warning.get("lifecycle")
+        start_ist = to_ist_time_str(event.get("start_utc") or warning.get("start_utc"))
+        end_ist = to_ist_time_str(event.get("end_utc") or warning.get("end_utc"))
+        short_event_id = f"E-{event_id.split(':')[-1]}" if event_id and ":" in event_id else event_id
+        actions = [{
+            "title": "Verify the current reading",
+            "urgency": "IMMEDIATE" if lifecycle == "OPEN_AT_CAPTURE_END" else "FOLLOW-UP",
+            "instruction": (
+                f"The capture ended while {short_event_id} was elevated. Take a new PM2.5 reading and compare it with this event's {peak:.1f} µg/m³ peak; the recording alone cannot tell whether it is still active."
+                if lifecycle == "OPEN_AT_CAPTURE_END"
+                else f"{short_event_id} ended within the capture. Check the next available PM2.5 reading and confirm it moves back toward the estimated local baseline of {baseline:.1f} µg/m³."
+            ),
+        }, {
+            "title": "Review the gate area at the event time",
+            "urgency": "PRIORITY" if severity == "SEVERE" else "REVIEW",
+            "instruction": f"Check available site notes or inspect the College Gate approach for visible activity around {start_ist}–{end_ist} IST. Record observations without treating timing alone as proof of a pollution source.",
+        }]
+        if peak >= 100:
+            actions.append({
+                "title": "Use a proportionate exposure precaution",
+                "urgency": "PRECAUTION",
+                "instruction": f"Until a current reading is checked, consider keeping people sensitive to air pollution away from the immediate sensor area. The {peak:.1f} µg/m³ peak applies at this node and time only, not across the campus.",
+            })
+        advisories.append({
+            **item,
+            "short_event_id": short_event_id,
+            "severity": severity,
+            "start_ist": start_ist,
+            "end_ist": end_ist,
+            "peak_pm2_5_ug_m3": peak,
+            "peak_excess_pm2_5_ug_m3": excess,
+            "duration_elapsed_minutes": warning.get("duration_elapsed_minutes"),
+            "lifecycle": lifecycle,
+            "summary": f"{short_event_id} recorded a {severity.lower()} PM2.5 episode from {start_ist} to {end_ist} IST: {peak:.1f} µg/m³ peak, {excess:.1f} µg/m³ above the estimated local baseline.",
+            "actions": actions,
+        })
+    return {
+        "status": advisory_data.get("status", "NOT_AVAILABLE"),
+        "dataset_id": "ft1_final_v2",
+        "location": "VNR VJIET campus · College Gate node",
+        "capture_window": "2026-10-09 14:24–16:02 IST",
+        "advisories": advisories,
+    }
+
+
+@router.get("/report/local-capture")
+def get_local_capture_report():
+    """Generate a fresh operator report from this node's field-capture outputs."""
+    from src.reporting import ReportConfig, build_report
+
+    analytics_dir = os.path.join(DATA_DIR, "analytics", "ft1_final_v2")
+    warnings_path = os.path.join(DATA_DIR, "warnings", "ft1_final_v2", "warnings.json")
+    advisories_path = os.path.join(DATA_DIR, "advisories", "ft1_final_v2", "advisories.json")
+    features_path = os.path.join(DATA_DIR, "parameter_intelligence", "ft1_final_v2", "features.csv")
+    report = build_report(
+        ReportConfig(dataset_id="ft1_final_v2", report_type="daily", audience="operator"),
+        analytics_dir=analytics_dir,
+        warnings_path=warnings_path,
+        advisories_path=advisories_path,
+        features_path=features_path,
+    )
+
+    parameter_columns = {
+        "PM1": ("pm1", "µg/m³"),
+        "PM2.5": ("pm2_5", "µg/m³"),
+        "PM10": ("pm10", "µg/m³"),
+        "Temperature": ("temperature_c", "°C"),
+        "Relative humidity": ("humidity_pct", "%"),
+        "Pressure": ("pressure_hpa", "hPa"),
+        "VOC index": ("voc_index", "index"),
+        "NOx index": ("nox_index", "index"),
+    }
+    parameter_values = {name: [] for name in parameter_columns}
+    timestamps = []
+    if os.path.exists(features_path):
+        with open(features_path, mode="r", encoding="utf-8") as feature_file:
+            for row in csv.DictReader(feature_file):
+                if row.get("timestamp"):
+                    timestamps.append(row["timestamp"])
+                for name, (column, _) in parameter_columns.items():
+                    try:
+                        value = float(row[column])
+                        if value == value and abs(value) != float("inf"):
+                            parameter_values[name].append(value)
+                    except (KeyError, TypeError, ValueError):
+                        continue
+    parameters = {}
+    for name, values in parameter_values.items():
+        unit = parameter_columns[name][1]
+        parameters[name] = {
+            "unit": unit,
+            "samples": len(values),
+            "minimum": round(min(values), 2) if values else None,
+            "mean": round(sum(values) / len(values), 2) if values else None,
+            "maximum": round(max(values), 2) if values else None,
+        }
+
+    start_utc = min(timestamps) if timestamps else None
+    end_utc = max(timestamps) if timestamps else None
+    summary = report.get("summary", {})
+    warning_rows = report.get("warnings", [])
+    warning_by_event = {warning.get("event_id"): warning for warning in warning_rows}
+    event_rows = []
+    for index, event in enumerate(report.get("analytics", {}).get("event_detection", {}).get("records", []), start=1):
+        warning = warning_by_event.get(event.get("event_id"), {})
+        event_rows.append({
+            **event,
+            "short_id": f"E-{event.get('event_id', '').split(':')[-1]}" if event.get("event_id") else f"Episode {index}",
+            "severity": warning.get("severity", "UNSPECIFIED"),
+            "start_ist": to_ist_time_str(event.get("start_utc")),
+            "end_ist": to_ist_time_str(event.get("end_utc")),
+        })
+    advisory_data = get_local_advisories()
+    report.update({
+        "title": "VNR VJIET local node field-capture report",
+        "location": "VNR VJIET campus · College Gate node",
+        "capture_window": {
+            "start_utc": start_utc,
+            "end_utc": end_utc,
+            "start_ist": to_ist_full_str(start_utc) if start_utc else None,
+            "end_ist": to_ist_full_str(end_utc) if end_utc else None,
+            "duration_minutes": len(timestamps),
+            "is_full_day": False,
+        },
+        "summary": {
+            **summary,
+            "warning_count": len(warning_rows),
+            "event_count": len(event_rows),
+            "events_count": len(event_rows),
+            "warnings_count": len(warning_rows),
+            "severe_warnings": sum(1 for warning in warning_rows if warning.get("severity") == "SEVERE"),
+            "peak_pm25": max((float(warning.get("peak_pm2_5_ug_m3", 0)) for warning in warning_rows), default=0),
+            "peak_excess_pm2_5_ug_m3": max((float(warning.get("peak_excess_pm2_5_ug_m3", 0)) for warning in warning_rows), default=0),
+        },
+        "events": event_rows,
+        "warnings": warning_rows,
+        "advisories": advisory_data.get("advisories", []),
+        "parameters": parameters,
+        "limitations": list(report.get("limitations", [])) + [
+            "This is a 99-minute field capture, not a complete calendar-day record.",
+            "Gas channels contain index/readiness information, not calibrated gas concentrations.",
+        ],
+    })
+    report["window"] = {"start_utc": start_utc, "end_utc": end_utc}
+    return report
+
+
 @router.post("/warnings/{warning_id}/acknowledge")
 def acknowledge_warning(warning_id: str):
     """Marks a warning as acknowledged in-memory."""

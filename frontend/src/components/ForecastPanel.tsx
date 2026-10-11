@@ -375,7 +375,7 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
 
   const getAqiColor = (aqi: number) => {
     if (aqi <= 50) return 'var(--accent-green)';
-    if (aqi <= 100) return 'var(--accent-yellow)';
+    if (aqi <= 100) return '#84cc16';
     if (aqi <= 200) return 'var(--accent-orange)';
     if (aqi <= 300) return 'var(--accent-red)';
     return 'var(--accent-purple)';
@@ -387,10 +387,10 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
     <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       
       {/* 6.1 Section 1: Live ML Status Bar */}
-      <div className="panel" style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderColor: liveConnection ? 'var(--accent-green)' : 'var(--border-color)', background: liveConnection ? 'rgba(46, 160, 67, 0.05)' : 'var(--bg-elevated)' }}>
+      <div className="panel" style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderColor: liveConnection ? 'var(--accent-green)' : 'var(--border-primary)', background: liveConnection ? 'rgba(46, 160, 67, 0.05)' : 'var(--bg-elevated)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span className={`dot ${liveConnection ? 'live' : ''}`} style={{ width: 10, height: 10, background: liveConnection ? 'var(--accent-green)' : 'var(--text-muted)', borderRadius: '50%', display: 'inline-block' }}></span>
-          <span style={{ fontWeight: 600, color: 'var(--text-normal)' }}>{liveConnection ? 'Live ML Inference Active' : 'Connecting ML Backend...'}</span>
+          <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{liveConnection ? 'Live ML Inference Active' : 'Connecting ML Backend...'}</span>
         </div>
         <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
           {liveConnection && <span>Target: <strong>{targetSensorState?.name || `${city} City Aggregate`}</strong> | Multi-Horizon Conformal Regressor</span>}
@@ -415,11 +415,11 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
                   </span>
                 )}
               </div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-normal)' }}>
+              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 {Math.round(card.val)} <span style={{ fontSize: '1rem', fontWeight: 400, color: 'var(--text-muted)' }}>AQI</span>
               </div>
               {card.bounds ? (
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', background: 'var(--bg-panel)', padding: '2px 6px', borderRadius: 4, display: 'inline-block', alignSelf: 'flex-start' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', background: 'var(--bg-surface)', padding: '2px 6px', borderRadius: 4, display: 'inline-block', alignSelf: 'flex-start' }}>
                   Band: {Math.round(card.bounds[0])} - {Math.round(card.bounds[1])} AQI (±12%)
                 </div>
               ) : (
@@ -479,16 +479,16 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
       </div>
 
       {/* 6.4 Section 4: Regional Ward (Kukatpally, Hyd) vs. Local Edge Sensor (AWS IoT Core) Comparison */}
-      <div className="panel" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div className="panel" style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '18px 20px' }}>
         {/* Comparison Header */}
         <div className="panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <div className="panel-title" style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '1.15rem' }}>
+            <div className="panel-title" style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: '1rem' }}>
               <Layers size={20} style={{ color: 'var(--accent-blue)' }} />
               Regional Municipal Ward vs. Local Sensor Telemetry Comparison
             </div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 4 }}>
-              Microclimate variance between Municipal Ward reference (<strong>Kukatpally, Hyderabad · Ward HYD_24</strong>) and physical edge sensors streaming through <strong>AWS IoT Core</strong>.
+            <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: 4, lineHeight: 1.5 }}>
+              Compare the current municipal reference with the College Gate sensor, then review the captured time-series below.
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
@@ -533,17 +533,16 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
         </div>
 
         {/* Side-by-Side Dual Profiles */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 390px), 1fr))', gap: 12 }}>
           {/* Column 1: Regional Baseline (Kukatpally Municipal Ward) */}
           <div style={{
-            background: 'rgba(56, 139, 253, 0.04)',
-            border: '1px solid rgba(56, 139, 253, 0.25)',
-            borderRadius: 'var(--radius-md)',
-            padding: 18,
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border-primary)',
+            borderRadius: 14,
+            padding: 15,
             display: 'flex',
             flexDirection: 'column',
-            gap: 14,
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+            gap: 11,
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
@@ -577,7 +576,7 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
               justifyContent: 'space-between',
               padding: '12px 14px',
               borderRadius: 8,
-              background: 'var(--bg-panel)',
+              background: 'var(--bg-surface)',
               border: '1px solid var(--border-primary)',
               borderLeft: `4px solid ${getAqiColor(regAqi)}`
             }}>
@@ -609,37 +608,37 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
 
             {/* Metrics Grid 3x2 */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-              <div style={{ background: 'var(--bg-panel)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
+              <div style={{ background: 'var(--bg-surface)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>PM2.5 Ambient</div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>
                   {regPm25} <span style={{ fontSize: '0.7rem', fontWeight: 400, color: 'var(--text-muted)' }}>µg/m³</span>
                 </div>
               </div>
-              <div style={{ background: 'var(--bg-panel)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
+              <div style={{ background: 'var(--bg-surface)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>PM10 Ambient</div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>
                   {regPm10} <span style={{ fontSize: '0.7rem', fontWeight: 400, color: 'var(--text-muted)' }}>µg/m³</span>
                 </div>
               </div>
-              <div style={{ background: 'var(--bg-panel)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
+              <div style={{ background: 'var(--bg-surface)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Temperature</div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>
                   {regTemp} <span style={{ fontSize: '0.7rem', fontWeight: 400, color: 'var(--text-muted)' }}>°C</span>
                 </div>
               </div>
-              <div style={{ background: 'var(--bg-panel)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
+              <div style={{ background: 'var(--bg-surface)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Relative Humidity</div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>
                   {regHum} <span style={{ fontSize: '0.7rem', fontWeight: 400, color: 'var(--text-muted)' }}>%</span>
                 </div>
               </div>
-              <div style={{ background: 'var(--bg-panel)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
+              <div style={{ background: 'var(--bg-surface)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Pressure</div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>
                   {regPressure} <span style={{ fontSize: '0.7rem', fontWeight: 400, color: 'var(--text-muted)' }}>hPa</span>
                 </div>
               </div>
-              <div style={{ background: 'var(--bg-panel)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
+              <div style={{ background: 'var(--bg-surface)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Wind Speed</div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>
                   {regionalData.wind_speed} <span style={{ fontSize: '0.7rem', fontWeight: 400, color: 'var(--text-muted)' }}>km/h</span>
@@ -663,14 +662,13 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
 
           {/* Column 2: Local Edge Telemetry (AWS IoT Core) */}
           <div style={{
-            background: 'rgba(16, 185, 129, 0.04)',
-            border: '1px solid rgba(16, 185, 129, 0.25)',
-            borderRadius: 'var(--radius-md)',
-            padding: 18,
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border-primary)',
+            borderRadius: 14,
+            padding: 15,
             display: 'flex',
             flexDirection: 'column',
-            gap: 14,
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
+            gap: 11,
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
@@ -704,7 +702,7 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
               justifyContent: 'space-between',
               padding: '12px 14px',
               borderRadius: 8,
-              background: 'var(--bg-panel)',
+              background: 'var(--bg-surface)',
               border: '1px solid var(--border-primary)',
               borderLeft: `4px solid ${getAqiColor(localAqi)}`
             }}>
@@ -736,37 +734,37 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
 
             {/* Metrics Grid 3x2 */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-              <div style={{ background: 'var(--bg-panel)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
+              <div style={{ background: 'var(--bg-surface)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>PM2.5 Sensor</div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>
                   {localPm25} <span style={{ fontSize: '0.7rem', fontWeight: 400, color: 'var(--text-muted)' }}>µg/m³</span>
                 </div>
               </div>
-              <div style={{ background: 'var(--bg-panel)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
+              <div style={{ background: 'var(--bg-surface)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>PM10 / PM1.0</div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>
                   {localPm10} <span style={{ fontSize: '0.7rem', fontWeight: 400, color: 'var(--text-muted)' }}>/ {localPm1}</span>
                 </div>
               </div>
-              <div style={{ background: 'var(--bg-panel)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
+              <div style={{ background: 'var(--bg-surface)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Temperature</div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>
                   {localTemp} <span style={{ fontSize: '0.7rem', fontWeight: 400, color: 'var(--text-muted)' }}>°C</span>
                 </div>
               </div>
-              <div style={{ background: 'var(--bg-panel)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
+              <div style={{ background: 'var(--bg-surface)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Relative Humidity</div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>
                   {localHum} <span style={{ fontSize: '0.7rem', fontWeight: 400, color: 'var(--text-muted)' }}>%</span>
                 </div>
               </div>
-              <div style={{ background: 'var(--bg-panel)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
+              <div style={{ background: 'var(--bg-surface)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Pressure</div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>
                   {localPressure} <span style={{ fontSize: '0.7rem', fontWeight: 400, color: 'var(--text-muted)' }}>hPa</span>
                 </div>
               </div>
-              <div style={{ background: 'var(--bg-panel)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
+              <div style={{ background: 'var(--bg-surface)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-primary)' }}>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>VOC Air Index</div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>
                   {localVoc} <span style={{ fontSize: '0.7rem', fontWeight: 400, color: 'var(--text-muted)' }}>pts</span>
@@ -797,7 +795,7 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
             {/* Delta 1: PM2.5 */}
             <div style={{
-              background: 'var(--bg-panel)',
+              background: 'var(--bg-surface)',
               border: '1px solid var(--border-primary)',
               borderRadius: 8,
               padding: '12px 14px',
@@ -828,7 +826,7 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
 
             {/* Delta 2: PM10 */}
             <div style={{
-              background: 'var(--bg-panel)',
+              background: 'var(--bg-surface)',
               border: '1px solid var(--border-primary)',
               borderRadius: 8,
               padding: '12px 14px',
@@ -859,7 +857,7 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
 
             {/* Delta 3: AQI Penalty */}
             <div style={{
-              background: 'var(--bg-panel)',
+              background: 'var(--bg-surface)',
               border: '1px solid var(--border-primary)',
               borderRadius: 8,
               padding: '12px 14px',
@@ -890,7 +888,7 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
 
             {/* Delta 4: Urban Canopy Heat */}
             <div style={{
-              background: 'var(--bg-panel)',
+              background: 'var(--bg-surface)',
               border: '1px solid var(--border-primary)',
               borderRadius: 8,
               padding: '12px 14px',
@@ -924,102 +922,7 @@ export default function ForecastPanel({ city = 'Hyderabad', userCoords, liveData
         {/* Dedicated Regional vs Local Comparison Component (Oct 9, 2026: 14:24 to 16:02 IST) */}
         <RegionalLocalComparison />
 
-        {/* Recent Ingestion Stream (Last 5 Readings from AWS IoT Core in IST) */}
-        <div style={{ background: 'var(--bg-panel)', borderRadius: 8, border: '1px solid var(--border-primary)', padding: '14px 16px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Clock size={16} style={{ color: 'var(--accent-cyan)' }} />
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                Recent AWS IoT Core Ingestion Ledger (Last 5 Packets · Converted to IST)
-              </span>
-            </div>
-            <span style={{ fontSize: '0.7rem', color: 'var(--accent-emerald)', background: 'rgba(16, 185, 129, 0.1)', padding: '2px 8px', borderRadius: 4, fontWeight: 600 }}>
-              Live MQTT Topic: <code>{localTopic}</code>
-            </span>
-          </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem', textAlign: 'left' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid var(--border-primary)', color: 'var(--text-muted)' }}>
-                  <th style={{ padding: '8px 10px', fontWeight: 600 }}>Timestamp (IST)</th>
-                  <th style={{ padding: '8px 10px', fontWeight: 600 }}>Node ID</th>
-                  <th style={{ padding: '8px 10px', fontWeight: 600 }}>PM2.5 (µg/m³)</th>
-                  <th style={{ padding: '8px 10px', fontWeight: 600 }}>PM10 (µg/m³)</th>
-                  <th style={{ padding: '8px 10px', fontWeight: 600 }}>PM1.0 (µg/m³)</th>
-                  <th style={{ padding: '8px 10px', fontWeight: 600 }}>Temp (°C)</th>
-                  <th style={{ padding: '8px 10px', fontWeight: 600 }}>Humidity (%)</th>
-                  <th style={{ padding: '8px 10px', fontWeight: 600 }}>Pressure (hPa)</th>
-                  <th style={{ padding: '8px 10px', fontWeight: 600 }}>AWS Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {displayHistoryRows.map((row: any, idx: number) => (
-                  <tr key={idx} style={{ 
-                    borderBottom: '1px solid rgba(255,255,255,0.04)',
-                    background: idx === 0 ? 'rgba(16, 185, 129, 0.05)' : 'transparent',
-                    fontFamily: 'monospace'
-                  }}>
-                    <td style={{ padding: '8px 10px', color: 'var(--accent-cyan)', fontWeight: 600 }}>
-                      {row.timestamp_ist || row.timestamp || localTimestampIst}
-                    </td>
-                    <td style={{ padding: '8px 10px', color: 'var(--text-primary)' }}>
-                      {row.device_id || localDeviceId}
-                    </td>
-                    <td style={{ padding: '8px 10px', color: 'var(--accent-orange)', fontWeight: 700 }}>
-                      {row.pm25 !== undefined ? row.pm25 : localPm25}
-                    </td>
-                    <td style={{ padding: '8px 10px', color: 'var(--text-primary)' }}>
-                      {row.pm10 !== undefined ? row.pm10 : localPm10}
-                    </td>
-                    <td style={{ padding: '8px 10px', color: 'var(--text-muted)' }}>
-                      {row.pm1 !== undefined ? row.pm1 : localPm1}
-                    </td>
-                    <td style={{ padding: '8px 10px', color: 'var(--text-primary)' }}>
-                      {row.temp !== undefined ? row.temp : localTemp}°C
-                    </td>
-                    <td style={{ padding: '8px 10px', color: 'var(--text-primary)' }}>
-                      {row.humidity !== undefined ? row.humidity : localHum}%
-                    </td>
-                    <td style={{ padding: '8px 10px', color: 'var(--text-primary)' }}>
-                      {row.pressure !== undefined ? row.pressure : localPressure}
-                    </td>
-                    <td style={{ padding: '8px 10px' }}>
-                      <span style={{ 
-                        color: 'var(--accent-green)', 
-                        background: 'rgba(34, 197, 94, 0.12)', 
-                        padding: '2px 6px', 
-                        borderRadius: 4, 
-                        fontSize: '0.68rem',
-                        fontWeight: 600
-                      }}>
-                        ● {row.status || 'ONLINE'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Physical Interpretation Context Strip */}
-        <div style={{
-          padding: '12px 16px',
-          borderRadius: 8,
-          background: 'rgba(56, 139, 253, 0.05)',
-          border: '1px solid rgba(56, 139, 253, 0.2)',
-          fontSize: '0.78rem',
-          lineHeight: 1.5,
-          color: 'var(--text-secondary)'
-        }}>
-          <strong style={{ color: 'var(--accent-blue)' }}>Hyperlocal Microclimate Attribution:</strong> The 
-          regional <strong>CPCB Kukatpally Municipal Ward station</strong> records wide-area atmospheric background air quality 
-          at 10m elevation. In contrast, the <strong>College Gate IoT sensor (Node <code>aervia-54a91ed9b4dc</code> via AWS IoT Core)</strong> samples 
-          the 1.8m pedestrian breathing zone directly affected by stop-and-go vehicle queuing, gate traffic pulses, and localized 
-          dust agitation. The measured <strong>{deltaPm25 >= 0 ? `+${deltaPm25} µg/m³` : `${deltaPm25} µg/m³`} PM2.5 delta</strong> isolates the true localized microclimate excess 
-          that municipal averages dilute.
-        </div>
       </div>
       
     </div>

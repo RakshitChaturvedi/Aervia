@@ -31,12 +31,12 @@ function formatAdvisoryText(text: string) {
         {parts.map((part, pIdx) => {
           if (part.startsWith('**') && part.endsWith('**')) {
             return (
-              <strong key={pIdx} style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
+              <strong key={pIdx} style={{ color: '#ffffff', fontWeight: 700 }}>
                 {part.slice(2, -2)}
               </strong>
             );
           }
-          return <span key={pIdx} style={{ color: 'var(--text-secondary)' }}>{part}</span>;
+          return <span key={pIdx} style={{ color: '#e2e8f0' }}>{part}</span>;
         })}
       </div>
     );
@@ -184,7 +184,7 @@ export default function AdvisoryPanel({
             <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--text-primary)' }}>
               Citizen Health Advisory
             </div>
-            <div className="panel-badge badge-purple" style={{ fontSize: '0.62rem', padding: '2px 6px' }}>
+            <div className="panel-badge badge-purple" style={{ fontSize: '0.62rem', padding: '2px 6px', color: '#ffffff', background: '#6d28d9', borderColor: '#7c3aed' }}>
               Gemini AI • NLG
             </div>
           </div>
@@ -211,7 +211,7 @@ export default function AdvisoryPanel({
           alignItems: 'center', 
           marginBottom: 10,
           padding: '5px 9px',
-          background: 'rgba(0,0,0,0.25)',
+          background: '#f1f5f9',
           borderRadius: 6,
           border: '1px solid var(--border-primary)',
           fontSize: '0.74rem'
@@ -257,7 +257,7 @@ export default function AdvisoryPanel({
         {/* Single Unified Formatted Text Card (Scrollable) */}
         <div 
           style={{
-            background: 'rgba(22, 27, 34, 0.85)',
+            background: '#273244',
             border: `1px solid ${isDistrictMode ? 'rgba(56, 189, 248, 0.4)' : 'rgba(168, 85, 247, 0.4)'}`,
             borderRadius: 8,
             padding: '12px 14px',
